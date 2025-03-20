@@ -151,7 +151,7 @@ export default function AdminPage() {
     enabled: !!user && user.role === "admin"
   });
 
-  // Formulário para pacientes de teste
+  // Formulário para utentes de teste
   const createTestPatientsForm = () => {
     const patients = Array.from({ length: patientCount }).map((_, index) => ({
       processNumber: `TEST${100 + index}`,
@@ -165,7 +165,7 @@ export default function AdminPage() {
     };
   };
 
-  // Função para criar pacientes de teste
+  // Função para criar utentes de teste
   const handleCreateTestPatients = async () => {
     setIsAddingPatients(true);
     
@@ -182,7 +182,7 @@ export default function AdminPage() {
       });
       
       if (!response.ok) {
-        throw new Error("Erro ao criar pacientes de teste");
+        throw new Error("Erro ao criar utentes de teste");
       }
       
       const result = await response.json();
@@ -198,7 +198,7 @@ export default function AdminPage() {
     } catch (error) {
       toast({
         title: "Erro",
-        description: error instanceof Error ? error.message : "Erro ao criar pacientes de teste",
+        description: error instanceof Error ? error.message : "Erro ao criar utentes de teste",
         variant: "destructive"
       });
     } finally {
@@ -279,7 +279,7 @@ export default function AdminPage() {
               </TabsTrigger>
               <TabsTrigger value="patients">
                 <Hospital className="h-4 w-4 mr-2" />
-                Pacientes Teste
+                Utentes Teste
               </TabsTrigger>
               <TabsTrigger value="reports">
                 <FileText className="h-4 w-4 mr-2" />
@@ -498,7 +498,7 @@ export default function AdminPage() {
             <TabsContent value="patients">
               <Card>
                 <CardHeader>
-                  <CardTitle>Criar Pacientes de Teste</CardTitle>
+                  <CardTitle>Criar Utentes de Teste</CardTitle>
                   <CardDescription>
                     Adicione dados de teste para utilizar no sistema de relatórios médicos.
                   </CardDescription>
@@ -555,7 +555,7 @@ export default function AdminPage() {
                           Criando pacientes...
                         </span>
                       ) : (
-                        "Criar Pacientes de Teste"
+                        "Criar Utentes de Teste"
                       )}
                     </Button>
                     
