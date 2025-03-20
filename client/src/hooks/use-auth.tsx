@@ -3,16 +3,13 @@ import {
   useQuery,
   useMutation,
   UseMutationResult,
-  QueryFunctionContext,
 } from "@tanstack/react-query";
 import { User, type InsertUser } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
-// Tipo para login (username e password)
+// Tipos para mutações
 type LoginData = Pick<InsertUser, "username" | "password">;
-
-// Tipo para registro (todos os campos do InsertUser)
 type RegisterData = InsertUser;
 
 // Tipo do contexto de autenticação
@@ -29,15 +26,15 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 // Provider de autenticação
-export function AuthProvider({ children }: { children: ReactNode }) {
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const { toast } = useToast();
 
   // Query para obter usuário autenticado
   const {
-    data: user,
+    data: userData,
     error,
     isLoading,
-  } = useQuery<User | null>({
+  } = useQuery<User | null, Error>({
     queryKey: ["/api/user"],
     queryFn: async () => {
       try {
@@ -55,6 +52,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     },
   });
+
+  const user = userData || null;
 
   // Mutation para login
   const loginMutation = useMutation<User, Error, LoginData>({
@@ -146,27 +145,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
   });
 
+  const contextValue = {
+    user,
+    isLoading,
+    error,
+    loginMutation,
+    logoutMutation,
+    registerMutation,
+  };
+
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isLoading,
-        error,
-        loginMutation,
-        logoutMutation,
-        registerMutation,
-      }}
-    >
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );
-}
+};
 
 // Hook para usar o contexto de autenticação
-export function useAuth() {
+export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
     throw new Error("useAuth deve ser usado dentro de um AuthProvider");
   }
   return context;
-}
+};
