@@ -6,15 +6,18 @@ import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import AuthPage from "@/pages/auth-page";
+import AdminPage from "@/pages/admin-page";
 import { setupTheme } from "@/lib/theme";
 import { AuthProvider } from "./hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
+import { AdminRoute } from "./lib/admin-route";
 
 function Router() {
   return (
     <Switch>
       <ProtectedRoute path="/" component={Home} />
       <Route path="/auth" component={AuthPage} />
+      <AdminRoute path="/admin" component={AdminPage} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -467,6 +467,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // ==== Admin Routes ====
   
+  // ==== Rotas Administrativas ====
+  
   // Get all users (admin only)
   app.get("/api/admin/users", ensureAdmin, async (req, res) => {
     try {
@@ -484,6 +486,144 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       log(`Error fetching users: ${error}`, "api");
+      res.status(500).json({
+        success: false,
+        message: "Erro interno do servidor"
+      });
+    }
+  });
+  
+  // Obter todos os relatórios médicos (admin only)
+  app.get("/api/admin/reports", ensureAdmin, async (req, res) => {
+    try {
+      const reports = await storage.getAllMedicalReports();
+      
+      // Enriquecer dados dos relatórios com informações do médico
+      const reportsWithUserData = await Promise.all(reports.map(async (report) => {
+        const doctor = await storage.getUser(report.userId);
+        return {
+          ...report,
+          doctor: doctor ? { 
+            id: doctor.id, 
+            name: doctor.name, 
+            role: doctor.role,
+            specialty: doctor.specialty 
+          } : null
+        };
+      }));
+      
+      res.json({
+        success: true,
+        data: reportsWithUserData
+      });
+    } catch (error) {
+      log(`Error fetching all reports: ${error}`, "api");
+      res.status(500).json({
+        success: false,
+        message: "Erro interno do servidor"
+      });
+    }
+  });
+  
+  // Obter todos os logs de auditoria (admin only)
+  app.get("/api/admin/audit-logs", ensureAdmin, async (req, res) => {
+    try {
+      const logs = await storage.getAuditLogs();
+      
+      // Enriquecer logs com informações do usuário
+      const logsWithUserData = await Promise.all(logs.map(async (log) => {
+        if (log.userId) {
+          const user = await storage.getUser(log.userId);
+          return {
+            ...log,
+            user: user ? { 
+              id: user.id, 
+              name: user.name, 
+              role: user.role 
+            } : null
+          };
+        }
+        return log;
+      }));
+      
+      res.json({
+        success: true,
+        data: logsWithUserData.sort((a, b) => 
+          new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+        )
+      });
+    } catch (error) {
+      log(`Error fetching audit logs: ${error}`, "api");
+      res.status(500).json({
+        success: false,
+        message: "Erro interno do servidor"
+      });
+    }
+  });
+  
+  // Obter relatório específico com histórico de auditoria (admin only)
+  app.get("/api/admin/reports/:id/audit", ensureAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({
+          success: false,
+          message: "Formato de ID inválido"
+        });
+      }
+      
+      // Obter o relatório
+      const report = await storage.getMedicalReport(id);
+      if (!report) {
+        return res.status(404).json({
+          success: false,
+          message: "Relatório médico não encontrado"
+        });
+      }
+      
+      // Obter logs de auditoria do relatório
+      const auditLogs = await storage.getAuditLogs("medical_report", id);
+      
+      // Obter logs de comunicação do relatório
+      const communicationLogs = await storage.getCommunicationLogsByReportId(id);
+      
+      // Enriquecer logs com informações do usuário
+      const auditLogsWithUserData = await Promise.all(auditLogs.map(async (log) => {
+        if (log.userId) {
+          const user = await storage.getUser(log.userId);
+          return {
+            ...log,
+            user: user ? { 
+              id: user.id, 
+              name: user.name, 
+              role: user.role 
+            } : null
+          };
+        }
+        return log;
+      }));
+      
+      // Obter informações do médico
+      const doctor = await storage.getUser(report.userId);
+      
+      res.json({
+        success: true,
+        data: {
+          report: {
+            ...report,
+            doctor: doctor ? { 
+              id: doctor.id, 
+              name: doctor.name, 
+              role: doctor.role,
+              specialty: doctor.specialty 
+            } : null
+          },
+          auditLogs: auditLogsWithUserData,
+          communicationLogs
+        }
+      });
+    } catch (error) {
+      log(`Error fetching report audit: ${error}`, "api");
       res.status(500).json({
         success: false,
         message: "Erro interno do servidor"
