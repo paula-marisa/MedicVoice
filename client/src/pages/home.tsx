@@ -1,15 +1,17 @@
-import { useState, useRef } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useState, useRef, useEffect } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Header } from "@/layout/header";
 import { Footer } from "@/layout/footer";
 import { PatientForm, type PatientFormValues } from "@/components/patient-form";
 import { ReportForm, type ReportFormValues } from "@/components/report-form";
+import { ReportList } from "@/components/report-list";
 import { VoiceRecognition } from "@/components/voice-recognition";
 import { ExportOptions } from "@/components/export-options";
 import { Notification } from "@/components/ui/notification";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import { insertMedicalReportSchema } from "@shared/schema";
+import { insertMedicalReportSchema, MedicalReport } from "@shared/schema";
 import { useAuth } from "@/hooks/use-auth";
 import { jsPDF } from "jspdf";
 
@@ -310,61 +312,211 @@ export default function Home() {
     }
   };
 
+  // Estados para edição de relatório
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentReportId, setCurrentReportId] = useState<number | null>(null);
+  
+  // Mutation para atualizar relatório
+  const updateReportMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number, data: any }) => {
+      const response = await apiRequest("PATCH", `/api/my-reports/${id}`, data);
+      return response.json();
+    },
+    onSuccess: () => {
+      notificationRef.current?.show({
+        message: "Relatório atualizado com sucesso!",
+        type: "success"
+      });
+      setIsEditing(false);
+      setCurrentReportId(null);
+      queryClient.invalidateQueries({ queryKey: ["/api/my-reports"] });
+      handleClearForm();
+    },
+    onError: (error) => {
+      notificationRef.current?.show({
+        message: `Erro ao atualizar relatório: ${error.message}`,
+        type: "error"
+      });
+    }
+  });
+  
+  // Carregar relatório para edição
+  const handleEditReport = (report: MedicalReport) => {
+    // Definir dados do paciente (campos não editáveis)
+    setPatient({
+      processNumber: report.processNumber,
+      name: report.name,
+      age: report.age,
+      gender: report.gender
+    });
+    
+    // Definir dados do relatório (campos editáveis)
+    setReport({
+      diagnosis: report.diagnosis,
+      symptoms: report.symptoms,
+      treatment: report.treatment,
+      observations: report.observations || ""
+    });
+    
+    // Ativar modo de edição
+    setIsEditing(true);
+    setCurrentReportId(report.id);
+  };
+  
+  // Salvar atualizações do relatório
+  const handleUpdateReport = async () => {
+    try {
+      if (!user || !user.id || !currentReportId) {
+        notificationRef.current?.show({
+          message: "Erro ao identificar relatório ou usuário",
+          type: "error"
+        });
+        return;
+      }
+      
+      // Apenas enviar os campos editáveis
+      const updateData = {
+        diagnosis: report.diagnosis,
+        symptoms: report.symptoms,
+        treatment: report.treatment,
+        observations: report.observations
+      };
+      
+      updateReportMutation.mutate({ 
+        id: currentReportId,
+        data: updateData
+      });
+    } catch (error) {
+      console.error("Erro ao atualizar relatório:", error);
+      notificationRef.current?.show({
+        message: "Erro ao atualizar relatório",
+        type: "error"
+      });
+    }
+  };
+  
+  // Cancelar edição
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setCurrentReportId(null);
+    handleClearForm();
+  };
+
   return (
     <>
       <Header />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2 space-y-6">
-            <PatientForm 
-              onPatientChange={setPatient} 
-              defaultValues={patient} 
-            />
-            
-            <ReportForm 
-              onReportChange={setReport} 
-              defaultValues={report} 
-              transcription={transcription} 
-            />
-            
-            <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3">
-              <Button 
-                variant="outline" 
-                onClick={handleClearForm}
-              >
-                Limpar Campos
-              </Button>
-              <Button 
-                variant="secondary" 
-                onClick={handleSaveDraft}
-                disabled={saveReportMutation.isPending}
-              >
-                Salvar Rascunho
-              </Button>
-              <Button 
-                onClick={handleSaveAndSubmit}
-                disabled={saveReportMutation.isPending}
-              >
-                Salvar e Enviar
-              </Button>
-            </div>
-          </div>
+        <Tabs defaultValue="novo" className="w-full">
+          <TabsList className="mb-6">
+            <TabsTrigger value="novo">Novo Relatório</TabsTrigger>
+            <TabsTrigger value="meus">Meus Relatórios</TabsTrigger>
+          </TabsList>
           
-          <div className="lg:col-span-1 space-y-6">
-            <VoiceRecognition 
-              onTranscriptionComplete={handleTranscriptionComplete} 
-              notificationRef={notificationRef}
-            />
-            
-            <ExportOptions 
-              onExportPDF={handleExportPDF} 
-              onExportSClinico={handleExportSClinico} 
-              processNumber={patient.processNumber}
-              notificationRef={notificationRef}
-            />
-          </div>
-        </div>
+          <TabsContent value="novo">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2 space-y-6">
+                <PatientForm 
+                  onPatientChange={setPatient} 
+                  defaultValues={patient} 
+                />
+                
+                <ReportForm 
+                  onReportChange={setReport} 
+                  defaultValues={report} 
+                  transcription={transcription} 
+                />
+                
+                <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3">
+                  <Button 
+                    variant="outline" 
+                    onClick={handleClearForm}
+                  >
+                    Limpar Campos
+                  </Button>
+                  <Button 
+                    variant="secondary" 
+                    onClick={handleSaveDraft}
+                    disabled={saveReportMutation.isPending}
+                  >
+                    Salvar Rascunho
+                  </Button>
+                  <Button 
+                    onClick={handleSaveAndSubmit}
+                    disabled={saveReportMutation.isPending}
+                  >
+                    Salvar e Enviar
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="lg:col-span-1 space-y-6">
+                <VoiceRecognition 
+                  onTranscriptionComplete={handleTranscriptionComplete} 
+                  notificationRef={notificationRef}
+                />
+                
+                <ExportOptions 
+                  onExportPDF={handleExportPDF} 
+                  onExportSClinico={handleExportSClinico} 
+                  processNumber={patient.processNumber}
+                  notificationRef={notificationRef}
+                />
+              </div>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="meus">
+            {isEditing ? (
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2 space-y-6">
+                  <PatientForm 
+                    onPatientChange={() => {}} // Campos de paciente não são editáveis
+                    defaultValues={patient}
+                    disabled={true} // Desabilitar edição dos campos
+                  />
+                  
+                  <ReportForm 
+                    onReportChange={setReport} 
+                    defaultValues={report} 
+                    transcription={transcription} 
+                  />
+                  
+                  <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3">
+                    <Button 
+                      variant="outline" 
+                      onClick={handleCancelEdit}
+                    >
+                      Cancelar
+                    </Button>
+                    <Button 
+                      onClick={handleUpdateReport}
+                      disabled={updateReportMutation.isPending}
+                    >
+                      Atualizar Relatório
+                    </Button>
+                  </div>
+                </div>
+                
+                <div className="lg:col-span-1 space-y-6">
+                  <VoiceRecognition 
+                    onTranscriptionComplete={handleTranscriptionComplete} 
+                    notificationRef={notificationRef}
+                  />
+                  
+                  <ExportOptions 
+                    onExportPDF={handleExportPDF} 
+                    onExportSClinico={handleExportSClinico} 
+                    processNumber={patient.processNumber}
+                    notificationRef={notificationRef}
+                  />
+                </div>
+              </div>
+            ) : (
+              <ReportList onEditReport={handleEditReport} />
+            )}
+          </TabsContent>
+        </Tabs>
       </main>
       
       <Footer />

@@ -1,7 +1,12 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertMedicalReportSchema, insertCommunicationLogSchema, type User } from "@shared/schema";
+import { 
+  insertMedicalReportSchema, 
+  insertCommunicationLogSchema, 
+  type User, 
+  type InsertMedicalReport
+} from "@shared/schema";
 import { z } from "zod";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
@@ -518,6 +523,166 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       log(`Error fetching all reports: ${error}`, "api");
+      res.status(500).json({
+        success: false,
+        message: "Erro interno do servidor"
+      });
+    }
+  });
+  
+  // Obter relatórios médicos do usuário autenticado
+  app.get("/api/my-reports", ensureAuthenticated, async (req, res) => {
+    try {
+      if (!req.user || !req.user.id) {
+        return res.status(401).json({
+          success: false,
+          message: "Usuário não autenticado"
+        });
+      }
+      
+      const userId = req.user.id;
+      const reports = await storage.getMedicalReportsByUserId(userId);
+      
+      res.json({
+        success: true,
+        data: reports
+      });
+    } catch (error) {
+      log(`Error fetching user reports: ${error}`, "api");
+      res.status(500).json({
+        success: false,
+        message: "Erro interno do servidor"
+      });
+    }
+  });
+  
+  // Obter um relatório específico pertencente ao usuário autenticado
+  app.get("/api/my-reports/:id", ensureAuthenticated, async (req, res) => {
+    try {
+      if (!req.user || !req.user.id) {
+        return res.status(401).json({
+          success: false,
+          message: "Usuário não autenticado"
+        });
+      }
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({
+          success: false,
+          message: "Formato de ID inválido"
+        });
+      }
+      
+      // Obter o relatório
+      const report = await storage.getMedicalReport(id);
+      
+      if (!report) {
+        return res.status(404).json({
+          success: false,
+          message: "Relatório médico não encontrado"
+        });
+      }
+      
+      // Verificar se o relatório pertence ao usuário autenticado
+      if (report.userId !== req.user.id) {
+        return res.status(403).json({
+          success: false,
+          message: "Você não tem permissão para acessar este relatório"
+        });
+      }
+      
+      res.json({
+        success: true,
+        data: report
+      });
+    } catch (error) {
+      log(`Error fetching user report: ${error}`, "api");
+      res.status(500).json({
+        success: false,
+        message: "Erro interno do servidor"
+      });
+    }
+  });
+  
+  // Atualizar um relatório médico (apenas campos permitidos)
+  app.patch("/api/my-reports/:id", ensureAuthenticated, async (req, res) => {
+    try {
+      if (!req.user || !req.user.id) {
+        return res.status(401).json({
+          success: false,
+          message: "Usuário não autenticado"
+        });
+      }
+      
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({
+          success: false,
+          message: "Formato de ID inválido"
+        });
+      }
+      
+      // Obter o relatório atual
+      const existingReport = await storage.getMedicalReport(id);
+      
+      if (!existingReport) {
+        return res.status(404).json({
+          success: false,
+          message: "Relatório médico não encontrado"
+        });
+      }
+      
+      // Verificar se o relatório pertence ao usuário autenticado
+      if (existingReport.userId !== req.user.id) {
+        return res.status(403).json({
+          success: false,
+          message: "Você não tem permissão para editar este relatório"
+        });
+      }
+      
+      // Extrair apenas os campos que podem ser atualizados
+      const { diagnosis, symptoms, treatment, observations, status } = req.body;
+      
+      // Criar o objeto de atualização apenas com campos permitidos
+      const updateData: Partial<InsertMedicalReport> = {};
+      
+      if (diagnosis !== undefined) updateData.diagnosis = diagnosis;
+      if (symptoms !== undefined) updateData.symptoms = symptoms;
+      if (treatment !== undefined) updateData.treatment = treatment;
+      if (observations !== undefined) updateData.observations = observations;
+      if (status !== undefined) updateData.status = status;
+      
+      // Atualizar o relatório
+      const updatedReport = await storage.updateMedicalReport(id, updateData);
+      
+      if (!updatedReport) {
+        return res.status(500).json({
+          success: false,
+          message: "Erro ao atualizar o relatório"
+        });
+      }
+      
+      // Registrar a atualização no log de auditoria
+      await logAuditTrail(req, "update", "medical_report", id, {
+        updatedFields: Object.keys(updateData),
+        oldValues: {
+          diagnosis: existingReport.diagnosis,
+          symptoms: existingReport.symptoms,
+          treatment: existingReport.treatment,
+          observations: existingReport.observations,
+          status: existingReport.status
+        },
+        newValues: updateData
+      });
+      
+      res.json({
+        success: true,
+        message: "Relatório atualizado com sucesso",
+        data: updatedReport
+      });
+    } catch (error) {
+      log(`Error updating report: ${error}`, "api");
       res.status(500).json({
         success: false,
         message: "Erro interno do servidor"
