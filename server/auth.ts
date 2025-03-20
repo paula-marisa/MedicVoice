@@ -51,6 +51,26 @@ async function logAuthActivity(action: string, userId?: number, details?: any, r
 }
 
 // Setup authentication
+// Function to initialize admin user
+export async function initAdminUser() {
+  try {
+    const adminUser = await storage.getUserByUsername("admin");
+    if (!adminUser) {
+      const adminData: InsertUser = {
+        username: "admin",
+        password: await hashPassword("admin"),
+        name: "Administrador",
+        role: "admin",
+        specialty: "Administração"
+      };
+      await storage.createUser(adminData);
+      log("Admin user created successfully", "auth");
+    }
+  } catch (error) {
+    log(`Error creating admin user: ${error}`, "auth");
+  }
+}
+
 export function setupAuth(app: Express) {
   // Session settings
   const sessionSettings: session.SessionOptions = {
@@ -104,9 +124,20 @@ export function setupAuth(app: Express) {
     }
   });
 
-  // Register user
+  // Create admin user if it doesn't exist when setting up auth
+  initAdminUser().catch(error => log(`Failed to initialize admin user: ${error}`, "auth"));
+
+  // Register user (restricted to admins only)
   app.post("/api/register", async (req, res, next) => {
     try {
+      // Check if the current user is an admin
+      if (!req.isAuthenticated() || req.user.role !== "admin") {
+        return res.status(403).json({
+          success: false,
+          message: "Apenas administradores podem registrar novos usuários"
+        });
+      }
+
       // Check if user already exists
       const existingUser = await storage.getUserByUsername(req.body.username);
       if (existingUser) {
@@ -125,18 +156,16 @@ export function setupAuth(app: Express) {
       const user = await storage.createUser(userData);
       
       // Log the registration
-      await logAuthActivity("user_registered", user.id, null, req);
+      await logAuthActivity("user_registered", user.id, { 
+        registeredBy: req.user.id 
+      }, req);
 
-      // Log in the new user
-      req.login(user, (err) => {
-        if (err) return next(err);
-        
-        // Return success without password
-        const { password, ...userWithoutPassword } = user;
-        res.status(201).json({
-          success: true,
-          user: userWithoutPassword
-        });
+      // Return success without password
+      const { password, ...userWithoutPassword } = user;
+      res.status(201).json({
+        success: true,
+        user: userWithoutPassword,
+        message: "Usuário registrado com sucesso"
       });
     } catch (error) {
       log(`Registration error: ${error}`, "auth");
@@ -227,5 +256,17 @@ export function ensureAuthenticated(req: Request, res: Response, next: NextFunct
   res.status(401).json({
     success: false,
     message: "Autenticação necessária"
+  });
+}
+
+// Middleware to ensure user is an admin
+export function ensureAdmin(req: Request, res: Response, next: NextFunction) {
+  if (req.isAuthenticated() && req.user?.role === "admin") {
+    return next();
+  }
+  
+  res.status(403).json({
+    success: false,
+    message: "Acesso permitido apenas para administradores"
   });
 }
