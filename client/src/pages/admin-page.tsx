@@ -151,6 +151,61 @@ export default function AdminPage() {
     enabled: !!user && user.role === "admin"
   });
 
+  // Formulário para pacientes de teste
+  const createTestPatientsForm = () => {
+    const patients = Array.from({ length: patientCount }).map((_, index) => ({
+      processNumber: `TEST${100 + index}`,
+      name: `Paciente Teste ${index + 1}`,
+      age: "45",
+      gender: "masculino"
+    }));
+
+    return {
+      patients
+    };
+  };
+
+  // Função para criar pacientes de teste
+  const handleCreateTestPatients = async () => {
+    setIsAddingPatients(true);
+    
+    try {
+      const testData = createTestPatientsForm();
+      
+      const response = await fetch("/api/admin/patients/test-data", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        credentials: "include",
+        body: JSON.stringify(testData)
+      });
+      
+      if (!response.ok) {
+        throw new Error("Erro ao criar pacientes de teste");
+      }
+      
+      const result = await response.json();
+      
+      toast({
+        title: "Pacientes de teste criados",
+        description: result.message,
+        variant: "default"
+      });
+      
+      // Atualizar lista de relatórios
+      refetchReports();
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: error instanceof Error ? error.message : "Erro ao criar pacientes de teste",
+        variant: "destructive"
+      });
+    } finally {
+      setIsAddingPatients(false);
+    }
+  };
+
   // Função para registrar um novo usuário
   const handleRegisterUser = (data: RegisterUserValues) => {
     registerMutation.mutate(data, {
@@ -168,6 +223,18 @@ export default function AdminPage() {
   ) : [];
 
   // A verificação agora é feita no AdminRoute, então não precisamos fazer ela aqui
+
+  // Verificar se usuário existe
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <h2 className="text-xl font-medium">Carregando informações do usuário...</h2>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -417,6 +484,82 @@ export default function AdminPage() {
                       </Table>
                     </div>
                   )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            {/* Aba de Pacientes de Teste */}
+            <TabsContent value="patients">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Criar Pacientes de Teste</CardTitle>
+                  <CardDescription>
+                    Adicione dados de teste para utilizar no sistema de relatórios médicos.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="text-lg font-medium mb-2">Quantidade de Pacientes</h3>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Escolha quantos pacientes de teste deseja criar. Serão gerados registros com dados simulados.
+                      </p>
+                      
+                      <div className="flex items-center space-x-4">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => setPatientCount(Math.max(1, patientCount - 1))}
+                        >
+                          -
+                        </Button>
+                        <span className="font-medium text-lg">{patientCount}</span>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => setPatientCount(Math.min(10, patientCount + 1))}
+                        >
+                          +
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-muted rounded-md p-4">
+                      <h4 className="font-medium mb-2">Pacientes a serem criados:</h4>
+                      <div className="space-y-2">
+                        {Array.from({ length: patientCount }).map((_, index) => (
+                          <div key={index} className="flex justify-between items-center text-sm p-2 rounded-md bg-background">
+                            <div>
+                              <span className="font-medium">Paciente Teste {index + 1}</span>
+                              <span className="text-muted-foreground ml-2">(Processo: TEST{100 + index})</span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <Button 
+                      className="w-full"
+                      onClick={handleCreateTestPatients}
+                      disabled={isAddingPatients}
+                    >
+                      {isAddingPatients ? (
+                        <span className="flex items-center">
+                          <div className="animate-spin h-4 w-4 mr-2 border-b-2 border-current rounded-full"></div>
+                          Criando pacientes...
+                        </span>
+                      ) : (
+                        "Criar Pacientes de Teste"
+                      )}
+                    </Button>
+                    
+                    <div className="text-sm text-muted-foreground">
+                      <p className="italic">
+                        Nota: Os dados de teste são criados apenas para fins de demonstração. 
+                        Cada paciente será registrado com um relatório médico em rascunho.
+                      </p>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
