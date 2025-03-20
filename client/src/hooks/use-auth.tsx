@@ -5,7 +5,7 @@ import {
   UseMutationResult,
 } from "@tanstack/react-query";
 import { User, type InsertUser } from "@shared/schema";
-import { apiRequest, queryClient } from "@/lib/queryClient";
+import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
 // Tipos para mutações
@@ -13,20 +13,29 @@ type LoginData = Pick<InsertUser, "username" | "password">;
 type RegisterData = InsertUser;
 
 // Tipo do contexto de autenticação
-type AuthContextType = {
+interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   error: Error | null;
   loginMutation: UseMutationResult<User, Error, LoginData>;
   logoutMutation: UseMutationResult<void, Error, void>;
   registerMutation: UseMutationResult<User, Error, RegisterData>;
-};
+}
 
 // Criação do contexto
 const AuthContext = createContext<AuthContextType | null>(null);
 
+// Hook para usar o contexto de autenticação
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth deve ser usado dentro de um AuthProvider");
+  }
+  return context;
+}
+
 // Provider de autenticação
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
 
   // Query para obter usuário autenticado
@@ -38,17 +47,33 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     queryKey: ["/api/user"],
     queryFn: async () => {
       try {
-        const response = await fetch("/api/user");
+        console.log("Verificando usuário autenticado");
+        const response = await fetch("/api/user", {
+          credentials: "include"  // Importante para enviar cookies
+        });
+        console.log("Status da resposta /api/user:", response.status);
+        
         if (response.status === 401) {
+          console.log("Usuário não autenticado (401)");
           return null;
         }
+        
         if (!response.ok) {
+          console.error("Erro na resposta /api/user:", response.statusText);
           throw new Error("Erro ao obter dados do usuário");
         }
+        
         const data = await response.json();
-        return data.user || null;
+        console.log("Dados do usuário:", data);
+        
+        if (!data.success || !data.user) {
+          console.log("Resposta sem dados de usuário válidos:", data);
+          return null;
+        }
+        
+        return data.user;
       } catch (error) {
-        console.error("Erro na autenticação:", error);
+        console.error("Erro ao verificar autenticação:", error);
         return null;
       }
     },
@@ -59,18 +84,38 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Mutation para login
   const loginMutation = useMutation<User, Error, LoginData>({
     mutationFn: async (credentials) => {
-      const res = await apiRequest("POST", "/api/login", credentials);
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.message || "Credenciais inválidas");
+      try {
+        console.log("Tentando login com:", credentials);
+        const res = await fetch("/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(credentials),
+          credentials: "include"
+        });
+        console.log("Status da resposta:", res.status);
+        
+        if (!res.ok) {
+          const errorData = await res.json();
+          console.error("Erro na resposta:", errorData);
+          throw new Error(errorData.message || "Credenciais inválidas");
+        }
+        
+        const data = await res.json();
+        console.log("Dados da resposta:", data);
+        
+        if (!data.success || !data.user) {
+          console.error("Resposta sem dados de usuário:", data);
+          throw new Error(data.message || "Resposta inválida do servidor");
+        }
+        
+        return data.user;
+      } catch (err) {
+        console.error("Erro no login:", err);
+        throw err;
       }
-      const data = await res.json();
-      if (!data.success || !data.user) {
-        throw new Error(data.message || "Resposta inválida do servidor");
-      }
-      return data.user;
     },
     onSuccess: (userData) => {
+      console.log("Login bem-sucedido:", userData);
       // Atualiza o cache com o novo usuário
       queryClient.setQueryData(["/api/user"], userData);
       
@@ -82,6 +127,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
     },
     onError: (error: Error) => {
+      console.error("Erro no login (callback):", error);
       toast({
         title: "Falha no login",
         description: error.message || "Credenciais inválidas",
@@ -93,18 +139,38 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Mutation para registro
   const registerMutation = useMutation<User, Error, RegisterData>({
     mutationFn: async (userData) => {
-      const res = await apiRequest("POST", "/api/register", userData);
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.message || "Falha no registro");
+      try {
+        console.log("Tentando registrar:", userData);
+        const res = await fetch("/api/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(userData),
+          credentials: "include"
+        });
+        console.log("Status da resposta de registro:", res.status);
+        
+        if (!res.ok) {
+          const errorData = await res.json();
+          console.error("Erro na resposta de registro:", errorData);
+          throw new Error(errorData.message || "Falha no registro");
+        }
+        
+        const data = await res.json();
+        console.log("Dados da resposta de registro:", data);
+        
+        if (!data.success || !data.user) {
+          console.error("Resposta de registro sem dados de usuário:", data);
+          throw new Error(data.message || "Resposta inválida do servidor");
+        }
+        
+        return data.user;
+      } catch (err) {
+        console.error("Erro no registro:", err);
+        throw err;
       }
-      const data = await res.json();
-      if (!data.success || !data.user) {
-        throw new Error(data.message || "Resposta inválida do servidor");
-      }
-      return data.user;
     },
     onSuccess: (userData) => {
+      console.log("Registro bem-sucedido:", userData);
       // Atualiza o cache com o novo usuário
       queryClient.setQueryData(["/api/user"], userData);
       
@@ -116,6 +182,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
     },
     onError: (error: Error) => {
+      console.error("Erro no registro (callback):", error);
       toast({
         title: "Falha no registro",
         description: error.message || "Não foi possível criar a conta",
@@ -127,14 +194,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Mutation para logout
   const logoutMutation = useMutation<void, Error, void>({
     mutationFn: async () => {
-      const res = await apiRequest("POST", "/api/logout");
-      if (!res.ok) {
-        const error = await res.json();
-        throw new Error(error.message || "Falha ao realizar logout");
+      try {
+        console.log("Tentando fazer logout");
+        const res = await fetch("/api/logout", {
+          method: "POST",
+          credentials: "include"
+        });
+        console.log("Status da resposta de logout:", res.status);
+        
+        if (!res.ok) {
+          const errorData = await res.json();
+          console.error("Erro na resposta de logout:", errorData);
+          throw new Error(errorData.message || "Falha ao realizar logout");
+        }
+        
+        return;
+      } catch (err) {
+        console.error("Erro no logout:", err);
+        throw err;
       }
-      return;
     },
     onSuccess: () => {
+      console.log("Logout bem-sucedido");
       // Limpa o cache do usuário
       queryClient.setQueryData(["/api/user"], null);
       
@@ -146,6 +227,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
     },
     onError: (error: Error) => {
+      console.error("Erro no logout (callback):", error);
       toast({
         title: "Falha no logout",
         description: error.message,
@@ -154,27 +236,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     },
   });
 
-  const contextValue = {
-    user,
-    isLoading,
-    error,
-    loginMutation,
-    logoutMutation,
-    registerMutation,
-  };
-
   return (
-    <AuthContext.Provider value={contextValue}>
+    <AuthContext.Provider 
+      value={{
+        user,
+        isLoading,
+        error,
+        loginMutation,
+        logoutMutation,
+        registerMutation,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
-};
-
-// Hook para usar o contexto de autenticação
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth deve ser usado dentro de um AuthProvider");
-  }
-  return context;
-};
+}
