@@ -7,7 +7,7 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import AuthPage from "@/pages/auth-page";
 import { setupTheme } from "@/lib/theme";
-import { AuthProvider } from "@/hooks/use-auth";
+import { AuthProvider } from "./hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
 
 function Router() {

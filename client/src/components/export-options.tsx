@@ -6,7 +6,7 @@ import { format } from "date-fns";
 import { pt } from "date-fns/locale";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "../hooks/use-auth";
 
 interface ExportOptionsProps {
   onExportPDF: () => void;
