@@ -36,12 +36,28 @@ const registerUserSchema = z.object({
 
 type RegisterUserValues = z.infer<typeof registerUserSchema>;
 
+// Esquema para pacientes de teste
+const testPatientsSchema = z.object({
+  patients: z.array(
+    z.object({
+      processNumber: z.string().min(3, "Número de processo deve ter pelo menos 3 caracteres"),
+      name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
+      age: z.string().min(1, "Idade é obrigatória"),
+      gender: z.string().min(1, "Gênero é obrigatório")
+    })
+  )
+});
+
+type TestPatientsValues = z.infer<typeof testPatientsSchema>;
+
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<string>("register");
   const [searchReport, setSearchReport] = useState<string>("");
   const [, setLocation] = useLocation();
   const { user, registerMutation } = useAuth();
   const { toast } = useToast();
+  const [isAddingPatients, setIsAddingPatients] = useState(false);
+  const [patientCount, setPatientCount] = useState(1);
 
   // Redirecionar se não for admin
   useEffect(() => {
@@ -179,7 +195,7 @@ export default function AdminPage() {
           </div>
           
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-4 mb-8">
+            <TabsList className="grid w-full grid-cols-5 mb-8">
               <TabsTrigger value="register">
                 <UserPlus className="h-4 w-4 mr-2" />
                 Registrar Usuários
@@ -187,6 +203,10 @@ export default function AdminPage() {
               <TabsTrigger value="users">
                 <User className="h-4 w-4 mr-2" />
                 Gerenciar Usuários
+              </TabsTrigger>
+              <TabsTrigger value="patients">
+                <Hospital className="h-4 w-4 mr-2" />
+                Pacientes Teste
               </TabsTrigger>
               <TabsTrigger value="reports">
                 <FileText className="h-4 w-4 mr-2" />

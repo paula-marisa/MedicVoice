@@ -631,6 +631,106 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ==== Patient Routes ====
+
+  // Get patient by process number
+  app.get("/api/patients/:processNumber", ensureAuthenticated, async (req, res) => {
+    try {
+      const { processNumber } = req.params;
+      
+      if (!processNumber) {
+        return res.status(400).json({
+          success: false,
+          message: "Número de processo é obrigatório"
+        });
+      }
+      
+      // Check if there's a report with this process number to get patient info
+      const reports = await storage.getAllMedicalReports();
+      const patientReport = reports.find(report => report.processNumber === processNumber);
+      
+      if (!patientReport) {
+        return res.status(404).json({
+          success: false,
+          message: "Paciente não encontrado"
+        });
+      }
+      
+      // Return patient info from the report
+      const patientInfo = {
+        processNumber: patientReport.processNumber,
+        name: patientReport.name,
+        age: patientReport.age,
+        gender: patientReport.gender
+      };
+      
+      res.json(patientInfo);
+    } catch (error) {
+      log(`Error fetching patient: ${error}`, "api");
+      res.status(500).json({
+        success: false,
+        message: "Erro interno do servidor"
+      });
+    }
+  });
+
+  // Add patient test data (for testing purposes - only admin can use)
+  app.post("/api/admin/patients/test-data", ensureAdmin, async (req, res) => {
+    try {
+      const { patients } = req.body;
+      
+      if (!Array.isArray(patients) || patients.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "Dados de pacientes inválidos"
+        });
+      }
+      
+      const createdReports = [];
+      
+      // For each patient, create a draft medical report
+      for (const patient of patients) {
+        if (!patient.processNumber || !patient.name || !patient.age || !patient.gender) {
+          continue; // Skip invalid patients
+        }
+        
+        // Create a draft medical report for this patient
+        const reportData = {
+          processNumber: patient.processNumber,
+          name: patient.name,
+          age: patient.age,
+          gender: patient.gender,
+          diagnosis: "Dados de teste",
+          symptoms: "Dados de teste",
+          treatment: "Dados de teste",
+          observations: "Paciente de teste criado pelo administrador",
+          status: "draft",
+          userId: req.user.id
+        };
+        
+        const report = await storage.createMedicalReport(reportData);
+        createdReports.push(report);
+        
+        // Log the action
+        await logAuditTrail(req, "create", "medical_report", report.id, {
+          message: "Paciente de teste criado pelo administrador",
+        });
+      }
+      
+      res.status(201).json({
+        success: true,
+        message: `${createdReports.length} pacientes de teste criados com sucesso`,
+        data: createdReports
+      });
+    } catch (error) {
+      log(`Error creating test patients: ${error}`, "api");
+      res.status(500).json({
+        success: false,
+        message: "Erro interno do servidor"
+      });
+    }
+  });
+
   // Create HTTP server
   const httpServer = createServer(app);
   return httpServer;
