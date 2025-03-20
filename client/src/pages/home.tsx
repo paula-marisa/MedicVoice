@@ -10,9 +10,13 @@ import { Notification } from "@/components/ui/notification";
 import { Button } from "@/components/ui/button";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { insertMedicalReportSchema } from "@shared/schema";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function Home() {
-  // State
+  // State para autenticação
+  const { user } = useAuth();
+  
+  // State para dados do paciente e relatório
   const [patient, setPatient] = useState<PatientFormValues>({
     processNumber: "",
     name: "",
@@ -56,11 +60,23 @@ export default function Home() {
   // Save as draft
   const handleSaveDraft = async () => {
     try {
+      // Verificar se usuário está autenticado
+      if (!user || !user.id) {
+        notificationRef.current?.show({
+          message: "Você precisa estar logado para salvar relatórios.",
+          type: "error"
+        });
+        return;
+      }
+      
       const formData = {
         ...patient,
         ...report,
-        status: "draft"
+        status: "draft",
+        userId: user.id
       };
+      
+      console.log("Salvando rascunho:", formData);
       
       // Validate data before sending
       insertMedicalReportSchema.parse(formData);
@@ -78,11 +94,23 @@ export default function Home() {
   // Save and submit
   const handleSaveAndSubmit = async () => {
     try {
+      // Verificar se usuário está autenticado
+      if (!user || !user.id) {
+        notificationRef.current?.show({
+          message: "Você precisa estar logado para salvar relatórios.",
+          type: "error"
+        });
+        return;
+      }
+      
       const formData = {
         ...patient,
         ...report,
-        status: "submitted"
+        status: "submitted",
+        userId: user.id
       };
+      
+      console.log("Salvando e enviando relatório:", formData);
       
       // Validate data before sending
       insertMedicalReportSchema.parse(formData);
