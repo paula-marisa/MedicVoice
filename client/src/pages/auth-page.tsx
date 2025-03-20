@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, Redirect } from "wouter";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -32,7 +32,27 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export default function AuthPage() {
   const [activeTab, setActiveTab] = useState<string>("login");
+  const [showRegister, setShowRegister] = useState<boolean>(true);
   const { user, isLoading, loginMutation, registerMutation } = useAuth();
+  
+  // Verificar se existem usuários no sistema
+  useEffect(() => {
+    // Consultar a API para ver se já existem usuários
+    fetch("/api/check-users")
+      .then(res => res.json())
+      .then(data => {
+        console.log("Verificação de usuários:", data);
+        // Se já existem usuários, esconder o registro
+        if (data.hasUsers) {
+          setShowRegister(false);
+        }
+      })
+      .catch(err => {
+        console.error("Erro ao verificar usuários:", err);
+        // Por segurança, se houver erro, esconder o registro
+        setShowRegister(false);
+      });
+  }, []);
   
   // Formulário de login
   const loginForm = useForm<LoginFormValues>({
@@ -85,9 +105,11 @@ export default function AuthPage() {
             {/* Formulário */}
             <div>
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-2 mb-8">
+                <TabsList className={`grid w-full ${showRegister ? 'grid-cols-2' : 'grid-cols-1'} mb-8`}>
                   <TabsTrigger value="login">Entrar</TabsTrigger>
-                  <TabsTrigger value="register">Registrar</TabsTrigger>
+                  {showRegister && (
+                    <TabsTrigger value="register">Registrar</TabsTrigger>
+                  )}
                 </TabsList>
                 
                 {/* Tab de Login */}
@@ -155,28 +177,31 @@ export default function AuthPage() {
                         </Button>
                       </form>
                     </CardContent>
-                    <CardFooter className="flex justify-center text-sm text-muted-foreground">
-                      Não tem uma conta? 
-                      <button 
-                        type="button" 
-                        className="ml-1 text-primary hover:underline"
-                        onClick={() => setActiveTab("register")}
-                      >
-                        Registre-se
-                      </button>
-                    </CardFooter>
+                    {showRegister && (
+                      <CardFooter className="flex justify-center text-sm text-muted-foreground">
+                        Não tem uma conta? 
+                        <button 
+                          type="button" 
+                          className="ml-1 text-primary hover:underline"
+                          onClick={() => setActiveTab("register")}
+                        >
+                          Registre-se
+                        </button>
+                      </CardFooter>
+                    )}
                   </Card>
                 </TabsContent>
                 
-                {/* Tab de Registro */}
-                <TabsContent value="register">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Cadastro de Profissional</CardTitle>
-                      <CardDescription>
-                        Crie uma conta para acessar o sistema de relatórios médicos.
-                      </CardDescription>
-                    </CardHeader>
+                {/* Tab de Registro - só mostrar se permitido */}
+                {showRegister && (
+                  <TabsContent value="register">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Cadastro de Profissional</CardTitle>
+                        <CardDescription>
+                          Crie uma conta para acessar o sistema de relatórios médicos.
+                        </CardDescription>
+                      </CardHeader>
                     <CardContent>
                       <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
                         <div className="space-y-2">
@@ -298,6 +323,7 @@ export default function AuthPage() {
                     </CardFooter>
                   </Card>
                 </TabsContent>
+                )}
               </Tabs>
             </div>
             

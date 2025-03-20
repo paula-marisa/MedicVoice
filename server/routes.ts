@@ -87,6 +87,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication
   setupAuth(app);
   
+  // Rota para verificar se existem usuários no sistema
+  app.get("/api/check-users", async (req, res) => {
+    try {
+      const users = await storage.getAllUsers();
+      res.json({
+        success: true,
+        hasUsers: users.length > 0
+      });
+    } catch (error) {
+      log(`Error checking users: ${error}`, "auth");
+      res.status(500).json({
+        success: false,
+        message: "Erro ao verificar usuários",
+        hasUsers: true // Por segurança, assume que existem usuários
+      });
+    }
+  });
+  
   // ==== Protected Medical Report Routes ====
   
   // Create medical report
