@@ -1,7 +1,7 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertMedicalReportSchema, insertCommunicationLogSchema } from "@shared/schema";
+import { insertMedicalReportSchema, insertCommunicationLogSchema, type User } from "@shared/schema";
 import { z } from "zod";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
@@ -455,7 +455,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const allUsers = await storage.getAllUsers();
       
       // Remove password from each user
-      const usersWithoutPassword = allUsers.map((user: User) => {
+      const usersWithoutPassword = allUsers.map((user) => {
         const { password, ...userWithoutPassword } = user;
         return userWithoutPassword;
       });
