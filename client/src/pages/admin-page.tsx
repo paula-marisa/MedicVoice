@@ -494,7 +494,7 @@ export default function AdminPage() {
               </Card>
             </TabsContent>
             
-            {/* Aba de Pacientes de Teste */}
+            {/* Aba de Utentes de Teste */}
             <TabsContent value="patients">
               <Card>
                 <CardHeader>
@@ -584,7 +584,7 @@ export default function AdminPage() {
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400" size={18} />
                       <Input 
-                        placeholder="Pesquisar por paciente ou número de processo" 
+                        placeholder="Pesquisar por utente ou número de processo" 
                         className="pl-10"
                         value={searchReport}
                         onChange={(e) => setSearchReport(e.target.value)}
