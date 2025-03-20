@@ -27,7 +27,7 @@ export default function Home() {
     observations: ""
   });
   
-  const [transcription, setTranscription] = useState<{ text: string, field: string } | null>(null);
+  const [transcription, setTranscription] = useState<{ text: string, field: string } | undefined>();
   
   // Refs
   const notificationRef = useRef<{ show: (props: any) => void }>(null);
@@ -122,6 +122,11 @@ export default function Home() {
   // Handle transcription update
   const handleTranscriptionComplete = (text: string, field: string) => {
     setTranscription({ text, field });
+    
+    // Também atualiza o relatório diretamente
+    const updatedReport = { ...report };
+    updatedReport[field as keyof ReportFormValues] = text;
+    setReport(updatedReport);
   };
 
   // Handle PDF export
@@ -132,8 +137,28 @@ export default function Home() {
 
   // Handle SClinico export
   const handleExportSClinico = () => {
-    // In a real app, this would format the data for SClinico (HL7/FHIR or JSON)
-    console.log("Exporting to SClinico...", { patient, report });
+    // Verificar se temos um número de processo
+    if (!patient.processNumber) {
+      notificationRef.current?.show({
+        message: "É necessário um número de processo para exportar para o SClínico",
+        type: "error"
+      });
+      return;
+    }
+    
+    // Em uma aplicação real, isso enviaria os dados formatados para o SClínico (HL7/FHIR ou JSON)
+    const today = new Date();
+    
+    // Simulação: exportação para SClínico com autenticação médica
+    console.log("Exportando para SClínico...", { 
+      patient, 
+      report, 
+      exportDate: today.toISOString(),
+      processNumber: patient.processNumber
+    });
+    
+    // Numa implementação real, faria uma chamada de API para o backend
+    // que integraria com o sistema SClínico usando o número de processo
   };
 
   return (
@@ -186,6 +211,7 @@ export default function Home() {
             <ExportOptions 
               onExportPDF={handleExportPDF} 
               onExportSClinico={handleExportSClinico} 
+              processNumber={patient.processNumber}
               notificationRef={notificationRef}
             />
           </div>

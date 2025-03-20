@@ -26,7 +26,7 @@ export function VoiceRecognition({ onTranscriptionComplete, notificationRef }: V
   const [interimTranscript, setInterimTranscript] = useState("");
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const recognitionRef = useRef<any | null>(null);
   const timerRef = useRef<number | null>(null);
   const transcriptRef = useRef<string>("");
 
@@ -91,7 +91,7 @@ export function VoiceRecognition({ onTranscriptionComplete, notificationRef }: V
       transcriptRef.current = "";
 
       // Setup Web Speech API
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
       if (!SpeechRecognition) {
         notificationRef.current?.show({
           message: "Reconhecimento de voz não suportado pelo seu navegador",
@@ -106,7 +106,7 @@ export function VoiceRecognition({ onTranscriptionComplete, notificationRef }: V
       recognitionRef.current.interimResults = true;
       
       // Manipular resultados de reconhecimento
-      recognitionRef.current.onresult = (event) => {
+      recognitionRef.current.onresult = (event: any) => {
         let interimText = '';
         let finalText = transcriptRef.current;
         
@@ -160,7 +160,7 @@ export function VoiceRecognition({ onTranscriptionComplete, notificationRef }: V
         setInterimTranscript(interimText);
       };
 
-      recognitionRef.current.onerror = (event) => {
+      recognitionRef.current.onerror = (event: any) => {
         console.error('Speech recognition error', event.error);
         notificationRef.current?.show({
           message: `Erro: ${event.error}`,
