@@ -5,7 +5,7 @@ import { insertMedicalReportSchema, insertCommunicationLogSchema } from "@shared
 import { z } from "zod";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
-import { setupAuth, ensureAuthenticated } from "./auth";
+import { setupAuth, ensureAuthenticated, ensureAdmin, initAdminUser } from "./auth";
 import { log } from "./vite";
 
 // Function to log audit trail
@@ -81,6 +81,9 @@ async function exportToSClinico(reportId: number, processNumber: string, userId:
 }
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Create admin user
+  await initAdminUser();
+  
   // Setup authentication
   setupAuth(app);
   
@@ -444,6 +447,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // ==== Admin Routes ====
+  
+  // Get all users (admin only)
+  app.get("/api/admin/users", ensureAdmin, async (req, res) => {
+    try {
+      const allUsers = await storage.getAllUsers();
+      
+      // Remove password from each user
+      const usersWithoutPassword = allUsers.map((user: User) => {
+        const { password, ...userWithoutPassword } = user;
+        return userWithoutPassword;
+      });
+      
+      res.json({
+        success: true,
+        data: usersWithoutPassword
+      });
+    } catch (error) {
+      log(`Error fetching users: ${error}`, "api");
+      res.status(500).json({
+        success: false,
+        message: "Erro interno do servidor"
+      });
+    }
+  });
+
   // Create HTTP server
   const httpServer = createServer(app);
   return httpServer;
