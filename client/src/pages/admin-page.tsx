@@ -153,12 +153,19 @@ export default function AdminPage() {
 
   // Formulário para utentes de teste
   const createTestPatientsForm = () => {
-    const patients = Array.from({ length: patientCount }).map((_, index) => ({
-      processNumber: `TEST${100 + index}`,
-      name: `Paciente Teste ${index + 1}`,
-      age: "45",
-      gender: "masculino"
-    }));
+    const genders = ["M", "F", "O"]; // Usando os mesmos códigos do formulário de utentes
+    
+    const patients = Array.from({ length: patientCount }).map((_, index) => {
+      // Alterna entre os gêneros para garantir diversidade nos dados de teste
+      const genderIndex = index % genders.length;
+      
+      return {
+        processNumber: `TEST${100 + index}`,
+        name: `Utente Teste ${index + 1}`,
+        age: "45",
+        gender: genders[genderIndex]
+      };
+    });
 
     return {
       patients
@@ -188,7 +195,7 @@ export default function AdminPage() {
       const result = await response.json();
       
       toast({
-        title: "Pacientes de teste criados",
+        title: "Utentes de teste criados",
         description: result.message,
         variant: "default"
       });
@@ -219,13 +226,14 @@ export default function AdminPage() {
   // Filtrar relatórios com base na pesquisa
   const filteredReports = reportsData ? reportsData.filter((report: any) => {
     // Verificar se as propriedades existem antes de chamar toLowerCase
-    const patientNameMatches = report.patientName ? 
-      report.patientName.toLowerCase().includes(searchReport.toLowerCase()) : false;
+    const utenteName = report.utenteName || report.patientName;
+    const utenteNameMatches = utenteName ? 
+      utenteName.toLowerCase().includes(searchReport.toLowerCase()) : false;
     
     const processNumberMatches = report.processNumber ? 
       report.processNumber.toLowerCase().includes(searchReport.toLowerCase()) : false;
     
-    return patientNameMatches || processNumberMatches;
+    return utenteNameMatches || processNumberMatches;
   }) : [];
 
   // A verificação agora é feita no AdminRoute, então não precisamos fazer ela aqui
