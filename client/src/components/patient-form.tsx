@@ -45,7 +45,7 @@ export function PatientForm({ onPatientChange, defaultValues, disabled = false }
     }
   });
 
-  // Query para buscar dados do paciente
+  // Query para buscar dados do utente
   const { 
     data: patientData, 
     isFetching, 
@@ -61,18 +61,18 @@ export function PatientForm({ onPatientChange, defaultValues, disabled = false }
           return null;
         }
         if (!response.ok) {
-          throw new Error("Erro ao buscar dados do paciente");
+          throw new Error("Erro ao buscar dados do utente");
         }
         return await response.json();
       } catch (error) {
-        console.error("Erro ao buscar paciente:", error);
+        console.error("Erro ao buscar utente:", error);
         return null;
       }
     },
     enabled: false // Não buscar automaticamente
   });
 
-  // Buscar paciente pelo processo
+  // Buscar utente pelo processo
   const searchPatient = async () => {
     setIsSearching(true);
     try {
@@ -89,13 +89,13 @@ export function PatientForm({ onPatientChange, defaultValues, disabled = false }
         onPatientChange(values as PatientFormValues);
         
         toast({
-          title: "Paciente encontrado",
+          title: "Utente encontrado",
           description: `Dados de ${result.data.name} carregados com sucesso.`,
           variant: "default",
         });
       } else {
         toast({
-          title: "Paciente não encontrado",
+          title: "Utente não encontrado",
           description: "Não foram encontrados dados para este número de processo.",
           variant: "destructive",
         });
@@ -103,7 +103,7 @@ export function PatientForm({ onPatientChange, defaultValues, disabled = false }
     } catch (error) {
       toast({
         title: "Erro na busca",
-        description: "Não foi possível buscar os dados do paciente.",
+        description: "Não foi possível buscar os dados do utente.",
         variant: "destructive",
       });
     } finally {
@@ -125,7 +125,7 @@ export function PatientForm({ onPatientChange, defaultValues, disabled = false }
   return (
     <Card>
       <CardContent className="pt-6">
-        <h2 className="text-lg font-medium mb-6">Dados do Paciente</h2>
+        <h2 className="text-lg font-medium mb-6">Dados do Utente</h2>
         
         <Form {...form}>
           <form className="space-y-6" onChange={handleFormChange}>
@@ -179,14 +179,14 @@ export function PatientForm({ onPatientChange, defaultValues, disabled = false }
                 render={({ field }) => (
                   <FormItem>
                     <Label htmlFor="patient-name">
-                      Nome do Paciente
+                      Nome do Utente
                     </Label>
                     <FormControl>
                       <Input
                         id="patient-name"
                         placeholder="Nome completo"
                         {...field}
-                        disabled={disabled || isFetching}
+                        disabled={true} // Nome sempre bloqueado, associado ao processo
                       />
                     </FormControl>
                     <FormMessage />
@@ -207,7 +207,7 @@ export function PatientForm({ onPatientChange, defaultValues, disabled = false }
                         id="patient-age"
                         placeholder="Idade"
                         {...field}
-                        disabled={disabled || isFetching}
+                        disabled={true} // Idade sempre bloqueada, associada ao processo
                       />
                     </FormControl>
                     <FormMessage />
@@ -226,7 +226,7 @@ export function PatientForm({ onPatientChange, defaultValues, disabled = false }
                     <Select 
                       onValueChange={field.onChange} 
                       defaultValue={field.value}
-                      disabled={disabled || isFetching}
+                      disabled={true} // Género sempre bloqueado, associado ao processo
                     >
                       <FormControl>
                         <SelectTrigger id="patient-gender">
