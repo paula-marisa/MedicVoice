@@ -27,9 +27,10 @@ export type PatientFormValues = z.infer<typeof patientSchema>;
 interface PatientFormProps {
   onPatientChange: (patient: PatientFormValues) => void;
   defaultValues?: Partial<PatientFormValues>;
+  disabled?: boolean;
 }
 
-export function PatientForm({ onPatientChange, defaultValues }: PatientFormProps) {
+export function PatientForm({ onPatientChange, defaultValues, disabled = false }: PatientFormProps) {
   const { toast } = useToast();
   const [processNumber, setProcessNumber] = useState<string>(defaultValues?.processNumber || "");
   const [isSearching, setIsSearching] = useState<boolean>(false);
@@ -148,6 +149,7 @@ export function PatientForm({ onPatientChange, defaultValues }: PatientFormProps
                             field.onChange(e);
                             handleProcessNumberChange(e.target.value);
                           }}
+                          disabled={disabled || isFetching}
                         />
                       </FormControl>
                       <FormMessage />
@@ -158,7 +160,7 @@ export function PatientForm({ onPatientChange, defaultValues }: PatientFormProps
               <Button 
                 type="button" 
                 onClick={searchPatient}
-                disabled={isSearching || !processNumber || processNumber.length < 3}
+                disabled={disabled || isSearching || !processNumber || processNumber.length < 3}
                 className="mb-[2px]"
               >
                 {isSearching ? (
@@ -184,7 +186,7 @@ export function PatientForm({ onPatientChange, defaultValues }: PatientFormProps
                         id="patient-name"
                         placeholder="Nome completo"
                         {...field}
-                        disabled={isFetching}
+                        disabled={disabled || isFetching}
                       />
                     </FormControl>
                     <FormMessage />
@@ -205,7 +207,7 @@ export function PatientForm({ onPatientChange, defaultValues }: PatientFormProps
                         id="patient-age"
                         placeholder="Idade"
                         {...field}
-                        disabled={isFetching}
+                        disabled={disabled || isFetching}
                       />
                     </FormControl>
                     <FormMessage />
@@ -224,7 +226,7 @@ export function PatientForm({ onPatientChange, defaultValues }: PatientFormProps
                     <Select 
                       onValueChange={field.onChange} 
                       defaultValue={field.value}
-                      disabled={isFetching}
+                      disabled={disabled || isFetching}
                     >
                       <FormControl>
                         <SelectTrigger id="patient-gender">
