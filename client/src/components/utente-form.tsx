@@ -225,12 +225,16 @@ export function UtenteForm({ onUtenteChange, defaultValues, disabled = false }: 
                     </Label>
                     <Select 
                       onValueChange={field.onChange} 
-                      defaultValue={field.value}
+                      value={field.value}
                       disabled={true} // Género sempre bloqueado, associado ao processo
                     >
                       <FormControl>
                         <SelectTrigger id="utente-gender">
-                          <SelectValue placeholder="Selecionar" />
+                          <SelectValue placeholder="Selecionar">
+                            {field.value === "M" ? "Masculino" : 
+                             field.value === "F" ? "Feminino" : 
+                             field.value === "O" ? "Outro" : "Selecionar"}
+                          </SelectValue>
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
