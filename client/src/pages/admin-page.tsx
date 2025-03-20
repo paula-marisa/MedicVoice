@@ -217,10 +217,16 @@ export default function AdminPage() {
   };
 
   // Filtrar relatórios com base na pesquisa
-  const filteredReports = reportsData ? reportsData.filter((report: any) => 
-    report.patientName.toLowerCase().includes(searchReport.toLowerCase()) ||
-    report.processNumber.toLowerCase().includes(searchReport.toLowerCase())
-  ) : [];
+  const filteredReports = reportsData ? reportsData.filter((report: any) => {
+    // Verificar se as propriedades existem antes de chamar toLowerCase
+    const patientNameMatches = report.patientName ? 
+      report.patientName.toLowerCase().includes(searchReport.toLowerCase()) : false;
+    
+    const processNumberMatches = report.processNumber ? 
+      report.processNumber.toLowerCase().includes(searchReport.toLowerCase()) : false;
+    
+    return patientNameMatches || processNumberMatches;
+  }) : [];
 
   // A verificação agora é feita no AdminRoute, então não precisamos fazer ela aqui
 
