@@ -166,7 +166,7 @@ export default function Home() {
       // Verificar se temos dados suficientes para gerar o PDF
       if (!patient.name || !patient.processNumber) {
         notificationRef.current?.show({
-          message: "Preencha pelo menos o nome do paciente e número de processo",
+          message: "Preencha pelo menos o nome do utente e número de processo",
           type: "error"
         });
         return;
@@ -265,7 +265,7 @@ export default function Home() {
       // Verificar se temos dados suficientes
       if (!patient.name || !patient.processNumber) {
         notificationRef.current?.show({
-          message: "Preencha pelo menos o nome do paciente e número de processo",
+          message: "Preencha pelo menos o nome do utente e número de processo",
           type: "error"
         });
         return;
@@ -342,7 +342,7 @@ export default function Home() {
   
   // Carregar relatório para edição
   const handleEditReport = (report: MedicalReport) => {
-    // Definir dados do paciente (campos não editáveis)
+    // Definir dados do utente (campos não editáveis)
     setPatient({
       processNumber: report.processNumber,
       name: report.name,
@@ -471,7 +471,7 @@ export default function Home() {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-6">
                   <PatientForm 
-                    onPatientChange={() => {}} // Campos de paciente não são editáveis
+                    onPatientChange={() => {}} // Campos de utente não são editáveis
                     defaultValues={patient}
                     disabled={true} // Desabilitar edição dos campos
                   />
