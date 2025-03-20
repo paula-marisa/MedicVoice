@@ -506,9 +506,9 @@ export default function AdminPage() {
                 <CardContent>
                   <div className="space-y-6">
                     <div>
-                      <h3 className="text-lg font-medium mb-2">Quantidade de Pacientes</h3>
+                      <h3 className="text-lg font-medium mb-2">Quantidade de Utentes</h3>
                       <p className="text-sm text-muted-foreground mb-4">
-                        Escolha quantos pacientes de teste deseja criar. Serão gerados registros com dados simulados.
+                        Escolha quantos utentes de teste deseja criar. Serão gerados registros com dados simulados.
                       </p>
                       
                       <div className="flex items-center space-x-4">
@@ -531,12 +531,12 @@ export default function AdminPage() {
                     </div>
                     
                     <div className="bg-muted rounded-md p-4">
-                      <h4 className="font-medium mb-2">Pacientes a serem criados:</h4>
+                      <h4 className="font-medium mb-2">Utentes a serem criados:</h4>
                       <div className="space-y-2">
                         {Array.from({ length: patientCount }).map((_, index) => (
                           <div key={index} className="flex justify-between items-center text-sm p-2 rounded-md bg-background">
                             <div>
-                              <span className="font-medium">Paciente Teste {index + 1}</span>
+                              <span className="font-medium">Utente Teste {index + 1}</span>
                               <span className="text-muted-foreground ml-2">(Processo: TEST{100 + index})</span>
                             </div>
                           </div>
@@ -552,7 +552,7 @@ export default function AdminPage() {
                       {isAddingPatients ? (
                         <span className="flex items-center">
                           <div className="animate-spin h-4 w-4 mr-2 border-b-2 border-current rounded-full"></div>
-                          Criando pacientes...
+                          Criando utentes...
                         </span>
                       ) : (
                         "Criar Utentes de Teste"
@@ -562,7 +562,7 @@ export default function AdminPage() {
                     <div className="text-sm text-muted-foreground">
                       <p className="italic">
                         Nota: Os dados de teste são criados apenas para fins de demonstração. 
-                        Cada paciente será registrado com um relatório médico em rascunho.
+                        Cada utente será registrado com um relatório médico em rascunho.
                       </p>
                     </div>
                   </div>
@@ -601,7 +601,7 @@ export default function AdminPage() {
                       <Table>
                         <TableHeader>
                           <TableRow>
-                            <TableHead>Paciente</TableHead>
+                            <TableHead>Utente</TableHead>
                             <TableHead>Nº Processo</TableHead>
                             <TableHead>Médico</TableHead>
                             <TableHead>Data</TableHead>
@@ -613,7 +613,7 @@ export default function AdminPage() {
                           {filteredReports && filteredReports.length > 0 ? (
                             filteredReports.map((report: any) => (
                               <TableRow key={report.id}>
-                                <TableCell className="font-medium">{report.patientName}</TableCell>
+                                <TableCell className="font-medium">{report.utenteName || report.patientName}</TableCell>
                                 <TableCell>{report.processNumber}</TableCell>
                                 <TableCell>{report.doctor?.name || "Desconhecido"}</TableCell>
                                 <TableCell>{new Date(report.createdAt).toLocaleDateString('pt-BR')}</TableCell>
