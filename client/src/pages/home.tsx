@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Header } from "@/layout/header";
 import { Footer } from "@/layout/footer";
-import { PatientForm, type PatientFormValues } from "@/components/patient-form";
+import { UtenteForm, type UtenteFormValues } from "@/components/utente-form";
 import { ReportForm, type ReportFormValues } from "@/components/report-form";
 import { ReportList } from "@/components/report-list";
 import { VoiceRecognition } from "@/components/voice-recognition";
@@ -20,7 +20,7 @@ export default function Home() {
   const { user } = useAuth();
   
   // State para dados do utente e relatório
-  const [patient, setPatient] = useState<PatientFormValues>({
+  const [patient, setPatient] = useState<UtenteFormValues>({
     processNumber: "",
     name: "",
     age: "",
@@ -416,8 +416,8 @@ export default function Home() {
           <TabsContent value="novo">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2 space-y-6">
-                <PatientForm 
-                  onPatientChange={setPatient} 
+                <UtenteForm 
+                  onUtenteChange={setPatient} 
                   defaultValues={patient} 
                 />
                 
@@ -470,8 +470,8 @@ export default function Home() {
             {isEditing ? (
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-6">
-                  <PatientForm 
-                    onPatientChange={() => {}} // Campos de utente não são editáveis
+                  <UtenteForm 
+                    onUtenteChange={() => {}} // Campos de utente não são editáveis
                     defaultValues={patient}
                     disabled={true} // Desabilitar edição dos campos
                   />
