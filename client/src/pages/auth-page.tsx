@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocation } from "wouter";
+import { useLocation, Redirect } from "wouter";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -67,7 +67,7 @@ export default function AuthPage() {
   
   // Se estiver autenticado, redirecionar para a página inicial
   if (!isLoading && user) {
-    return <Navigate to="/" />;
+    return <Redirect to="/" />;
   }
   
   return (

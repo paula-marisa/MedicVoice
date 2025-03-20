@@ -3,9 +3,10 @@ import {
   useQuery,
   useMutation,
   UseMutationResult,
+  QueryFunctionContext,
 } from "@tanstack/react-query";
 import { User, type InsertUser } from "@shared/schema";
-import { getQueryFn, apiRequest, queryClient } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
 // Tipo para login (username e password)
@@ -19,9 +20,9 @@ type AuthContextType = {
   user: User | null;
   isLoading: boolean;
   error: Error | null;
-  loginMutation: UseMutationResult<any, Error, LoginData>;
-  logoutMutation: UseMutationResult<any, Error, void>;
-  registerMutation: UseMutationResult<any, Error, RegisterData>;
+  loginMutation: UseMutationResult<User, Error, LoginData>;
+  logoutMutation: UseMutationResult<void, Error, void>;
+  registerMutation: UseMutationResult<User, Error, RegisterData>;
 };
 
 // Criação do contexto
@@ -33,37 +34,48 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Query para obter usuário autenticado
   const {
-    data: userResponse,
+    data: user,
     error,
     isLoading,
-  } = useQuery({
+  } = useQuery<User | null>({
     queryKey: ["/api/user"],
-    queryFn: getQueryFn({ on401: "returnNull" }),
+    queryFn: async () => {
+      try {
+        const response = await fetch("/api/user");
+        if (response.status === 401) {
+          return null;
+        }
+        if (!response.ok) {
+          throw new Error("Erro ao obter dados do usuário");
+        }
+        return await response.json();
+      } catch (error) {
+        console.error("Erro na autenticação:", error);
+        return null;
+      }
+    },
   });
 
-  // Extrai o usuário da resposta
-  const user = userResponse?.success ? userResponse.user : null;
-
   // Mutation para login
-  const loginMutation = useMutation({
-    mutationFn: async (credentials: LoginData) => {
+  const loginMutation = useMutation<User, Error, LoginData>({
+    mutationFn: async (credentials) => {
       const res = await apiRequest("POST", "/api/login", credentials);
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message || "Credenciais inválidas");
+      }
       return await res.json();
     },
-    onSuccess: (response) => {
-      if (response.success) {
-        // Atualiza o cache com o novo usuário
-        queryClient.setQueryData(["/api/user"], response);
-        
-        // Exibe mensagem de sucesso
-        toast({
-          title: "Login realizado",
-          description: `Bem-vindo, ${response.user.name}!`,
-          variant: "default",
-        });
-      } else {
-        throw new Error(response.message || "Falha no login");
-      }
+    onSuccess: (userData) => {
+      // Atualiza o cache com o novo usuário
+      queryClient.setQueryData(["/api/user"], userData);
+      
+      // Exibe mensagem de sucesso
+      toast({
+        title: "Login realizado",
+        description: `Bem-vindo, ${userData.name}!`,
+        variant: "default",
+      });
     },
     onError: (error: Error) => {
       toast({
@@ -75,25 +87,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   // Mutation para registro
-  const registerMutation = useMutation({
-    mutationFn: async (userData: RegisterData) => {
+  const registerMutation = useMutation<User, Error, RegisterData>({
+    mutationFn: async (userData) => {
       const res = await apiRequest("POST", "/api/register", userData);
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message || "Falha no registro");
+      }
       return await res.json();
     },
-    onSuccess: (response) => {
-      if (response.success) {
-        // Atualiza o cache com o novo usuário
-        queryClient.setQueryData(["/api/user"], response);
-        
-        // Exibe mensagem de sucesso
-        toast({
-          title: "Registro realizado",
-          description: `Conta criada com sucesso. Bem-vindo, ${response.user.name}!`,
-          variant: "default",
-        });
-      } else {
-        throw new Error(response.message || "Falha no registro");
-      }
+    onSuccess: (userData) => {
+      // Atualiza o cache com o novo usuário
+      queryClient.setQueryData(["/api/user"], userData);
+      
+      // Exibe mensagem de sucesso
+      toast({
+        title: "Registro realizado",
+        description: `Conta criada com sucesso. Bem-vindo, ${userData.name}!`,
+        variant: "default",
+      });
     },
     onError: (error: Error) => {
       toast({
@@ -105,14 +117,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   // Mutation para logout
-  const logoutMutation = useMutation({
+  const logoutMutation = useMutation<void, Error, void>({
     mutationFn: async () => {
       const res = await apiRequest("POST", "/api/logout");
-      return await res.json();
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.message || "Falha ao realizar logout");
+      }
+      return;
     },
     onSuccess: () => {
       // Limpa o cache do usuário
-      queryClient.setQueryData(["/api/user"], { success: false, user: null });
+      queryClient.setQueryData(["/api/user"], null);
       
       // Exibe mensagem de sucesso
       toast({

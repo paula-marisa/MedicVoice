@@ -1,13 +1,21 @@
+import { ThemeToggle } from "@/components/ui/theme-toggle";
+
 export function Footer() {
+  const currentYear = new Date().getFullYear();
+  
   return (
-    <footer className="mt-12 bg-white dark:bg-neutral-800 shadow-inner">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="flex flex-col md:flex-row items-center justify-between">
-          <div className="text-sm text-neutral-500 dark:text-neutral-400">
-            &copy; {new Date().getFullYear()} Assistente de Relatórios Médicos. Todos os direitos reservados.
+    <footer className="bg-white dark:bg-neutral-800 border-t border-gray-200 dark:border-gray-700 py-6 mt-auto">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+          <div className="text-sm text-gray-500 dark:text-gray-400">
+            &copy; {currentYear} Assistente de Relatórios Médicos. Todos os direitos reservados.
           </div>
-          <div className="mt-4 md:mt-0 text-sm text-neutral-500 dark:text-neutral-400">
-            Versão 1.0.0 | Protegido por LGPD/GDPR
+          
+          <div className="flex items-center space-x-4">
+            <span className="text-sm text-gray-500 dark:text-gray-400">
+              Em conformidade com LGPD/GDPR
+            </span>
+            <ThemeToggle />
           </div>
         </div>
       </div>
