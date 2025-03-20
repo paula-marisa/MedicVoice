@@ -796,10 +796,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // ==== Patient Routes ====
+  // ==== Utente Routes ====
 
-  // Get patient by process number
-  app.get("/api/patients/:processNumber", ensureAuthenticated, async (req, res) => {
+  // Get utente by process number
+  // Endpoint para buscar informações do utente pelo número de processo
+  app.get("/api/utentes/:processNumber", ensureAuthenticated, async (req, res) => {
     try {
       const { processNumber } = req.params;
       
@@ -810,28 +811,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      // Check if there's a report with this process number to get patient info
+      // Verificar se existe um relatório com este número de processo para obter informações do utente
       const reports = await storage.getAllMedicalReports();
-      const patientReport = reports.find(report => report.processNumber === processNumber);
+      const utenteReport = reports.find(report => report.processNumber === processNumber);
       
-      if (!patientReport) {
+      if (!utenteReport) {
         return res.status(404).json({
           success: false,
-          message: "Paciente não encontrado"
+          message: "Utente não encontrado"
         });
       }
       
-      // Return patient info from the report
-      const patientInfo = {
-        processNumber: patientReport.processNumber,
-        name: patientReport.name,
-        age: patientReport.age,
-        gender: patientReport.gender
+      // Retornar informações do utente a partir do relatório
+      const utenteInfo = {
+        processNumber: utenteReport.processNumber,
+        name: utenteReport.name,
+        age: utenteReport.age,
+        gender: utenteReport.gender
       };
       
-      res.json(patientInfo);
+      res.json(utenteInfo);
     } catch (error) {
-      log(`Error fetching patient: ${error}`, "api");
+      log(`Erro ao buscar utente: ${error}`, "api");
+      res.status(500).json({
+        success: false,
+        message: "Erro interno do servidor"
+      });
+    }
+  });
+  
+  // Mantendo endpoint legado para compatibilidade
+  // Endpoint para busca de utentes
+  app.get("/api/utentes/:processNumber", ensureAuthenticated, async (req, res) => {
+    try {
+      const { processNumber } = req.params;
+      
+      if (!processNumber) {
+        return res.status(400).json({
+          success: false,
+          message: "Número de processo é obrigatório"
+        });
+      }
+      
+      // Verificar se existe um relatório com este número de processo para obter informações do utente
+      const reports = await storage.getAllMedicalReports();
+      const utenteReport = reports.find(report => report.processNumber === processNumber);
+      
+      if (!utenteReport) {
+        return res.status(404).json({
+          success: false,
+          message: "Utente não encontrado"
+        });
+      }
+      
+      // Retornar informações do utente a partir do relatório
+      const utenteInfo = {
+        processNumber: utenteReport.processNumber,
+        name: utenteReport.name,
+        age: utenteReport.age,
+        gender: utenteReport.gender
+      };
+      
+      res.json(utenteInfo);
+    } catch (error) {
+      log(`Erro ao buscar utente: ${error}`, "api");
       res.status(500).json({
         success: false,
         message: "Erro interno do servidor"
@@ -839,36 +882,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Add patient test data (for testing purposes - only admin can use)
-  app.post("/api/admin/patients/test-data", ensureAdmin, async (req, res) => {
+  // Add utente test data (for testing purposes - only admin can use)
+  app.post("/api/admin/utentes/test-data", ensureAdmin, async (req, res) => {
     try {
-      const { patients } = req.body;
+      const { utentes } = req.body;
       
-      if (!Array.isArray(patients) || patients.length === 0) {
+      if (!Array.isArray(utentes) || utentes.length === 0) {
         return res.status(400).json({
           success: false,
-          message: "Dados de pacientes inválidos"
+          message: "Dados de utentes inválidos"
         });
       }
       
       const createdReports = [];
       
-      // For each patient, create a draft medical report
-      for (const patient of patients) {
-        if (!patient.processNumber || !patient.name || !patient.age || !patient.gender) {
-          continue; // Skip invalid patients
+      // For each utente, create a draft medical report
+      for (const utente of utentes) {
+        if (!utente.processNumber || !utente.name || !utente.age || !utente.gender) {
+          continue; // Skip invalid utentes
         }
         
-        // Create a draft medical report for this patient
+        // Create a draft medical report for this utente
         const reportData = {
-          processNumber: patient.processNumber,
-          name: patient.name,
-          age: patient.age,
-          gender: patient.gender,
+          processNumber: utente.processNumber,
+          name: utente.name,
+          age: utente.age,
+          gender: utente.gender,
           diagnosis: "Dados de teste",
           symptoms: "Dados de teste",
           treatment: "Dados de teste",
-          observations: "Paciente de teste criado pelo administrador",
+          observations: "Utente de teste criado pelo administrador",
           status: "draft",
           userId: req.user.id
         };
@@ -878,17 +921,75 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // Log the action
         await logAuditTrail(req, "create", "medical_report", report.id, {
-          message: "Paciente de teste criado pelo administrador",
+          message: "Utente de teste criado pelo administrador",
         });
       }
       
       res.status(201).json({
         success: true,
-        message: `${createdReports.length} pacientes de teste criados com sucesso`,
+        message: `${createdReports.length} utentes de teste criados com sucesso`,
         data: createdReports
       });
     } catch (error) {
-      log(`Error creating test patients: ${error}`, "api");
+      log(`Erro ao criar utentes de teste: ${error}`, "api");
+      res.status(500).json({
+        success: false,
+        message: "Erro interno do servidor"
+      });
+    }
+  });
+  
+  // Manter endpoint legado para compatibilidade
+  app.post("/api/admin/patients/test-data", ensureAdmin, async (req, res) => {
+    try {
+      // Redirecionando para o novo endpoint
+      const utentes = req.body.patients || [];
+      
+      if (!Array.isArray(utentes) || utentes.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: "Dados de utentes inválidos"
+        });
+      }
+      
+      const createdReports = [];
+      
+      // Para cada utente, criar um relatório médico de rascunho
+      for (const utente of utentes) {
+        if (!utente.processNumber || !utente.name || !utente.age || !utente.gender) {
+          continue; // Pular utentes inválidos
+        }
+        
+        // Criar um relatório médico de rascunho para este utente
+        const reportData = {
+          processNumber: utente.processNumber,
+          name: utente.name,
+          age: utente.age,
+          gender: utente.gender,
+          diagnosis: "Dados de teste",
+          symptoms: "Dados de teste",
+          treatment: "Dados de teste",
+          observations: "Utente de teste criado pelo administrador",
+          status: "draft",
+          userId: req.user.id
+        };
+        
+        const report = await storage.createMedicalReport(reportData);
+        createdReports.push(report);
+        
+        // Log da ação
+        await logAuditTrail(req, "create", "medical_report", report.id, {
+          message: "Utente de teste criado pelo administrador",
+        });
+      }
+      
+      res.status(201).json({
+        success: true,
+        message: `${createdReports.length} utentes de teste criados com sucesso`,
+        data: createdReports
+      });
+    } catch (error) {
+      log(`Erro ao criar utentes de teste: ${error}`, "api");
       res.status(500).json({
         success: false,
         message: "Erro interno do servidor"

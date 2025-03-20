@@ -36,7 +36,7 @@ const registerUserSchema = z.object({
 
 type RegisterUserValues = z.infer<typeof registerUserSchema>;
 
-// Esquema para pacientes de teste
+// Esquema para utentes de teste
 const testPatientsSchema = z.object({
   patients: z.array(
     z.object({

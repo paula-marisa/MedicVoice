@@ -88,7 +88,7 @@ export function ReportList({ onEditReport }: ReportListProps) {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400" size={18} />
             <Input 
-              placeholder="Pesquisar por paciente ou número de processo" 
+              placeholder="Pesquisar por utente ou número de processo" 
               className="pl-10"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -109,7 +109,7 @@ export function ReportList({ onEditReport }: ReportListProps) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Paciente</TableHead>
+                  <TableHead>Utente</TableHead>
                   <TableHead>Nº Processo</TableHead>
                   <TableHead className="hidden md:table-cell">Data</TableHead>
                   <TableHead className="hidden md:table-cell">Status</TableHead>

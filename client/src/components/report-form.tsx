@@ -71,7 +71,7 @@ export function ReportForm({ onReportChange, defaultValues, transcription }: Rep
                   <FormControl>
                     <Textarea
                       id="diagnosis"
-                      placeholder="Descreva o diagnóstico do paciente"
+                      placeholder="Descreva o diagnóstico do utente"
                       className="resize-none"
                       rows={3}
                       {...field}
