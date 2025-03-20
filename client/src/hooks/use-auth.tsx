@@ -45,7 +45,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (!response.ok) {
           throw new Error("Erro ao obter dados do usuário");
         }
-        return await response.json();
+        const data = await response.json();
+        return data.user || null;
       } catch (error) {
         console.error("Erro na autenticação:", error);
         return null;
@@ -63,7 +64,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const error = await res.json();
         throw new Error(error.message || "Credenciais inválidas");
       }
-      return await res.json();
+      const data = await res.json();
+      if (!data.success || !data.user) {
+        throw new Error(data.message || "Resposta inválida do servidor");
+      }
+      return data.user;
     },
     onSuccess: (userData) => {
       // Atualiza o cache com o novo usuário
@@ -93,7 +98,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const error = await res.json();
         throw new Error(error.message || "Falha no registro");
       }
-      return await res.json();
+      const data = await res.json();
+      if (!data.success || !data.user) {
+        throw new Error(data.message || "Resposta inválida do servidor");
+      }
+      return data.user;
     },
     onSuccess: (userData) => {
       // Atualiza o cache com o novo usuário

@@ -54,17 +54,32 @@ async function logAuthActivity(action: string, userId?: number, details?: any, r
 // Function to initialize admin user
 export async function initAdminUser() {
   try {
+    // Verificar se o usuário admin já existe
     const adminUser = await storage.getUserByUsername("admin");
+    
+    // Se não existir, criar o usuário admin
     if (!adminUser) {
       const adminData: InsertUser = {
         username: "admin",
-        password: await hashPassword("admin"),
+        password: await hashPassword("administrador"),
         name: "Administrador",
         role: "admin",
         specialty: "Administração"
       };
       await storage.createUser(adminData);
       log("Admin user created successfully", "auth");
+    } else {
+      // Se o admin já existe, verificar se a senha é "admin" e atualizá-la para "administrador"
+      try {
+        if (await comparePasswords("admin", adminUser.password)) {
+          await storage.updateUser(adminUser.id, {
+            password: await hashPassword("administrador")
+          });
+          log("Admin password updated from 'admin' to 'administrador'", "auth");
+        }
+      } catch (error) {
+        log(`Error updating admin password: ${error}`, "auth");
+      }
     }
   } catch (error) {
     log(`Error creating admin user: ${error}`, "auth");
@@ -127,15 +142,21 @@ export function setupAuth(app: Express) {
   // Create admin user if it doesn't exist when setting up auth
   initAdminUser().catch(error => log(`Failed to initialize admin user: ${error}`, "auth"));
 
-  // Register user (restricted to admins only)
+  // Normal registration (when no user exists in the system)
   app.post("/api/register", async (req, res, next) => {
     try {
-      // Check if the current user is an admin
-      if (!req.isAuthenticated() || req.user.role !== "admin") {
-        return res.status(403).json({
-          success: false,
-          message: "Apenas administradores podem registrar novos usuários"
-        });
+      // Check if any user exists in the system
+      const allUsers = await storage.getAllUsers();
+      
+      // If we have users in the system, only admins can register new users
+      if (allUsers.length > 0) {
+        // Check if the current user is authenticated and is an admin
+        if (!req.isAuthenticated() || req.user.role !== "admin") {
+          return res.status(403).json({
+            success: false,
+            message: "Apenas administradores podem registrar novos usuários"
+          });
+        }
       }
 
       // Check if user already exists
@@ -156,9 +177,15 @@ export function setupAuth(app: Express) {
       const user = await storage.createUser(userData);
       
       // Log the registration
-      await logAuthActivity("user_registered", user.id, { 
-        registeredBy: req.user.id 
-      }, req);
+      if (req.isAuthenticated()) {
+        await logAuthActivity("user_registered", user.id, { 
+          registeredBy: req.user.id 
+        }, req);
+      } else {
+        await logAuthActivity("user_registered", user.id, { 
+          registeredBy: "self" 
+        }, req);
+      }
 
       // Return success without password
       const { password, ...userWithoutPassword } = user;
@@ -167,6 +194,13 @@ export function setupAuth(app: Express) {
         user: userWithoutPassword,
         message: "Usuário registrado com sucesso"
       });
+      
+      // If this is a self-registration, log them in automatically
+      if (!req.isAuthenticated()) {
+        req.login(user, (err) => {
+          if (err) return next(err);
+        });
+      }
     } catch (error) {
       log(`Registration error: ${error}`, "auth");
       res.status(500).json({
