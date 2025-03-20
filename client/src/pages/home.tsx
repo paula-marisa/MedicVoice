@@ -19,7 +19,7 @@ export default function Home() {
   // State para autenticação
   const { user } = useAuth();
   
-  // State para dados do paciente e relatório
+  // State para dados do utente e relatório
   const [patient, setPatient] = useState<PatientFormValues>({
     processNumber: "",
     name: "",
@@ -186,9 +186,9 @@ export default function Home() {
       doc.text(`Data: ${today}`, 20, 30);
       doc.text(`Médico: ${userName} - ${user?.specialty || ''}`, 20, 35);
       
-      // Adicionar informações do paciente
+      // Adicionar informações do utente
       doc.setFontSize(12);
-      doc.text("Informações do Paciente", 20, 45);
+      doc.text("Informações do Utente", 20, 45);
       doc.setFontSize(10);
       doc.text(`Nome: ${patient.name}`, 25, 55);
       doc.text(`Nº Processo: ${patient.processNumber}`, 25, 60);
