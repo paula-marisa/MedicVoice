@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { insertMedicalReportSchema } from "@shared/schema";
 import { useAuth } from "@/hooks/use-auth";
+import { jsPDF } from "jspdf";
 
 export default function Home() {
   // State para autenticação
@@ -159,34 +160,154 @@ export default function Home() {
 
   // Handle PDF export
   const handleExportPDF = () => {
-    // In a real app, this would generate a PDF using a library like jsPDF
-    console.log("Exporting PDF...", { patient, report });
+    try {
+      // Verificar se temos dados suficientes para gerar o PDF
+      if (!patient.name || !patient.processNumber) {
+        notificationRef.current?.show({
+          message: "Preencha pelo menos o nome do paciente e número de processo",
+          type: "error"
+        });
+        return;
+      }
+
+      // Criar um novo documento PDF
+      const doc = new jsPDF();
+      const today = new Date().toLocaleDateString('pt-BR');
+      const userName = user?.name || 'Médico não identificado';
+
+      // Adicionar título
+      doc.setFontSize(18);
+      doc.text("Relatório Médico", 105, 20, { align: 'center' });
+      
+      // Adicionar data e informações do médico
+      doc.setFontSize(10);
+      doc.text(`Data: ${today}`, 20, 30);
+      doc.text(`Médico: ${userName} - ${user?.specialty || ''}`, 20, 35);
+      
+      // Adicionar informações do paciente
+      doc.setFontSize(12);
+      doc.text("Informações do Paciente", 20, 45);
+      doc.setFontSize(10);
+      doc.text(`Nome: ${patient.name}`, 25, 55);
+      doc.text(`Nº Processo: ${patient.processNumber}`, 25, 60);
+      doc.text(`Idade: ${patient.age}`, 25, 65);
+      doc.text(`Gênero: ${patient.gender}`, 25, 70);
+      
+      // Adicionar informações do relatório
+      doc.setFontSize(12);
+      doc.text("Diagnóstico", 20, 85);
+      doc.setFontSize(10);
+      const diagnosisLines = doc.splitTextToSize(report.diagnosis, 170);
+      doc.text(diagnosisLines, 25, 95);
+      
+      let currentY = 95 + (diagnosisLines.length * 5);
+      
+      doc.setFontSize(12);
+      doc.text("Sintomas", 20, currentY + 10);
+      doc.setFontSize(10);
+      const symptomsLines = doc.splitTextToSize(report.symptoms, 170);
+      doc.text(symptomsLines, 25, currentY + 20);
+      
+      currentY = currentY + 20 + (symptomsLines.length * 5);
+      
+      doc.setFontSize(12);
+      doc.text("Tratamento", 20, currentY + 10);
+      doc.setFontSize(10);
+      const treatmentLines = doc.splitTextToSize(report.treatment, 170);
+      doc.text(treatmentLines, 25, currentY + 20);
+      
+      currentY = currentY + 20 + (treatmentLines.length * 5);
+      
+      if (report.observations) {
+        doc.setFontSize(12);
+        doc.text("Observações", 20, currentY + 10);
+        doc.setFontSize(10);
+        const observationsLines = doc.splitTextToSize(report.observations, 170);
+        doc.text(observationsLines, 25, currentY + 20);
+      }
+      
+      // Adicionar rodapé
+      const pageCount = doc.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.text(
+          `Documento gerado em ${today} - Página ${i} de ${pageCount}`,
+          105,
+          285,
+          { align: 'center' }
+        );
+      }
+      
+      // Salvar o PDF
+      doc.save(`relatorio_${patient.processNumber}_${today.replace(/\//g, '-')}.pdf`);
+      
+      notificationRef.current?.show({
+        message: "PDF exportado com sucesso!",
+        type: "success"
+      });
+      
+      console.log("Exporting PDF...", { patient, report });
+    } catch (error) {
+      console.error("Erro ao gerar PDF:", error);
+      notificationRef.current?.show({
+        message: "Erro ao gerar PDF. Por favor, tente novamente.",
+        type: "error"
+      });
+    }
   };
 
   // Handle SClinico export
   const handleExportSClinico = () => {
-    // Verificar se temos um número de processo
-    if (!patient.processNumber) {
+    try {
+      // Verificar se temos dados suficientes
+      if (!patient.name || !patient.processNumber) {
+        notificationRef.current?.show({
+          message: "Preencha pelo menos o nome do paciente e número de processo",
+          type: "error"
+        });
+        return;
+      }
+      
+      // Verificar se usuário está autenticado
+      if (!user) {
+        notificationRef.current?.show({
+          message: "Você precisa estar logado para exportar para o SClínico",
+          type: "error"
+        });
+        return;
+      }
+      
+      // Em uma aplicação real, isso enviaria os dados formatados para o SClínico (HL7/FHIR ou JSON)
+      const today = new Date();
+      
+      // Simular uma chamada de API para o SClínico
+      setTimeout(() => {
+        // Simulação: exportação para SClínico com autenticação médica
+        console.log("Exportando para SClínico...", { 
+          patient, 
+          report, 
+          exportDate: today.toISOString(),
+          processNumber: patient.processNumber,
+          doctor: {
+            id: user.id,
+            name: user.name,
+            specialty: user.specialty
+          }
+        });
+        
+        notificationRef.current?.show({
+          message: `Relatório exportado para o SClínico com sucesso. Número do processo: ${patient.processNumber}`,
+          type: "success"
+        });
+      }, 1000);
+    } catch (error) {
+      console.error("Erro ao exportar para SClínico:", error);
       notificationRef.current?.show({
-        message: "É necessário um número de processo para exportar para o SClínico",
+        message: "Erro ao exportar para o SClínico. Por favor, tente novamente.",
         type: "error"
       });
-      return;
     }
-    
-    // Em uma aplicação real, isso enviaria os dados formatados para o SClínico (HL7/FHIR ou JSON)
-    const today = new Date();
-    
-    // Simulação: exportação para SClínico com autenticação médica
-    console.log("Exportando para SClínico...", { 
-      patient, 
-      report, 
-      exportDate: today.toISOString(),
-      processNumber: patient.processNumber
-    });
-    
-    // Numa implementação real, faria uma chamada de API para o backend
-    // que integraria com o sistema SClínico usando o número de processo
   };
 
   return (
