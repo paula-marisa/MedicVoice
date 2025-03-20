@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { ClipboardList, User, LogOut, Settings } from "lucide-react";
+import { ClipboardList, User, LogOut, Settings, ShieldCheck } from "lucide-react";
 
 export function Header() {
   const { user, logoutMutation } = useAuth();
@@ -80,6 +80,16 @@ export function Header() {
                     <Settings className="mr-2 h-4 w-4" />
                     <span>Configurações</span>
                   </DropdownMenuItem>
+                  
+                  {user && user.role === "admin" && (
+                    <DropdownMenuItem asChild className="cursor-pointer">
+                      <Link href="/admin">
+                        <ShieldCheck className="mr-2 h-4 w-4" />
+                        <span>Painel Administrativo</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  
                   <DropdownMenuSeparator />
                   <DropdownMenuItem className="cursor-pointer text-red-600 dark:text-red-400" onClick={handleLogout}>
                     <LogOut className="mr-2 h-4 w-4" />

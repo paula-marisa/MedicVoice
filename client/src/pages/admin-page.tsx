@@ -151,10 +151,7 @@ export default function AdminPage() {
     report.processNumber.toLowerCase().includes(searchReport.toLowerCase())
   ) : [];
 
-  // Se não for admin, não renderizar conteúdo
-  if (!user || user.role !== "admin") {
-    return null;
-  }
+  // A verificação agora é feita no AdminRoute, então não precisamos fazer ela aqui
 
   return (
     <div className="min-h-screen flex flex-col">
