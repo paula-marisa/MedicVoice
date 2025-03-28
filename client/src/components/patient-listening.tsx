@@ -1,0 +1,358 @@
+import { useState, useRef, useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Mic, MicOff, Info, Ear, Stethoscope } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { analyzeSymptoms, formatSymptomsReport } from "@/lib/symptoms-analyzer";
+import { 
+  AlertDialog, 
+  AlertDialogContent, 
+  AlertDialogDescription, 
+  AlertDialogHeader, 
+  AlertDialogTitle,
+  AlertDialogFooter
+} from "@/components/ui/alert-dialog";
+
+interface PatientListeningProps {
+  onSymptomsDetected: (symptoms: string) => void;
+  notificationRef: React.RefObject<any>;
+}
+
+export function PatientListening({ onSymptomsDetected, notificationRef }: PatientListeningProps) {
+  const [isListening, setIsListening] = useState(false);
+  const [recordingTime, setRecordingTime] = useState(0);
+  const [transcript, setTranscript] = useState("");
+  const [interimTranscript, setInterimTranscript] = useState("");
+  const [isInfoOpen, setIsInfoOpen] = useState(false);
+  const [detectedSymptoms, setDetectedSymptoms] = useState<any[]>([]);
+  const [showAnalysisResult, setShowAnalysisResult] = useState(false);
+  
+  const recognitionRef = useRef<any | null>(null);
+  const timerRef = useRef<number | null>(null);
+  const transcriptRef = useRef<string>("");
+
+  // Format time as MM:SS
+  const formattedTime = () => {
+    const minutes = Math.floor(recordingTime / 60);
+    const seconds = recordingTime % 60;
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  // Setup and cleanup timer
+  useEffect(() => {
+    if (isListening) {
+      timerRef.current = window.setInterval(() => {
+        setRecordingTime(prev => prev + 1);
+      }, 1000);
+    } else if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [isListening]);
+
+  const startListening = () => {
+    try {
+      // Reset states
+      setRecordingTime(0);
+      setTranscript("");
+      setInterimTranscript("");
+      transcriptRef.current = "";
+      setDetectedSymptoms([]);
+
+      // Setup Web Speech API
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        notificationRef.current?.show({
+          message: "Reconhecimento de voz não suportado pelo seu navegador",
+          type: "error"
+        });
+        return;
+      }
+
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.lang = 'pt-PT'; // Portuguese (Portugal)
+      recognitionRef.current.continuous = true;
+      recognitionRef.current.interimResults = true;
+      
+      // Manipular resultados de reconhecimento
+      recognitionRef.current.onresult = (event: any) => {
+        let interimText = '';
+        let finalText = transcriptRef.current;
+        
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+          
+          if (event.results[i].isFinal) {
+            finalText += transcript + ' ';
+            transcriptRef.current = finalText;
+            setTranscript(finalText);
+          } else {
+            interimText = transcript;
+          }
+        }
+        
+        setInterimTranscript(interimText);
+      };
+
+      recognitionRef.current.onerror = (event: any) => {
+        console.error('Speech recognition error', event.error);
+        notificationRef.current?.show({
+          message: `Erro: ${event.error}`,
+          type: "error"
+        });
+        stopListening();
+      };
+
+      recognitionRef.current.onend = () => {
+        if (isListening) {
+          // Tentar reiniciar se a gravação parou mas não foi solicitada
+          recognitionRef.current?.start();
+        }
+      };
+
+      // Start recognition
+      recognitionRef.current.start();
+      setIsListening(true);
+      notificationRef.current?.show({
+        message: "Escutando o utente. Clique em parar quando terminar.",
+        type: "info"
+      });
+    } catch (error) {
+      console.error("Error starting voice recognition:", error);
+      notificationRef.current?.show({
+        message: "Erro ao iniciar o reconhecimento de voz",
+        type: "error"
+      });
+    }
+  };
+
+  const stopListening = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      
+      // Pegar texto final
+      const finalText = transcriptRef.current.trim();
+      
+      // Se tivermos texto, analisar para detectar sintomas
+      if (finalText) {
+        // Analisa o texto para encontrar sintomas
+        const symptoms = analyzeSymptoms(finalText);
+        setDetectedSymptoms(symptoms);
+        setShowAnalysisResult(true);
+        
+        notificationRef.current?.show({
+          message: `Análise completa. ${symptoms.length} sintomas detectados.`,
+          type: "success"
+        });
+      } else {
+        notificationRef.current?.show({
+          message: "Nenhum texto capturado. Tente novamente.",
+          type: "warning"
+        });
+      }
+      
+      // Limpar estados
+      setIsListening(false);
+    }
+  };
+
+  const toggleListening = () => {
+    if (isListening) {
+      stopListening();
+    } else {
+      startListening();
+    }
+  };
+
+  const confirmSymptoms = () => {
+    // Formatar os sintomas detectados em um relatório estruturado
+    const formattedSymptoms = formatSymptomsReport(detectedSymptoms);
+    
+    // Passar os sintomas para o componente pai
+    onSymptomsDetected(formattedSymptoms);
+    
+    // Mostrar notificação
+    notificationRef.current?.show({
+      message: "Sintomas adicionados ao relatório com sucesso!",
+      type: "success"
+    });
+    
+    // Limpar e fechar
+    setShowAnalysisResult(false);
+    setTranscript("");
+    setInterimTranscript("");
+    transcriptRef.current = "";
+  };
+
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-medium">Escuta do Utente</h2>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => setIsInfoOpen(true)}
+              title="Informações sobre escuta do utente"
+            >
+              <Info className="h-4 w-4" />
+            </Button>
+          </div>
+          
+          <div className="text-sm text-neutral-600 dark:text-neutral-400 mb-6">
+            Clique para iniciar a escuta do utente e captar automaticamente os sintomas relatados.
+            O sistema irá detectar e estruturar os sintomas para o relatório.
+          </div>
+          
+          <div className="flex items-center justify-center mb-6">
+            <div className="w-full bg-neutral-100 dark:bg-neutral-800 rounded-lg p-6 text-center">
+              <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium mb-2">
+                {isListening ? (
+                  <Badge variant="destructive" className="flex items-center gap-1">
+                    <span className="relative flex h-3 w-3">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                    </span>
+                    Escutando...
+                  </Badge>
+                ) : (
+                  <Badge variant="outline" className="flex items-center gap-1">
+                    Pronto para escutar
+                  </Badge>
+                )}
+              </div>
+              <div className="text-2xl font-semibold">{formattedTime()}</div>
+              
+              {/* Mostrar texto sendo transcrito em tempo real */}
+              {isListening && (
+                <div className="mt-4 text-sm text-left bg-white dark:bg-neutral-900 p-3 rounded border overflow-y-auto max-h-24">
+                  {transcript && <p className="text-neutral-800 dark:text-neutral-200">{transcript}</p>}
+                  {interimTranscript && (
+                    <p className="text-neutral-500 italic">{interimTranscript}</p>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+          
+          <div className="flex flex-col items-center">
+            <Button 
+              size="lg"
+              variant={isListening ? "destructive" : "default"}
+              className="h-16 w-16 rounded-full mb-3 flex items-center justify-center"
+              onClick={toggleListening}
+            >
+              {isListening ? (
+                <Ear className="h-6 w-6" />
+              ) : (
+                <Stethoscope className="h-6 w-6" />
+              )}
+            </Button>
+            <span className="text-sm text-neutral-600 dark:text-neutral-400">
+              {isListening ? "Parar Escuta" : "Iniciar Escuta"}
+            </span>
+          </div>
+        </CardContent>
+      </Card>
+      
+      {/* Diálogo de informações */}
+      <AlertDialog open={isInfoOpen} onOpenChange={setIsInfoOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Escuta e Análise Automática de Sintomas</AlertDialogTitle>
+            <AlertDialogDescription>
+              <div className="space-y-4 mt-2">
+                <div>
+                  <p className="text-sm">
+                    Este componente permite escutar o que o utente relata durante a consulta e automaticamente 
+                    extrair os sintomas mencionados para incluir no relatório médico.
+                  </p>
+                </div>
+                
+                <div>
+                  <h3 className="font-medium text-sm">Como usar:</h3>
+                  <ul className="list-disc ml-5 text-sm mt-1">
+                    <li>Inicie a escuta quando o utente começar a descrever seus sintomas</li>
+                    <li>Deixe-o falar naturalmente, como em uma consulta normal</li>
+                    <li>O sistema irá capturar o que foi dito e analisar os sintomas mencionados</li>
+                    <li>Ao finalizar, você poderá revisar os sintomas detectados</li>
+                    <li>Confirme para adicionar os sintomas ao relatório de forma estruturada</li>
+                  </ul>
+                </div>
+                
+                <div className="text-sm pt-2 border-t">
+                  <p>O reconhecimento funciona melhor em ambientes silenciosos e quando o utente fala claramente.</p>
+                </div>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+        </AlertDialogContent>
+      </AlertDialog>
+      
+      {/* Diálogo de resultado da análise de sintomas */}
+      <AlertDialog open={showAnalysisResult} onOpenChange={setShowAnalysisResult}>
+        <AlertDialogContent className="max-w-3xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Sintomas Detectados</AlertDialogTitle>
+            <AlertDialogDescription>
+              <div className="mt-4">
+                <h3 className="text-sm font-medium mb-2">Texto capturado do utente:</h3>
+                <div className="bg-neutral-100 dark:bg-neutral-800 p-3 rounded-md mb-4 text-sm max-h-32 overflow-y-auto">
+                  {transcript}
+                </div>
+                
+                <h3 className="text-sm font-medium mb-2">Sintomas detectados:</h3>
+                {detectedSymptoms.length > 0 ? (
+                  <div className="space-y-2">
+                    {detectedSymptoms.map((symptom, index) => (
+                      <div key={index} className="bg-white dark:bg-neutral-900 border rounded-md p-3">
+                        <div className="flex justify-between items-start">
+                          <span className="font-medium">{symptom.symptom}</span>
+                          <Badge variant={symptom.confidence > 0.7 ? "default" : 
+                                          symptom.confidence > 0.5 ? "secondary" : "outline"}>
+                            Confiança: {Math.round(symptom.confidence * 100)}%
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
+                          "{symptom.context}"
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-center text-neutral-500 dark:text-neutral-400 py-4">
+                    Nenhum sintoma detectado no texto. Tente novamente com mais detalhes.
+                  </p>
+                )}
+                
+                {detectedSymptoms.length > 0 && (
+                  <div className="mt-4 p-3 bg-neutral-100 dark:bg-neutral-800 rounded-md">
+                    <h3 className="text-sm font-medium mb-2">Texto a ser adicionado ao relatório:</h3>
+                    <p className="text-sm">{formatSymptomsReport(detectedSymptoms)}</p>
+                  </div>
+                )}
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex justify-between items-center mt-4">
+            <Button variant="outline" onClick={() => setShowAnalysisResult(false)}>
+              Cancelar
+            </Button>
+            <Button 
+              onClick={confirmSymptoms}
+              disabled={detectedSymptoms.length === 0}
+            >
+              Adicionar ao Relatório
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
+}

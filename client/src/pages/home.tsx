@@ -6,6 +6,7 @@ import { UtenteForm, type UtenteFormValues } from "@/components/utente-form";
 import { ReportForm, type ReportFormValues } from "@/components/report-form";
 import { ReportList } from "@/components/report-list";
 import { VoiceRecognition } from "@/components/voice-recognition";
+import { PatientListening } from "@/components/patient-listening";
 import { ExportOptions } from "@/components/export-options";
 import { Notification } from "@/components/ui/notification";
 import { Button } from "@/components/ui/button";
@@ -158,6 +159,24 @@ export default function Home() {
     const updatedReport = { ...report };
     updatedReport[field as keyof ReportFormValues] = text;
     setReport(updatedReport);
+  };
+  
+  // Handle symptoms detected by the patient listening component
+  const handleSymptomsDetected = (symptoms: string) => {
+    // Update symptoms field with detected symptoms
+    const updatedReport = { ...report };
+    
+    // If symptoms field already has content, append the new symptoms
+    if (updatedReport.symptoms && updatedReport.symptoms.trim() !== "") {
+      updatedReport.symptoms = updatedReport.symptoms + "\n\n" + symptoms;
+    } else {
+      updatedReport.symptoms = symptoms;
+    }
+    
+    setReport(updatedReport);
+    
+    // Also update transcription state to trigger any UI updates
+    setTranscription({ text: symptoms, field: "symptoms" });
   };
 
   // Handle PDF export
@@ -451,6 +470,11 @@ export default function Home() {
               </div>
               
               <div className="lg:col-span-1 space-y-6">
+                <PatientListening
+                  onSymptomsDetected={handleSymptomsDetected}
+                  notificationRef={notificationRef}
+                />
+              
                 <VoiceRecognition 
                   onTranscriptionComplete={handleTranscriptionComplete} 
                   notificationRef={notificationRef}
@@ -499,6 +523,11 @@ export default function Home() {
                 </div>
                 
                 <div className="lg:col-span-1 space-y-6">
+                  <PatientListening
+                    onSymptomsDetected={handleSymptomsDetected}
+                    notificationRef={notificationRef}
+                  />
+                  
                   <VoiceRecognition 
                     onTranscriptionComplete={handleTranscriptionComplete} 
                     notificationRef={notificationRef}
