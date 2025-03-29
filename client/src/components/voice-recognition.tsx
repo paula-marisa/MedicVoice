@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Mic, MicOff, Info } from "lucide-react";
+import { Mic, MicOff, Info, Shield, ExternalLink } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "wouter";
 import { 
   AlertDialog, 
   AlertDialogContent, 
@@ -12,6 +13,8 @@ import {
   AlertDialogHeader, 
   AlertDialogTitle 
 } from "@/components/ui/alert-dialog";
+import { PrivacyConsentDialog } from "./privacy-consent-dialog";
+import { RecordingIndicator } from "./recording-indicator";
 
 interface VoiceRecognitionProps {
   onTranscriptionComplete: (text: string, field: string) => void;
@@ -25,6 +28,8 @@ export function VoiceRecognition({ onTranscriptionComplete, notificationRef }: V
   const [transcript, setTranscript] = useState("");
   const [interimTranscript, setInterimTranscript] = useState("");
   const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const [showPrivacyConsent, setShowPrivacyConsent] = useState(false);
+  const [hasDoctorConsent, setHasDoctorConsent] = useState(false);
   
   const recognitionRef = useRef<any | null>(null);
   const timerRef = useRef<number | null>(null);
@@ -248,7 +253,32 @@ export function VoiceRecognition({ onTranscriptionComplete, notificationRef }: V
     if (isRecording) {
       stopRecording();
     } else {
+      // Verificar se já temos consentimento
+      if (hasDoctorConsent) {
+        startRecording();
+      } else {
+        // Mostrar diálogo de consentimento
+        setShowPrivacyConsent(true);
+      }
+    }
+  };
+  
+  // Manipula o resultado do consentimento
+  const handlePrivacyConsent = (consented: boolean) => {
+    setHasDoctorConsent(consented);
+    
+    if (consented) {
+      // Se o consentimento foi concedido, iniciar gravação
+      notificationRef.current?.show({
+        message: "Consentimento RGPD/LGPD obtido com sucesso",
+        type: "success"
+      });
       startRecording();
+    } else {
+      notificationRef.current?.show({
+        message: "Consentimento não concedido. A gravação não será iniciada.",
+        type: "info"
+      });
     }
   };
 
@@ -271,6 +301,17 @@ export function VoiceRecognition({ onTranscriptionComplete, notificationRef }: V
           <div className="text-sm text-neutral-600 dark:text-neutral-400 mb-6">
             Clique no botão abaixo para começar a gravar. Você pode dizer o nome do campo (ex: "diagnóstico") 
             para alterar o destino da transcrição.
+            
+            <div className="mt-2 flex items-start gap-2 bg-muted/50 p-2 rounded text-xs">
+              <Shield className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+              <div>
+                <p>Será solicitado seu consentimento conforme RGPD/LGPD para processar dados de voz.</p>
+                <Link href="/privacy-policy" className="text-primary hover:underline inline-flex items-center gap-1 mt-1">
+                  Ver política de privacidade
+                  <ExternalLink className="h-3 w-3" />
+                </Link>
+              </div>
+            </div>
           </div>
           
           <div className="flex items-center justify-center mb-6">
@@ -354,6 +395,37 @@ export function VoiceRecognition({ onTranscriptionComplete, notificationRef }: V
         </CardContent>
       </Card>
       
+      {/* Indicador visual de gravação */}
+      <RecordingIndicator 
+        isRecording={isRecording}
+        recordingType="dictation" 
+        recordingTime={recordingTime}
+      />
+      
+      {/* Diálogo de consentimento RGPD/LGPD */}
+      <PrivacyConsentDialog
+        open={showPrivacyConsent}
+        onOpenChange={setShowPrivacyConsent}
+        onConsent={handlePrivacyConsent}
+        title="Consentimento para Reconhecimento de Voz"
+        description="Para prosseguir com o reconhecimento de voz, é necessário o seu consentimento explícito para o processamento de dados de voz, conforme as regulamentações de proteção de dados (RGPD/LGPD)."
+        privacyItems={[
+          {
+            id: "consent-voice-capture-doctor",
+            description: "Autorizo a captura temporária do meu áudio para fins de transcrição e preenchimento do relatório médico."
+          },
+          {
+            id: "consent-processing-doctor",
+            description: "Entendo que os dados vocais serão processados localmente, sem armazenamento permanente do áudio original, e que os textos transcritos serão utilizados apenas para auxiliar na preparação do relatório médico."
+          },
+          {
+            id: "consent-retention-doctor",
+            description: "Estou ciente de que os dados processados serão retidos apenas pelo período necessário para a criação do relatório e podem ser excluídos mediante solicitação."
+          }
+        ]}
+        dataRetentionPeriod="90 dias"
+      />
+
       {/* Diálogo de ajuda */}
       <AlertDialog open={isHelpOpen} onOpenChange={setIsHelpOpen}>
         <AlertDialogContent>

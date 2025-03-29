@@ -7,6 +7,7 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import AuthPage from "@/pages/auth-page";
 import AdminPage from "@/pages/admin-page";
+import PrivacyPolicy from "@/pages/privacy-policy";
 import { setupTheme } from "@/lib/theme";
 import { AuthProvider } from "./hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
@@ -18,6 +19,7 @@ function Router() {
       <ProtectedRoute path="/" component={Home} />
       <Route path="/auth" component={AuthPage} />
       <AdminRoute path="/admin" component={AdminPage} />
+      <Route path="/privacy-policy" component={PrivacyPolicy} />
       <Route component={NotFound} />
     </Switch>
   );

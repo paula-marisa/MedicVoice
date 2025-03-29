@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Mic, MicOff, Info, Ear, Stethoscope } from "lucide-react";
+import { Mic, MicOff, Info, Ear, Stethoscope, ExternalLink, Shield } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "wouter";
 import { analyzeSymptoms, formatSymptomsReport } from "@/lib/symptoms-analyzer";
 import { 
   AlertDialog, 
@@ -12,6 +13,8 @@ import {
   AlertDialogTitle,
   AlertDialogFooter
 } from "@/components/ui/alert-dialog";
+import { PrivacyConsentDialog } from "./privacy-consent-dialog";
+import { RecordingIndicator } from "./recording-indicator";
 
 interface PatientListeningProps {
   onSymptomsDetected: (symptoms: string) => void;
@@ -26,6 +29,8 @@ export function PatientListening({ onSymptomsDetected, notificationRef }: Patien
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [detectedSymptoms, setDetectedSymptoms] = useState<any[]>([]);
   const [showAnalysisResult, setShowAnalysisResult] = useState(false);
+  const [showPrivacyConsent, setShowPrivacyConsent] = useState(false);
+  const [hasPatientConsent, setHasPatientConsent] = useState(false);
   
   const recognitionRef = useRef<any | null>(null);
   const timerRef = useRef<number | null>(null);
@@ -165,7 +170,32 @@ export function PatientListening({ onSymptomsDetected, notificationRef }: Patien
     if (isListening) {
       stopListening();
     } else {
+      // Verificar se já temos consentimento
+      if (hasPatientConsent) {
+        startListening();
+      } else {
+        // Mostrar diálogo de consentimento
+        setShowPrivacyConsent(true);
+      }
+    }
+  };
+  
+  // Manipula o resultado do consentimento
+  const handlePrivacyConsent = (consented: boolean) => {
+    setHasPatientConsent(consented);
+    
+    if (consented) {
+      // Se o consentimento foi concedido, iniciar escuta
+      notificationRef.current?.show({
+        message: "Consentimento RGPD/LGPD obtido com sucesso",
+        type: "success"
+      });
       startListening();
+    } else {
+      notificationRef.current?.show({
+        message: "Consentimento não concedido. A escuta não será iniciada.",
+        type: "info"
+      });
     }
   };
 
@@ -208,6 +238,17 @@ export function PatientListening({ onSymptomsDetected, notificationRef }: Patien
           <div className="text-sm text-neutral-600 dark:text-neutral-400 mb-6">
             Clique para iniciar a escuta do utente e captar automaticamente os sintomas relatados.
             O sistema irá detectar e estruturar os sintomas para o relatório.
+            
+            <div className="mt-2 flex items-start gap-2 bg-muted/50 p-2 rounded text-xs">
+              <Shield className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+              <div>
+                <p>Será solicitado consentimento do utente conforme RGPD/LGPD para processar dados de voz.</p>
+                <Link href="/privacy-policy" className="text-primary hover:underline inline-flex items-center gap-1 mt-1">
+                  Ver política de privacidade
+                  <ExternalLink className="h-3 w-3" />
+                </Link>
+              </div>
+            </div>
           </div>
           
           <div className="flex items-center justify-center mb-6">
@@ -294,6 +335,37 @@ export function PatientListening({ onSymptomsDetected, notificationRef }: Patien
           </AlertDialogHeader>
         </AlertDialogContent>
       </AlertDialog>
+      
+      {/* Indicador visual de gravação */}
+      <RecordingIndicator 
+        isRecording={isListening}
+        recordingType="listening" 
+        recordingTime={recordingTime}
+      />
+      
+      {/* Diálogo de consentimento RGPD/LGPD */}
+      <PrivacyConsentDialog
+        open={showPrivacyConsent}
+        onOpenChange={setShowPrivacyConsent}
+        onConsent={handlePrivacyConsent}
+        title="Consentimento para Escuta do Utente"
+        description="Para prosseguir com a escuta do utente, é necessário o consentimento explícito para o processamento de dados de voz, conforme as regulamentações de proteção de dados (RGPD/LGPD)."
+        privacyItems={[
+          {
+            id: "consent-voice-capture",
+            description: "Autorizo a captura temporária do áudio da conversa com o profissional de saúde para fins de transcrição e análise de sintomas."
+          },
+          {
+            id: "consent-processing",
+            description: "Entendo que os dados vocais serão processados localmente, sem armazenamento permanente do áudio original, e que os textos transcritos serão utilizados apenas para auxiliar na preparação do relatório médico."
+          },
+          {
+            id: "consent-retention",
+            description: "Estou ciente de que os dados processados serão retidos apenas pelo período necessário para a criação do relatório e podem ser excluídos mediante solicitação."
+          }
+        ]}
+        dataRetentionPeriod="90 dias"
+      />
       
       {/* Diálogo de resultado da análise de sintomas */}
       <AlertDialog open={showAnalysisResult} onOpenChange={setShowAnalysisResult}>
