@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { Header } from "@/layout/header";
@@ -19,7 +19,6 @@ import {
   Bell, 
   Eye, 
   Lock, 
-  LayoutGrid, 
   Palette, 
   VolumeX, 
   Volume2, 
@@ -28,15 +27,18 @@ import {
   Mail,
   Moon,
   Sun,
-  Laptop
+  Laptop,
+  LayoutDashboard
 } from "lucide-react";
 
 import {
   getUserSettings,
   saveUserSettings,
   applyInterfaceSettings,
+  applyCustomColors,
   getTranslations,
   formatDate,
+  translations,
   LanguageSettings,
   InterfaceSettings,
   NotificationSettings,
@@ -186,7 +188,7 @@ export default function SettingsPage() {
                 Geral
               </TabsTrigger>
               <TabsTrigger value="interface">
-                <LayoutGrid className="h-4 w-4 mr-2" />
+                <LayoutDashboard className="h-4 w-4 mr-2" />
                 Interface
               </TabsTrigger>
               <TabsTrigger value="notifications">
@@ -385,39 +387,6 @@ export default function SettingsPage() {
                       </div>
                       
                       <Separator />
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="layout-style">Estilo de Layout</Label>
-                        <Select 
-                          value={display.dashboardLayout} 
-                          onValueChange={(value) => setDisplay({ ...display, dashboardLayout: value })}
-                        >
-                          <SelectTrigger id="layout-style" className="w-full">
-                            <SelectValue placeholder="Selecione o estilo de layout" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="grid">Grelha</SelectItem>
-                            <SelectItem value="list">Lista</SelectItem>
-                            <SelectItem value="compact">Compacto</SelectItem>
-                            <SelectItem value="detailed">Detalhado</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <Label htmlFor="compact-mode">Modo Compacto</Label>
-                          <p className="text-sm text-muted-foreground">
-                            Reduz o espaçamento para mostrar mais conteúdo.
-                          </p>
-                        </div>
-                        <Switch 
-                          id="compact-mode" 
-                          checked={display.compactMode}
-                          onCheckedChange={(value) => setDisplay({ ...display, compactMode: value })}
-                        />
-                      </div>
-                      
                       <div className="flex items-center justify-between">
                         <div className="space-y-0.5">
                           <Label htmlFor="show-statistics">Mostrar Estatísticas</Label>
@@ -471,13 +440,7 @@ export default function SettingsPage() {
                               </div>
                             </div>
                           </div>
-                          <div className="flex items-center space-x-2">
-                            <Checkbox id="custom-logo" />
-                            <Label htmlFor="custom-logo">Usar logotipo personalizado</Label>
-                          </div>
-                          <Button variant="outline" disabled className="mt-2">
-                            Fazer Upload de Logotipo
-                          </Button>
+
                         </div>
                       )}
                     </div>
