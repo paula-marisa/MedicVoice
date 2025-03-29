@@ -711,18 +711,29 @@ export function applyTranslations(language: string) {
     });
     
     // Traduz elementos de toast existentes na página
-    document.querySelectorAll('[role="status"]').forEach(toast => {
-      const titleEl = toast.querySelector('[data-toast-title]');
-      const descEl = toast.querySelector('[data-toast-description]');
-      
-      if (titleEl && titleEl.textContent === "Configurações guardadas") {
-        titleEl.textContent = "Settings saved";
-      }
-      
-      if (descEl && descEl.textContent === "As suas alterações foram guardadas com sucesso e aplicadas.") {
-        descEl.textContent = "Your changes have been successfully saved and applied.";
-      }
-    });
+    // Usamos try-catch para evitar erros quando os elementos são removidos durante a operação
+    try {
+      document.querySelectorAll('[role="status"]').forEach(toast => {
+        try {
+          if (!toast || !toast.isConnected) return;
+          
+          const titleEl = toast.querySelector('[data-toast-title]');
+          const descEl = toast.querySelector('[data-toast-description]');
+          
+          if (titleEl && titleEl.isConnected && titleEl.textContent === "Configurações guardadas") {
+            titleEl.textContent = "Settings saved";
+          }
+          
+          if (descEl && descEl.isConnected && descEl.textContent === "As suas alterações foram guardadas com sucesso e aplicadas.") {
+            descEl.textContent = "Your changes have been successfully saved and applied.";
+          }
+        } catch (err) {
+          console.log("Erro ao traduzir toast individual:", err);
+        }
+      });
+    } catch (err) {
+      console.log("Erro ao traduzir toasts:", err);
+    }
   } else {
     // Para português
     window.appTranslations = {
@@ -763,18 +774,29 @@ export function applyTranslations(language: string) {
     }
     
     // Traduz elementos de toast existentes na página para português
-    document.querySelectorAll('[role="status"]').forEach(toast => {
-      const titleEl = toast.querySelector('[data-toast-title]');
-      const descEl = toast.querySelector('[data-toast-description]');
-      
-      if (titleEl && titleEl.textContent === "Settings saved") {
-        titleEl.textContent = "Configurações guardadas";
-      }
-      
-      if (descEl && descEl.textContent === "Your changes have been successfully saved and applied.") {
-        descEl.textContent = "As suas alterações foram guardadas com sucesso e aplicadas.";
-      }
-    });
+    // Usamos try-catch para evitar erros quando os elementos são removidos durante a operação
+    try {
+      document.querySelectorAll('[role="status"]').forEach(toast => {
+        try {
+          if (!toast || !toast.isConnected) return;
+          
+          const titleEl = toast.querySelector('[data-toast-title]');
+          const descEl = toast.querySelector('[data-toast-description]');
+          
+          if (titleEl && titleEl.isConnected && titleEl.textContent === "Settings saved") {
+            titleEl.textContent = "Configurações guardadas";
+          }
+          
+          if (descEl && descEl.isConnected && descEl.textContent === "Your changes have been successfully saved and applied.") {
+            descEl.textContent = "As suas alterações foram guardadas com sucesso e aplicadas.";
+          }
+        } catch (err) {
+          console.log("Erro ao traduzir toast individual para português:", err);
+        }
+      });
+    } catch (err) {
+      console.log("Erro ao traduzir toasts para português:", err);
+    }
   }
   
   // Atualiza os elementos com atributos de data-i18n
