@@ -8,7 +8,7 @@ import Home from "@/pages/home";
 import AuthPage from "@/pages/auth-page";
 import AdminPage from "@/pages/admin-page";
 import ProfilePage from "@/pages/profile-page";
-import SettingsPage from "@/pages/settings-page-simple";
+import SettingsPage from "@/pages/settings-page";
 import PrivacyPolicy from "@/pages/privacy-policy";
 import { setupTheme } from "@/lib/theme";
 import { AuthProvider } from "./hooks/use-auth";
