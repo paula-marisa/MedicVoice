@@ -37,6 +37,7 @@ import {
   applyInterfaceSettings,
   applyCustomColors,
   getTranslations,
+  applyTranslations,
   formatDate,
   translations,
   LanguageSettings,
@@ -59,6 +60,9 @@ export default function SettingsPage() {
   const [language, setLanguage] = useState("pt");
   const [dateFormat, setDateFormat] = useState("dd/mm/yyyy");
   const [theme, setTheme] = useState<"light" | "dark" | "system">("system");
+  
+  // Estado para armazenar traduções atuais
+  const [currentTranslations, setCurrentTranslations] = useState(getTranslations("pt"));
   const [fontSize, setFontSize] = useState("medium");
   const [highContrast, setHighContrast] = useState(false);
   const [notifications, setNotifications] = useState({
@@ -149,15 +153,37 @@ export default function SettingsPage() {
       applyInterfaceSettings(updatedSettings.interface);
       setAppTheme(theme);
       
+      // Atualiza as traduções imediatamente e aplica na interface
+      setCurrentTranslations(applyTranslations(language));
+      
+      // Altera os textos de acordo com o idioma escolhido
+      const messageTitle = language === 'en' ? "Settings saved" : 
+                          language === 'es' ? "Configuración guardada" : 
+                          language === 'fr' ? "Paramètres enregistrés" : "Configurações guardadas";
+      
+      const messageDescription = language === 'en' ? "Your changes have been successfully saved and applied." : 
+                               language === 'es' ? "Sus cambios han sido guardados y aplicados con éxito." : 
+                               language === 'fr' ? "Vos modifications ont été enregistrées et appliquées avec succès." : 
+                               "As suas alterações foram guardadas com sucesso e aplicadas.";
+      
       // Exibe mensagem de sucesso
       toast({
-        title: "Configurações guardadas",
-        description: "As suas alterações foram guardadas com sucesso e aplicadas.",
+        title: messageTitle,
+        description: messageDescription,
       });
     } else {
+      const errorTitle = language === 'en' ? "Error saving" : 
+                       language === 'es' ? "Error al guardar" : 
+                       language === 'fr' ? "Erreur lors de l'enregistrement" : "Erro ao guardar";
+      
+      const errorDescription = language === 'en' ? "An error occurred while saving the settings. Please try again." : 
+                             language === 'es' ? "Se produjo un error al guardar la configuración. Inténtelo de nuevo." : 
+                             language === 'fr' ? "Une erreur s'est produite lors de l'enregistrement des paramètres. Veuillez réessayer." : 
+                             "Ocorreu um erro ao guardar as configurações. Tente novamente.";
+      
       toast({
-        title: "Erro ao guardar",
-        description: "Ocorreu um erro ao guardar as configurações. Tente novamente.",
+        title: errorTitle,
+        description: errorDescription,
         variant: "destructive",
       });
     }
@@ -225,7 +251,11 @@ export default function SettingsPage() {
                         <Label htmlFor="language">Idioma</Label>
                         <Select 
                           value={language} 
-                          onValueChange={setLanguage}
+                          onValueChange={(value) => {
+                            setLanguage(value);
+                            // Atualiza as traduções imediatamente e aplica na interface
+                            setCurrentTranslations(applyTranslations(value));
+                          }}
                         >
                           <SelectTrigger id="language" className="w-full">
                             <SelectValue placeholder="Selecione o idioma" />

@@ -561,6 +561,33 @@ export function getTranslations(language: string = "pt") {
   return translations[language as keyof typeof translations] || translations.pt;
 }
 
+// Função para aplicar as traduções na interface do usuário
+export function applyTranslations(language: string) {
+  const selectedTranslations = getTranslations(language);
+  
+  // Define o atributo lang no documento HTML
+  document.documentElement.setAttribute('lang', language);
+  
+  // Atualiza os elementos com atributos de data-i18n
+  document.querySelectorAll('[data-i18n]').forEach(element => {
+    const key = element.getAttribute('data-i18n');
+    if (key) {
+      // Navega pela estrutura de tradução usando a chave composta
+      // ex: "settings.general.title" -> selectedTranslations.settings.general.title
+      const value = key.split('.').reduce((obj, prop) => {
+        return obj && obj[prop] ? obj[prop] : null;
+      }, selectedTranslations as any);
+      
+      if (value) {
+        // Atualiza o conteúdo do elemento
+        element.textContent = value;
+      }
+    }
+  });
+  
+  return selectedTranslations;
+}
+
 // Aplica as configurações de fonte e contraste
 export function applyInterfaceSettings(settings: InterfaceSettings) {
   const root = document.documentElement;
