@@ -3,9 +3,11 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { 
   insertMedicalReportSchema, 
-  insertCommunicationLogSchema, 
+  insertCommunicationLogSchema,
+  insertPatientConsentSchema,
   type User, 
-  type InsertMedicalReport
+  type InsertMedicalReport,
+  type InsertPatientConsent
 } from "@shared/schema";
 import { z } from "zod";
 import { ZodError } from "zod";
@@ -994,6 +996,146 @@ export async function registerRoutes(app: Express): Promise<Server> {
         success: false,
         message: "Erro interno do servidor"
       });
+    }
+  });
+
+  // ==== Patient Consent Routes ====
+  
+  // Create patient consent
+  app.post("/api/patient-consents", ensureAuthenticated, async (req, res) => {
+    try {
+      // Add user ID to the consent data
+      const consentData = {
+        ...req.body,
+        consentDate: new Date(),
+        userId: req.user.id
+      };
+      
+      // Validate request body
+      const data = insertPatientConsentSchema.parse(consentData);
+      
+      // Create new consent record
+      const consent = await storage.createPatientConsent(data);
+      
+      // Log the action
+      await logAuditTrail(req, "create", "patient_consent", consent.id, {
+        processNumber: consent.processNumber,
+        consentType: consent.consentType,
+        consentGranted: consent.consentGranted
+      });
+      
+      res.status(201).json({
+        success: true,
+        message: "Consentimento de paciente registrado com sucesso",
+        data: consent
+      });
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromZodError(error);
+        res.status(400).json({
+          success: false,
+          message: "Erro de validação",
+          errors: validationError.details
+        });
+      } else {
+        log(`Error creating patient consent: ${error}`, "api");
+        res.status(500).json({
+          success: false,
+          message: "Erro interno do servidor"
+        });
+      }
+    }
+  });
+  
+  // Get patient consent by process number and type
+  app.get("/api/patient-consents/:processNumber/:consentType", ensureAuthenticated, async (req, res) => {
+    try {
+      const { processNumber, consentType } = req.params;
+      
+      // Get the most recent consent for this process number and type
+      const consent = await storage.getPatientConsentByProcessNumber(processNumber, consentType);
+      
+      if (!consent) {
+        return res.status(404).json({
+          success: false,
+          message: "Consentimento não encontrado",
+          data: { consentExists: false }
+        });
+      }
+      
+      res.json({
+        success: true,
+        data: {
+          ...consent,
+          consentExists: true
+        }
+      });
+    } catch (error) {
+      log(`Error fetching patient consent: ${error}`, "api");
+      res.status(500).json({
+        success: false,
+        message: "Erro interno do servidor"
+      });
+    }
+  });
+  
+  // Update patient consent
+  app.put("/api/patient-consents/:id", ensureAuthenticated, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({
+          success: false,
+          message: "Formato de ID inválido"
+        });
+      }
+      
+      // Check if the consent exists
+      const existingConsent = await storage.getPatientConsent(id);
+      if (!existingConsent) {
+        return res.status(404).json({
+          success: false,
+          message: "Consentimento não encontrado"
+        });
+      }
+      
+      // Validate request body
+      const updateData = {
+        ...req.body,
+        consentDate: new Date(), // Update consent date on changes
+      };
+      
+      // Update consent
+      const updatedConsent = await storage.updatePatientConsent(id, updateData);
+      
+      // Log the action
+      await logAuditTrail(req, "update", "patient_consent", id, {
+        processNumber: updatedConsent.processNumber,
+        consentType: updatedConsent.consentType,
+        consentGranted: updatedConsent.consentGranted,
+        changes: req.body
+      });
+      
+      res.json({
+        success: true,
+        message: "Consentimento atualizado com sucesso",
+        data: updatedConsent
+      });
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromZodError(error);
+        res.status(400).json({
+          success: false,
+          message: "Erro de validação",
+          errors: validationError.details
+        });
+      } else {
+        log(`Error updating patient consent: ${error}`, "api");
+        res.status(500).json({
+          success: false,
+          message: "Erro interno do servidor"
+        });
+      }
     }
   });
 

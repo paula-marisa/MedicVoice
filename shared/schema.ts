@@ -64,10 +64,26 @@ export const communicationLogs = pgTable("communication_logs", {
   timestamp: timestamp("timestamp").defaultNow().notNull(),
 });
 
+// Patient consent records for GDPR/LGPD compliance
+export const patientConsents = pgTable("patient_consents", {
+  id: serial("id").primaryKey(),
+  patientName: text("patient_name").notNull(),
+  processNumber: text("process_number").notNull(),
+  consentType: text("consent_type").notNull(), // 'voice_recording', 'data_processing', etc.
+  consentGranted: boolean("consent_granted").notNull(),
+  consentDate: timestamp("consent_date").defaultNow().notNull(),
+  expiryDate: timestamp("expiry_date"),
+  consentDetails: jsonb("consent_details"), // Additional consent metadata
+  verbalConfirmation: boolean("verbal_confirmation").default(false),
+  confirmationRecording: text("confirmation_recording"), // Optional reference to stored confirmation
+  userId: integer("user_id").references(() => users.id), // Doctor/user who collected consent
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   medicalReports: many(medicalReports),
   auditLogs: many(auditLogs),
+  patientConsents: many(patientConsents),
 }));
 
 export const medicalReportsRelations = relations(medicalReports, ({ one, many }) => ({
@@ -92,6 +108,13 @@ export const communicationLogsRelations = relations(communicationLogs, ({ one })
   }),
 }));
 
+export const patientConsentsRelations = relations(patientConsents, ({ one }) => ({
+  user: one(users, {
+    fields: [patientConsents.userId],
+    references: [users.id],
+  }),
+}));
+
 // Insert schemas
 export const insertMedicalReportSchema = createInsertSchema(medicalReports)
   .omit({ id: true, createdAt: true, updatedAt: true });
@@ -101,6 +124,9 @@ export const insertAuditLogSchema = createInsertSchema(auditLogs)
 
 export const insertCommunicationLogSchema = createInsertSchema(communicationLogs)
   .omit({ id: true, timestamp: true });
+
+export const insertPatientConsentSchema = createInsertSchema(patientConsents)
+  .omit({ id: true, consentDate: true });
 
 // Types
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -114,3 +140,6 @@ export type AuditLog = typeof auditLogs.$inferSelect;
 
 export type InsertCommunicationLog = z.infer<typeof insertCommunicationLogSchema>;
 export type CommunicationLog = typeof communicationLogs.$inferSelect;
+
+export type InsertPatientConsent = z.infer<typeof insertPatientConsentSchema>;
+export type PatientConsent = typeof patientConsents.$inferSelect;

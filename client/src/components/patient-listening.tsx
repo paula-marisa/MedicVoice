@@ -15,13 +15,16 @@ import {
 } from "@/components/ui/alert-dialog";
 import { PrivacyConsentDialog } from "./privacy-consent-dialog";
 import { RecordingIndicator } from "./recording-indicator";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
 interface PatientListeningProps {
   onSymptomsDetected: (symptoms: string) => void;
   notificationRef: React.RefObject<any>;
+  patientProcessNumber?: string; // Opcional: número do processo do paciente, se já disponível
 }
 
-export function PatientListening({ onSymptomsDetected, notificationRef }: PatientListeningProps) {
+export function PatientListening({ onSymptomsDetected, notificationRef, patientProcessNumber }: PatientListeningProps) {
   const [isListening, setIsListening] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [transcript, setTranscript] = useState("");
@@ -31,10 +34,82 @@ export function PatientListening({ onSymptomsDetected, notificationRef }: Patien
   const [showAnalysisResult, setShowAnalysisResult] = useState(false);
   const [showPrivacyConsent, setShowPrivacyConsent] = useState(false);
   const [hasPatientConsent, setHasPatientConsent] = useState(false);
+  const [processNumber, setProcessNumber] = useState<string>(""); // Número do processo do paciente atual
   
   const recognitionRef = useRef<any | null>(null);
   const timerRef = useRef<number | null>(null);
   const transcriptRef = useRef<string>("");
+  
+  // Função para atualizar o número do processo e verificar consentimento
+  const updateProcessNumber = (newProcessNumber: string) => {
+    setProcessNumber(newProcessNumber);
+    // Verifica se já existe consentimento para este paciente
+    if (newProcessNumber) {
+      checkConsentQuery.refetch();
+    }
+  };
+  
+  // Inicializar o processo com o valor passado via props, se disponível
+  useEffect(() => {
+    if (patientProcessNumber) {
+      updateProcessNumber(patientProcessNumber);
+    }
+  }, [patientProcessNumber]);
+
+  // Consulta para verificar se já existe um consentimento para este paciente
+  const checkConsentQuery = useQuery({
+    queryKey: ['/api/patient-consents', processNumber, 'voice_listening'],
+    queryFn: async () => {
+      if (!processNumber) return null;
+      try {
+        const response = await fetch(`/api/patient-consents/${processNumber}/voice_listening`, {
+          credentials: 'include'
+        });
+        if (response.status === 404) {
+          return { consentExists: false };
+        }
+        if (!response.ok) {
+          throw new Error('Erro ao verificar consentimento');
+        }
+        return response.json();
+      } catch (error) {
+        console.error('Erro ao verificar consentimento:', error);
+        return { consentExists: false };
+      }
+    },
+    enabled: !!processNumber, // Só executa se houver um número de processo
+  });
+  
+  // Efeito para atualizar o estado de consentimento quando a consulta retornar
+  useEffect(() => {
+    if (checkConsentQuery.data) {
+      const consentData = checkConsentQuery.data;
+      if (consentData?.data?.consentExists) {
+        setHasPatientConsent(consentData.data.consentGranted);
+        console.log('Consentimento já registrado:', consentData.data.consentGranted ? 'Concedido' : 'Negado');
+      } else {
+        setHasPatientConsent(false);
+      }
+    }
+  }, [checkConsentQuery.data]);
+  
+  // Mutação para salvar o consentimento no banco de dados
+  const createConsentMutation = useMutation({
+    mutationFn: async (consentData: any) => {
+      const res = await apiRequest('POST', '/api/patient-consents', consentData);
+      return res.json();
+    },
+    onSuccess: () => {
+      console.log('Consentimento salvo com sucesso no servidor');
+    },
+    onError: (error) => {
+      console.error('Erro ao salvar consentimento:', error);
+      notificationRef.current?.show({
+        message: "Erro ao registrar consentimento do paciente. Contate o suporte.",
+        type: "error"
+      });
+    }
+  });
 
   // Format time as MM:SS
   const formattedTime = () => {
@@ -185,6 +260,23 @@ export function PatientListening({ onSymptomsDetected, notificationRef }: Patien
     setHasPatientConsent(consented);
     
     if (consented) {
+      // Obter o número do processo do relatório atual (assumindo que vem de um form ou contexto)
+      // Nota: Este é apenas um exemplo, na implementação real você deve obter o ID do paciente atual
+      const currentProcessNumber = processNumber || `PROC-${Date.now()}`; // Fallback temporário
+      
+      // Registrar o consentimento no banco de dados
+      createConsentMutation.mutate({
+        processNumber: currentProcessNumber,
+        consentType: "voice_listening",
+        consentGranted: true,
+        consentDetails: {
+          purpose: "Transcrição e análise de sintomas",
+          dataTypes: ["voz", "texto transcrito"],
+          retentionPeriod: "90 dias",
+          storedIn: "base de dados interna"
+        }
+      });
+      
       // Se o consentimento foi concedido, iniciar escuta
       notificationRef.current?.show({
         message: "Consentimento RGPD/LGPD obtido com sucesso",
@@ -192,6 +284,18 @@ export function PatientListening({ onSymptomsDetected, notificationRef }: Patien
       });
       startListening();
     } else {
+      // Se não consentiu, registrar a rejeição para fins de auditoria RGPD
+      if (processNumber) {
+        createConsentMutation.mutate({
+          processNumber: processNumber,
+          consentType: "voice_listening",
+          consentGranted: false,
+          consentDetails: {
+            reason: "Consentimento negado pelo utente"
+          }
+        });
+      }
+      
       notificationRef.current?.show({
         message: "Consentimento não concedido. A escuta não será iniciada.",
         type: "info"

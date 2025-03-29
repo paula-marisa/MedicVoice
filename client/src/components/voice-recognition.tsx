@@ -15,13 +15,16 @@ import {
 } from "@/components/ui/alert-dialog";
 import { PrivacyConsentDialog } from "./privacy-consent-dialog";
 import { RecordingIndicator } from "./recording-indicator";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
 interface VoiceRecognitionProps {
   onTranscriptionComplete: (text: string, field: string) => void;
   notificationRef: React.RefObject<any>;
+  patientProcessNumber?: string; // Opcional: número do processo do paciente, se já disponível
 }
 
-export function VoiceRecognition({ onTranscriptionComplete, notificationRef }: VoiceRecognitionProps) {
+export function VoiceRecognition({ onTranscriptionComplete, notificationRef, patientProcessNumber }: VoiceRecognitionProps) {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [targetField, setTargetField] = useState("diagnosis");
@@ -30,10 +33,73 @@ export function VoiceRecognition({ onTranscriptionComplete, notificationRef }: V
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [showPrivacyConsent, setShowPrivacyConsent] = useState(false);
   const [hasDoctorConsent, setHasDoctorConsent] = useState(false);
+  const [processNumber, setProcessNumber] = useState<string>("");
   
   const recognitionRef = useRef<any | null>(null);
   const timerRef = useRef<number | null>(null);
   const transcriptRef = useRef<string>("");
+  
+  // Inicializar o processo com o valor passado via props, se disponível
+  useEffect(() => {
+    if (patientProcessNumber) {
+      setProcessNumber(patientProcessNumber);
+    }
+  }, [patientProcessNumber]);
+  
+  // Verificar se já há consentimento para este médico/dispositivo
+  const checkConsentQuery = useQuery({
+    queryKey: ['/api/patient-consents', processNumber, 'voice_dictation'],
+    queryFn: async () => {
+      if (!processNumber) return null;
+      try {
+        const response = await fetch(`/api/patient-consents/${processNumber}/voice_dictation`, {
+          credentials: 'include'
+        });
+        if (response.status === 404) {
+          return { consentExists: false };
+        }
+        if (!response.ok) {
+          throw new Error('Erro ao verificar consentimento');
+        }
+        return response.json();
+      } catch (error) {
+        console.error('Erro ao verificar consentimento:', error);
+        return { consentExists: false };
+      }
+    },
+    enabled: !!processNumber, // Só executa se houver um número de processo
+  });
+
+  // Mutação para salvar o consentimento no banco de dados
+  const createConsentMutation = useMutation({
+    mutationFn: async (consentData: any) => {
+      const res = await apiRequest('POST', '/api/patient-consents', consentData);
+      return res.json();
+    },
+    onSuccess: () => {
+      console.log('Consentimento do médico salvo com sucesso no servidor');
+    },
+    onError: (error) => {
+      console.error('Erro ao salvar consentimento do médico:', error);
+      notificationRef.current?.show({
+        message: "Erro ao registrar seu consentimento. Contate o suporte técnico.",
+        type: "error"
+      });
+    }
+  });
+  
+  // Efeito para atualizar o estado de consentimento quando a consulta retornar
+  useEffect(() => {
+    if (checkConsentQuery.data) {
+      const consentData = checkConsentQuery.data;
+      if (consentData?.data?.consentExists) {
+        setHasDoctorConsent(consentData.data.consentGranted);
+        console.log('Consentimento do médico já registrado:', consentData.data.consentGranted ? 'Concedido' : 'Negado');
+      } else {
+        setHasDoctorConsent(false);
+      }
+    }
+  }, [checkConsentQuery.data]);
 
   // Format time as MM:SS
   const formattedTime = () => {
@@ -268,6 +334,22 @@ export function VoiceRecognition({ onTranscriptionComplete, notificationRef }: V
     setHasDoctorConsent(consented);
     
     if (consented) {
+      // Se o consentimento foi concedido, salvar no banco de dados (se houver identificação de paciente)
+      const currentProcessNumber = processNumber || `SELF-${Date.now()}`; // Fallback temporário
+      
+      // Registrar o consentimento no banco de dados
+      createConsentMutation.mutate({
+        processNumber: currentProcessNumber,
+        consentType: "voice_dictation",
+        consentGranted: true,
+        consentDetails: {
+          purpose: "Transcrição de voz do médico para relatório",
+          dataTypes: ["voz do médico", "texto transcrito"],
+          retentionPeriod: "90 dias",
+          storedIn: "base de dados interna"
+        }
+      });
+      
       // Se o consentimento foi concedido, iniciar gravação
       notificationRef.current?.show({
         message: "Consentimento RGPD/LGPD obtido com sucesso",
@@ -275,6 +357,18 @@ export function VoiceRecognition({ onTranscriptionComplete, notificationRef }: V
       });
       startRecording();
     } else {
+      // Se não consentiu, registrar a rejeição para fins de auditoria RGPD
+      if (processNumber) {
+        createConsentMutation.mutate({
+          processNumber: processNumber,
+          consentType: "voice_dictation",
+          consentGranted: false,
+          consentDetails: {
+            reason: "Consentimento negado pelo médico"
+          }
+        });
+      }
+      
       notificationRef.current?.show({
         message: "Consentimento não concedido. A gravação não será iniciada.",
         type: "info"

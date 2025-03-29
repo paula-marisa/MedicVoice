@@ -1,9 +1,10 @@
 import { 
-  users, medicalReports, auditLogs, communicationLogs,
+  users, medicalReports, auditLogs, communicationLogs, patientConsents,
   type User, type InsertUser, 
   type MedicalReport, type InsertMedicalReport,
   type AuditLog, type InsertAuditLog,
-  type CommunicationLog, type InsertCommunicationLog
+  type CommunicationLog, type InsertCommunicationLog,
+  type PatientConsent, type InsertPatientConsent
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and } from "drizzle-orm";
@@ -37,6 +38,12 @@ export interface IStorage {
   // Communication log methods
   createCommunicationLog(log: InsertCommunicationLog): Promise<CommunicationLog>;
   getCommunicationLogsByReportId(reportId: number): Promise<CommunicationLog[]>;
+  
+  // Patient consent methods
+  createPatientConsent(consent: InsertPatientConsent): Promise<PatientConsent>;
+  getPatientConsent(id: number): Promise<PatientConsent | undefined>;
+  getPatientConsentByProcessNumber(processNumber: string, consentType: string): Promise<PatientConsent | undefined>;
+  updatePatientConsent(id: number, consent: Partial<InsertPatientConsent>): Promise<PatientConsent | undefined>;
   
   // Session store
   sessionStore: SessionStore;
@@ -170,6 +177,44 @@ export class DatabaseStorage implements IStorage {
       .from(communicationLogs)
       .where(eq(communicationLogs.reportId, reportId))
       .orderBy(desc(communicationLogs.timestamp));
+  }
+
+  // Patient consent methods
+  async createPatientConsent(consent: InsertPatientConsent): Promise<PatientConsent> {
+    const [newConsent] = await db.insert(patientConsents).values(consent).returning();
+    return newConsent;
+  }
+
+  async getPatientConsent(id: number): Promise<PatientConsent | undefined> {
+    const [consent] = await db.select().from(patientConsents).where(eq(patientConsents.id, id));
+    return consent;
+  }
+
+  async getPatientConsentByProcessNumber(processNumber: string, consentType: string): Promise<PatientConsent | undefined> {
+    const [consent] = await db
+      .select()
+      .from(patientConsents)
+      .where(
+        and(
+          eq(patientConsents.processNumber, processNumber),
+          eq(patientConsents.consentType, consentType),
+          eq(patientConsents.consentGranted, true)
+        )
+      )
+      .orderBy(desc(patientConsents.consentDate))
+      .limit(1);
+    
+    return consent;
+  }
+
+  async updatePatientConsent(id: number, consentData: Partial<InsertPatientConsent>): Promise<PatientConsent | undefined> {
+    const [updatedConsent] = await db
+      .update(patientConsents)
+      .set(consentData)
+      .where(eq(patientConsents.id, id))
+      .returning();
+    
+    return updatedConsent;
   }
 }
 
