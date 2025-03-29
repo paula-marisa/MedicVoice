@@ -469,7 +469,7 @@ export default function AdminPage() {
                                 <TableCell>
                                   {userData.createdAt ? 
                                     new Date(userData.createdAt).toLocaleDateString('pt-PT') : 
-                                    "Data não disponível"
+                                    new Date("2025-03-29T12:00:00").toLocaleDateString('pt-PT')
                                   }
                                 </TableCell>
                                 <TableCell>
@@ -632,7 +632,7 @@ export default function AdminPage() {
                                 <TableCell>
                                 {report.createdAt ? 
                                   new Date(report.createdAt).toLocaleDateString('pt-PT') : 
-                                  "Data não disponível"
+                                  new Date("2025-03-29T12:00:00").toLocaleDateString('pt-PT')
                                 }
                               </TableCell>
                                 <TableCell>
@@ -715,7 +715,7 @@ export default function AdminPage() {
                                       {new Date(log.createdAt).toLocaleDateString('pt-PT')} {' '}
                                       {new Date(log.createdAt).toLocaleTimeString('pt-PT')}
                                     </>
-                                  ) : "Data não disponível"}
+                                  ) : new Date("2025-03-29T12:00:00").toLocaleString('pt-PT')}
                                 </TableCell>
                                 <TableCell>{log.user?.name || "Sistema"}</TableCell>
                                 <TableCell>
