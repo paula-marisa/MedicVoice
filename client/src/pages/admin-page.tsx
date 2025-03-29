@@ -27,9 +27,9 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-// Esquema de validação para registro de usuários pelo admin
+// Esquema de validação para registo de utilizadores pelo admin
 const registerUserSchema = z.object({
-  username: z.string().min(3, "Usuário deve ter pelo menos 3 caracteres"),
+  username: z.string().min(3, "Utilizador deve ter pelo menos 3 caracteres"),
   password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
   name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
   role: z.string().min(1, "Função é obrigatória"),
@@ -73,7 +73,7 @@ export default function AdminPage() {
     }
   }, [user, setLocation, toast]);
 
-  // Formulário de registro de usuários
+  // Formulário de registo de utilizadores
   const registerForm = useForm<RegisterUserValues>({
     resolver: zodResolver(registerUserSchema),
     defaultValues: {
@@ -85,7 +85,7 @@ export default function AdminPage() {
     }
   });
 
-  // Consulta para obter a lista de usuários
+  // Consulta para obter a lista de utilizadores
   const { 
     data: usersData, 
     isLoading: usersLoading,
@@ -99,7 +99,7 @@ export default function AdminPage() {
       });
       
       if (!res.ok) {
-        throw new Error("Erro ao obter lista de usuários");
+        throw new Error("Erro ao obter lista de utilizadores");
       }
       
       const data = await res.json();
@@ -215,7 +215,7 @@ export default function AdminPage() {
     }
   };
 
-  // Função para registrar um novo usuário
+  // Função para registar um novo utilizador
   const handleRegisterUser = (data: RegisterUserValues) => {
     registerMutation.mutate(data, {
       onSuccess: () => {
@@ -246,7 +246,7 @@ export default function AdminPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <h2 className="text-xl font-medium">Carregando informações do usuário...</h2>
+          <h2 className="text-xl font-medium">Carregando informações do utilizador...</h2>
         </div>
       </div>
     );
@@ -273,7 +273,7 @@ export default function AdminPage() {
           <div className="mb-6">
             <h2 className="text-2xl font-bold mb-2">Bem-vindo, {user.name}</h2>
             <p className="text-muted-foreground">
-              Este é o painel administrativo do sistema de relatórios médicos. Aqui, você pode gerenciar usuários, revisar relatórios médicos e acompanhar todas as atividades do sistema.
+              Este é o painel administrativo do sistema de relatórios médicos. Aqui, podes gerir utilizadores, consultar relatórios médicos e acompanhar todas as atividades do sistema.
             </p>
           </div>
           
@@ -281,11 +281,11 @@ export default function AdminPage() {
             <TabsList className="grid w-full grid-cols-5 mb-8">
               <TabsTrigger value="register">
                 <UserPlus className="h-4 w-4 mr-2" />
-                Registrar Usuários
+                Registar Utilizadores
               </TabsTrigger>
               <TabsTrigger value="users">
                 <User className="h-4 w-4 mr-2" />
-                Gerenciar Usuários
+                Gerir Utilizadores
               </TabsTrigger>
               <TabsTrigger value="patients">
                 <Hospital className="h-4 w-4 mr-2" />
@@ -305,9 +305,9 @@ export default function AdminPage() {
             <TabsContent value="register">
               <Card>
                 <CardHeader>
-                  <CardTitle>Registrar Novo Usuário</CardTitle>
+                  <CardTitle>Registar Novo Utilizador</CardTitle>
                   <CardDescription>
-                    Cadastre novos médicos, enfermeiros ou administradores no sistema.
+                    Registe novos médicos, enfermeiros ou administradores no sistema.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -327,14 +327,14 @@ export default function AdminPage() {
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="register-username">Usuário</Label>
+                      <Label htmlFor="register-username">Utilizador</Label>
                       <div className="relative">
                         <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400" size={18} />
                         <Input 
                           id="register-username" 
                           className="pl-10"
                           {...registerForm.register("username")} 
-                          placeholder="Escolha um nome de usuário" 
+                          placeholder="Escolha um nome de utilizador" 
                         />
                       </div>
                       {registerForm.formState.errors.username && (
@@ -406,7 +406,7 @@ export default function AdminPage() {
                       <div className="bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200 p-3 rounded">
                         {registerMutation.error instanceof Error 
                           ? registerMutation.error.message 
-                          : "Erro ao registrar usuário. Verifique os dados e tente novamente."}
+                          : "Erro ao registar utilizador. Verifique os dados e tente novamente."}
                       </div>
                     )}
                     
@@ -415,7 +415,7 @@ export default function AdminPage() {
                       className="w-full" 
                       disabled={registerMutation.isPending}
                     >
-                      {registerMutation.isPending ? "Registrando..." : "Registrar Usuário"}
+                      {registerMutation.isPending ? "A registar..." : "Registar Utilizador"}
                     </Button>
                   </form>
                 </CardContent>
@@ -426,9 +426,9 @@ export default function AdminPage() {
             <TabsContent value="users">
               <Card>
                 <CardHeader>
-                  <CardTitle>Gerenciar Usuários</CardTitle>
+                  <CardTitle>Gerir Utilizadores</CardTitle>
                   <CardDescription>
-                    Visualize e gerencie todos os usuários cadastrados no sistema.
+                    Visualize e gira todos os utilizadores registados no sistema.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -442,7 +442,7 @@ export default function AdminPage() {
                         <TableHeader>
                           <TableRow>
                             <TableHead>Nome</TableHead>
-                            <TableHead>Usuário</TableHead>
+                            <TableHead>Utilizador</TableHead>
                             <TableHead>Função</TableHead>
                             <TableHead>Especialidade</TableHead>
                             <TableHead>Data de Criação</TableHead>
@@ -473,18 +473,18 @@ export default function AdminPage() {
                                   <Button 
                                     variant="ghost" 
                                     size="sm"
-                                    disabled={userData.id === user.id} // Não pode resetar própria senha
+                                    disabled={userData.id === user.id} // Não pode redefinir a própria palavra-passe
                                     onClick={() => {
-                                      // Aqui implementaríamos a função para resetar senha
+                                      // Aqui implementaríamos a função para redefinir palavra-passe
                                       toast({
                                         title: "Função em desenvolvimento",
-                                        description: "A funcionalidade de reset de senha será implementada em breve.",
+                                        description: "A funcionalidade de redefinição de palavra-passe será implementada em breve.",
                                         variant: "default"
                                       });
                                     }}
                                   >
                                     <Key className="h-4 w-4 mr-1" />
-                                    Resetar Senha
+                                    Redefinir Palavra-passe
                                   </Button>
                                 </TableCell>
                               </TableRow>
@@ -492,7 +492,7 @@ export default function AdminPage() {
                           ) : (
                             <TableRow>
                               <TableCell colSpan={6} className="text-center py-4">
-                                Nenhum usuário encontrado.
+                                Nenhum utilizador encontrado.
                               </TableCell>
                             </TableRow>
                           )}
@@ -562,7 +562,7 @@ export default function AdminPage() {
                       {isAddingPatients ? (
                         <span className="flex items-center">
                           <div className="animate-spin h-4 w-4 mr-2 border-b-2 border-current rounded-full"></div>
-                          Criando utentes...
+                          A criar utentes...
                         </span>
                       ) : (
                         "Criar Utentes de Teste"
@@ -572,7 +572,7 @@ export default function AdminPage() {
                     <div className="text-sm text-muted-foreground">
                       <p className="italic">
                         Nota: Os dados de teste são criados apenas para fins de demonstração. 
-                        Cada utente será registrado com um relatório médico em rascunho.
+                        Cada utente será registado com um relatório médico em rascunho.
                       </p>
                     </div>
                   </div>
@@ -690,7 +690,7 @@ export default function AdminPage() {
                         <TableHeader>
                           <TableRow>
                             <TableHead>Data/Hora</TableHead>
-                            <TableHead>Usuário</TableHead>
+                            <TableHead>Utilizador</TableHead>
                             <TableHead>Ação</TableHead>
                             <TableHead>Recurso</TableHead>
                             <TableHead>IP</TableHead>
