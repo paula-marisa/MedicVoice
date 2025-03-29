@@ -258,11 +258,6 @@ export default function AdminPage() {
             <ClipboardList className="h-8 w-8 text-primary-500 mr-2" />
             <h1 className="text-xl font-semibold">Painel Administrativo</h1>
           </div>
-          <div className="flex items-center space-x-4">
-            <Button variant="outline" size="sm" onClick={() => setLocation("/")}>
-              Voltar para o sistema
-            </Button>
-          </div>
         </div>
       </header>
       

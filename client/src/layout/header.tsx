@@ -81,7 +81,7 @@ export function Header() {
                     <span>Configurações</span>
                   </DropdownMenuItem>
                   
-                  {user && user.role === "admin" && (
+                  {user && user.role === "admin" && window.location.pathname !== "/admin" && (
                     <DropdownMenuItem asChild className="cursor-pointer">
                       <Link href="/admin">
                         <ShieldCheck className="mr-2 h-4 w-4" />
