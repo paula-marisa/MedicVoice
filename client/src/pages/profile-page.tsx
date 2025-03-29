@@ -48,6 +48,10 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState("profile");
   const [isUploading, setIsUploading] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -154,6 +158,78 @@ export default function ProfilePage() {
       .join("")
       .toUpperCase()
       .slice(0, 2);
+  };
+  
+  // Função para lidar com a alteração de senha
+  const handlePasswordChange = async () => {
+    // Validar os campos
+    if (!currentPassword) {
+      toast({
+        title: "Erro",
+        description: "A senha atual é obrigatória.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    if (!newPassword) {
+      toast({
+        title: "Erro",
+        description: "A nova senha é obrigatória.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    if (newPassword !== confirmPassword) {
+      toast({
+        title: "Erro",
+        description: "A confirmação da senha não confere.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    try {
+      setIsChangingPassword(true);
+      
+      // Chamar API para alterar a senha
+      const response = await apiRequest("/api/change-password", {
+        method: "POST",
+        body: {
+          currentPassword,
+          newPassword
+        }
+      });
+      
+      // Verificar resposta
+      if (response.success) {
+        toast({
+          title: "Senha atualizada",
+          description: "A sua senha foi atualizada com sucesso."
+        });
+        
+        // Limpar os campos
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+      } else {
+        toast({
+          title: "Erro",
+          description: response.message || "Erro ao atualizar a senha.",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error("Erro ao alterar senha:", error);
+      toast({
+        title: "Erro",
+        description: "Ocorreu um erro ao processar sua solicitação.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsChangingPassword(false);
+    }
   };
 
   return (
@@ -515,28 +591,41 @@ export default function ProfilePage() {
                       <div className="grid gap-4 md:grid-cols-2">
                         <div className="space-y-2">
                           <Label htmlFor="current-password">Palavra-passe Atual</Label>
-                          <Input id="current-password" type="password" />
+                          <Input 
+                            id="current-password" 
+                            type="password" 
+                            value={currentPassword}
+                            onChange={(e) => setCurrentPassword(e.target.value)}
+                          />
                         </div>
                         
                         <div className="space-y-2">
                           <Label htmlFor="new-password">Nova Palavra-passe</Label>
-                          <Input id="new-password" type="password" />
+                          <Input 
+                            id="new-password" 
+                            type="password" 
+                            value={newPassword}
+                            onChange={(e) => setNewPassword(e.target.value)}
+                          />
                         </div>
                         
                         <div className="space-y-2">
                           <Label htmlFor="confirm-password">Confirmar Palavra-passe</Label>
-                          <Input id="confirm-password" type="password" />
+                          <Input 
+                            id="confirm-password" 
+                            type="password" 
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                          />
                         </div>
                       </div>
                       
                       <div className="flex justify-end">
-                        <Button onClick={() => {
-                          toast({
-                            title: "Funcionalidade em desenvolvimento",
-                            description: "Esta funcionalidade estará disponível em breve.",
-                          })
-                        }}>
-                          Atualizar Palavra-passe
+                        <Button 
+                          onClick={handlePasswordChange}
+                          disabled={isChangingPassword}
+                        >
+                          {isChangingPassword ? "A atualizar..." : "Atualizar Palavra-passe"}
                         </Button>
                       </div>
                     </div>

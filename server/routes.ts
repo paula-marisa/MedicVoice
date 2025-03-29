@@ -12,7 +12,7 @@ import {
 import { z } from "zod";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
-import { setupAuth, ensureAuthenticated, ensureAdmin, initAdminUser } from "./auth";
+import { setupAuth, ensureAuthenticated, ensureAdmin, initAdminUser, comparePasswords, hashPassword } from "./auth";
 import { log } from "./vite";
 
 // Function to log audit trail
@@ -93,6 +93,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Setup authentication
   setupAuth(app);
+  
+  // Change password route
+  app.post("/api/change-password", ensureAuthenticated, async (req: Request, res: Response) => {
+    try {
+      const { currentPassword, newPassword } = req.body;
+      
+      if (!currentPassword || !newPassword) {
+        return res.status(400).json({
+          success: false,
+          message: "Senha atual e nova senha são obrigatórias"
+        });
+      }
+      
+      // Get the user from the database
+      const user = await storage.getUser(req.user.id);
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "Usuário não encontrado"
+        });
+      }
+      
+      // Check if current password is correct
+      const isCorrectPassword = await comparePasswords(currentPassword, user.password);
+      if (!isCorrectPassword) {
+        return res.status(400).json({
+          success: false,
+          message: "Senha atual incorreta"
+        });
+      }
+      
+      // Hash the new password
+      const hashedNewPassword = await hashPassword(newPassword);
+      
+      // Update the user with the new password
+      await storage.updateUser(user.id, {
+        password: hashedNewPassword
+      });
+      
+      // Log the password change
+      await logAuditTrail(req, "password_change", "user", user.id, {
+        success: true
+      });
+      
+      return res.status(200).json({
+        success: true,
+        message: "Senha atualizada com sucesso"
+      });
+    } catch (error) {
+      log(`Error changing password: ${error}`, "api");
+      return res.status(500).json({
+        success: false,
+        message: "Erro ao atualizar senha"
+      });
+    }
+  });
   
   // Rota para verificar se existem usuários no sistema
   app.get("/api/check-users", async (req, res) => {
