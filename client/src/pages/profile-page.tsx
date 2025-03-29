@@ -194,16 +194,18 @@ export default function ProfilePage() {
       setIsChangingPassword(true);
       
       // Chamar API para alterar a senha
-      const response = await apiRequest("/api/change-password", {
-        method: "POST",
-        body: {
+      const response = await apiRequest(
+        "POST",
+        "/api/change-password",
+        {
           currentPassword,
           newPassword
         }
-      });
+      );
       
       // Verificar resposta
-      if (response.success) {
+      const data = await response.json();
+      if (data.success) {
         toast({
           title: "Senha atualizada",
           description: "A sua senha foi atualizada com sucesso."
@@ -216,7 +218,7 @@ export default function ProfilePage() {
       } else {
         toast({
           title: "Erro",
-          description: response.message || "Erro ao atualizar a senha.",
+          description: data.message || "Erro ao atualizar a senha.",
           variant: "destructive"
         });
       }
