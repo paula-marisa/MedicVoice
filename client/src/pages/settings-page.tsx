@@ -402,20 +402,6 @@ export default function SettingsPage() {
                         </Select>
                       </div>
                       
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-0.5">
-                          <Label htmlFor="high-contrast">Modo de Alto Contraste</Label>
-                          <p className="text-sm text-muted-foreground">
-                            Aumenta o contraste para melhor legibilidade.
-                          </p>
-                        </div>
-                        <Switch 
-                          id="high-contrast" 
-                          checked={highContrast}
-                          onCheckedChange={setHighContrast}
-                        />
-                      </div>
-                      
                       <Separator />
                       <div className="flex items-center justify-between">
                         <div className="space-y-0.5">
