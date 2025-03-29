@@ -8,6 +8,7 @@ import Home from "@/pages/home";
 import AuthPage from "@/pages/auth-page";
 import AdminPage from "@/pages/admin-page";
 import ProfilePage from "@/pages/profile-page";
+import SettingsPage from "@/pages/settings-page";
 import PrivacyPolicy from "@/pages/privacy-policy";
 import { setupTheme } from "@/lib/theme";
 import { AuthProvider } from "./hooks/use-auth";
@@ -23,6 +24,7 @@ function Router() {
       <Route path="/auth" component={AuthPage} />
       <AdminRoute path="/admin" component={AdminPage} />
       <ProtectedRoute path="/profile" component={ProfilePage} />
+      <ProtectedRoute path="/settings" component={SettingsPage} />
       <Route path="/privacy-policy" component={PrivacyPolicy} />
       <Route component={NotFound} />
     </Switch>
