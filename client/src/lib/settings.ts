@@ -561,6 +561,32 @@ export function getTranslations(language: string = "pt") {
   return translations[language as keyof typeof translations] || translations.pt;
 }
 
+// Definir tipo para appTranslations
+declare global {
+  interface Window {
+    appTranslations?: {
+      settingsSaved: string;
+      settingsSavedDesc: string;
+      errorSaving: string;
+      errorSavingDesc: string;
+      permissionRequired: string;
+      permissionRequiredDesc: string;
+      notificationsNotSupported: string;
+      notificationsNotSupportedDesc: string;
+      consentTitle: string;
+      consentText: string;
+      yes: string;
+      no: string;
+      cancel: string;
+      confirm: string;
+      proceed: string;
+      back: string;
+      tryAgain: string;
+      close: string;
+    };
+  }
+}
+
 // Função para aplicar as traduções na interface do usuário
 export function applyTranslations(language: string) {
   const selectedTranslations = getTranslations(language);
@@ -568,9 +594,46 @@ export function applyTranslations(language: string) {
   // Define o atributo lang no documento HTML
   document.documentElement.setAttribute('lang', language);
   
+  // Guarde o idioma anterior para comparação
+  const previousLanguage = localStorage.getItem('currentLanguage') || 'pt';
+  localStorage.setItem('currentLanguage', language);
+  
   // Atualiza todos os textos da interface baseado no idioma selecionado
   if (language === "en") {
-    // Textos principais
+    // Guarda todos os textos de toast e notificações em variáveis globais no window para acesso posterior
+    window.appTranslations = {
+      // Toast de sucesso
+      settingsSaved: "Settings saved",
+      settingsSavedDesc: "Your changes have been successfully saved and applied.",
+      
+      // Toast de erro
+      errorSaving: "Error saving",
+      errorSavingDesc: "An error occurred while saving the settings. Please try again.",
+      
+      // Toast de erro de permissão
+      permissionRequired: "Permission required",
+      permissionRequiredDesc: "Allow notifications in your browser settings to receive alerts.",
+      
+      // Toast de notificações
+      notificationsNotSupported: "Notifications not supported",
+      notificationsNotSupportedDesc: "Your browser does not support desktop notifications.",
+      
+      // Mensagens de consentimento
+      consentTitle: "Privacy Consent",
+      consentText: "To continue using this feature, we need your explicit consent.",
+      
+      // Outras mensagens comuns
+      yes: "Yes",
+      no: "No",
+      cancel: "Cancel",
+      confirm: "Confirm",
+      proceed: "Proceed",
+      back: "Back",
+      tryAgain: "Try Again",
+      close: "Close"
+    };
+    
+    // Textos principais da interface
     document.querySelectorAll('h1, h2, h3, p, label, button').forEach(element => {
       // Ignora elementos dentro de componentes específicos (como select options)
       if (element.closest('[data-no-translate="true"]')) return;
@@ -620,12 +683,80 @@ export function applyTranslations(language: string) {
         
         // Botões
         case "Guardar Alterações": element.textContent = "Save Changes"; break;
+        
+        // Notificações
+        case "Configurações guardadas": element.textContent = "Settings saved"; break;
+        case "As suas alterações foram guardadas com sucesso e aplicadas.": element.textContent = "Your changes have been successfully saved and applied."; break;
+        case "Erro ao guardar": element.textContent = "Error saving"; break;
+        case "Ocorreu um erro ao guardar as configurações. Tente novamente.": element.textContent = "An error occurred while saving the settings. Please try again."; break;
+      }
+    });
+    
+    // Traduz elementos de toast existentes na página
+    document.querySelectorAll('[role="status"]').forEach(toast => {
+      const titleEl = toast.querySelector('[data-toast-title]');
+      const descEl = toast.querySelector('[data-toast-description]');
+      
+      if (titleEl && titleEl.textContent === "Configurações guardadas") {
+        titleEl.textContent = "Settings saved";
+      }
+      
+      if (descEl && descEl.textContent === "As suas alterações foram guardadas com sucesso e aplicadas.") {
+        descEl.textContent = "Your changes have been successfully saved and applied.";
       }
     });
   } else {
-    // Se for português, recarrega a página para redefinir todos os textos originais
-    // Esta é uma solução mais simples, já que o padrão já é português
-    window.location.reload();
+    // Para português
+    window.appTranslations = {
+      // Toast de sucesso
+      settingsSaved: "Configurações guardadas",
+      settingsSavedDesc: "As suas alterações foram guardadas com sucesso e aplicadas.",
+      
+      // Toast de erro
+      errorSaving: "Erro ao guardar",
+      errorSavingDesc: "Ocorreu um erro ao guardar as configurações. Tente novamente.",
+      
+      // Toast de erro de permissão
+      permissionRequired: "Permissão necessária",
+      permissionRequiredDesc: "Permita notificações nas configurações do seu navegador para receber alertas.",
+      
+      // Toast de notificações
+      notificationsNotSupported: "Notificações não suportadas",
+      notificationsNotSupportedDesc: "O seu navegador não suporta notificações de desktop.",
+      
+      // Mensagens de consentimento
+      consentTitle: "Consentimento de Privacidade",
+      consentText: "Para continuar a utilizar esta funcionalidade, precisamos do seu consentimento explícito.",
+      
+      // Outras mensagens comuns
+      yes: "Sim",
+      no: "Não",
+      cancel: "Cancelar",
+      confirm: "Confirmar",
+      proceed: "Prosseguir",
+      back: "Voltar",
+      tryAgain: "Tentar Novamente",
+      close: "Fechar"
+    };
+    
+    // Se estava em outro idioma e mudou para português, recarrega a página
+    if (previousLanguage !== 'pt') {
+      window.location.reload();
+    }
+    
+    // Traduz elementos de toast existentes na página para português
+    document.querySelectorAll('[role="status"]').forEach(toast => {
+      const titleEl = toast.querySelector('[data-toast-title]');
+      const descEl = toast.querySelector('[data-toast-description]');
+      
+      if (titleEl && titleEl.textContent === "Settings saved") {
+        titleEl.textContent = "Configurações guardadas";
+      }
+      
+      if (descEl && descEl.textContent === "Your changes have been successfully saved and applied.") {
+        descEl.textContent = "As suas alterações foram guardadas com sucesso e aplicadas.";
+      }
+    });
   }
   
   // Atualiza os elementos com atributos de data-i18n

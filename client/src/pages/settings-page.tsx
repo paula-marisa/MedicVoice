@@ -157,21 +157,15 @@ export default function SettingsPage() {
       setCurrentTranslations(applyTranslations(language));
       
       // Altera os textos de acordo com o idioma escolhido
-      const messageTitle = language === 'en' ? "Settings saved" : "Configurações guardadas";
-      
-      const messageDescription = language === 'en' ? "Your changes have been successfully saved and applied." : 
-                               "As suas alterações foram guardadas com sucesso e aplicadas.";
-      
-      // Exibe mensagem de sucesso
+      // Exibe mensagem de sucesso usando as traduções globais
       toast({
-        title: messageTitle,
-        description: messageDescription,
+        title: window.appTranslations?.settingsSaved || (language === 'en' ? "Settings saved" : "Configurações guardadas"),
+        description: window.appTranslations?.settingsSavedDesc || (language === 'en' ? "Your changes have been successfully saved and applied." : "As suas alterações foram guardadas com sucesso e aplicadas."),
       });
     } else {
-      const errorTitle = language === 'en' ? "Error saving" : "Erro ao guardar";
-      
-      const errorDescription = language === 'en' ? "An error occurred while saving the settings. Please try again." : 
-                             "Ocorreu um erro ao guardar as configurações. Tente novamente.";
+      // Em caso de erro, usa as traduções globais
+      const errorTitle = window.appTranslations?.errorSaving || (language === 'en' ? "Error saving" : "Erro ao guardar");
+      const errorDescription = window.appTranslations?.errorSavingDesc || (language === 'en' ? "An error occurred while saving the settings. Please try again." : "Ocorreu um erro ao guardar as configurações. Tente novamente.");
       
       toast({
         title: errorTitle,
