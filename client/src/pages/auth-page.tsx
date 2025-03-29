@@ -110,12 +110,7 @@ export default function AuthPage() {
             {/* Formulário */}
             <div>
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className={`grid w-full ${showRegister ? 'grid-cols-2' : 'grid-cols-1'} mb-8`}>
-                  <TabsTrigger value="login">Entrar</TabsTrigger>
-                  {showRegister && (
-                    <TabsTrigger value="register">Registrar</TabsTrigger>
-                  )}
-                </TabsList>
+                {/* Removido botão Entrar no topo, conforme solicitado */}
                 
                 {/* Tab de Login */}
                 <TabsContent value="login">

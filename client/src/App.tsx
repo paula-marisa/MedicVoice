@@ -20,13 +20,22 @@ import { Header } from "@/layout/header";
 function Router() {
   return (
     <Switch>
+      <Route path="/auth">
+        <AuthPage />
+      </Route>
+      <Route path="/login">
+        <AuthPage />
+      </Route>
       <ProtectedRoute path="/" component={Home} />
-      <Route path="/auth" component={AuthPage} />
       <AdminRoute path="/admin" component={AdminPage} />
       <ProtectedRoute path="/profile" component={ProfilePage} />
       <ProtectedRoute path="/settings" component={SettingsPage} />
-      <Route path="/privacy-policy" component={PrivacyPolicy} />
-      <Route component={NotFound} />
+      <Route path="/privacy-policy">
+        <PrivacyPolicy />
+      </Route>
+      <Route>
+        <NotFound />
+      </Route>
     </Switch>
   );
 }
