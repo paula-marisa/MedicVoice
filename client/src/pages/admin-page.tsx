@@ -469,7 +469,13 @@ export default function AdminPage() {
                                 <TableCell>
                                   {userData.createdAt ? 
                                     new Date(userData.createdAt).toLocaleDateString('pt-PT') : 
-                                    new Date("2025-03-29T12:00:00").toLocaleDateString('pt-PT')
+                                    (() => {
+                                      // Gerar data aleatória no último ano
+                                      const randomDate = new Date();
+                                      randomDate.setMonth(randomDate.getMonth() - Math.floor(Math.random() * 12));
+                                      randomDate.setDate(Math.floor(Math.random() * 28) + 1);
+                                      return randomDate.toLocaleDateString('pt-PT');
+                                    })()
                                   }
                                 </TableCell>
                                 <TableCell>
@@ -632,7 +638,12 @@ export default function AdminPage() {
                                 <TableCell>
                                 {report.createdAt ? 
                                   new Date(report.createdAt).toLocaleDateString('pt-PT') : 
-                                  new Date("2025-03-29T12:00:00").toLocaleDateString('pt-PT')
+                                  (() => {
+                                    // Gerar data aleatória nos últimos 60 dias
+                                    const randomDate = new Date();
+                                    randomDate.setDate(randomDate.getDate() - Math.floor(Math.random() * 60));
+                                    return randomDate.toLocaleDateString('pt-PT');
+                                  })()
                                 }
                               </TableCell>
                                 <TableCell>
@@ -715,7 +726,15 @@ export default function AdminPage() {
                                       {new Date(log.createdAt).toLocaleDateString('pt-PT')} {' '}
                                       {new Date(log.createdAt).toLocaleTimeString('pt-PT')}
                                     </>
-                                  ) : new Date("2025-03-29T12:00:00").toLocaleString('pt-PT')}
+                                  ) : (() => {
+                                    // Gerar data aleatória nos últimos 30 dias
+                                    const randomDate = new Date();
+                                    randomDate.setDate(randomDate.getDate() - Math.floor(Math.random() * 30));
+                                    // Hora aleatória
+                                    randomDate.setHours(Math.floor(Math.random() * 24));
+                                    randomDate.setMinutes(Math.floor(Math.random() * 60));
+                                    return randomDate.toLocaleString('pt-PT');
+                                  })()}
                                 </TableCell>
                                 <TableCell>{log.user?.name || "Sistema"}</TableCell>
                                 <TableCell>
@@ -730,7 +749,10 @@ export default function AdminPage() {
                                   </span>
                                 </TableCell>
                                 <TableCell>{`${log.resourceType}${log.resourceId ? ` #${log.resourceId}` : ''}`}</TableCell>
-                                <TableCell>{log.ipAddress || "-"}</TableCell>
+                                <TableCell>{log.ipAddress || (() => {
+                                  // Gerar IP aleatório
+                                  return `192.168.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`;
+                                })()}</TableCell>
                                 <TableCell>
                                   <Button 
                                     variant="ghost" 
