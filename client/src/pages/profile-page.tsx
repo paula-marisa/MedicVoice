@@ -47,6 +47,7 @@ export default function ProfilePage() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("profile");
   const [isUploading, setIsUploading] = useState(false);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -117,19 +118,31 @@ export default function ProfilePage() {
     if (files && files.length > 0) {
       setIsUploading(true);
       
-      // Simulação de upload
-      setTimeout(() => {
-        setIsUploading(false);
-        toast({
-          title: "Foto atualizada",
-          description: "A sua foto de perfil foi atualizada com sucesso.",
-        });
-        
-        // Limpa o input para permitir selecionar o mesmo arquivo novamente
-        if (fileInputRef.current) {
-          fileInputRef.current.value = '';
+      const file = files[0];
+      const reader = new FileReader();
+      
+      reader.onload = (e) => {
+        // Quando o arquivo for lido, atualize o estado da imagem
+        if (e.target?.result) {
+          setProfileImage(e.target.result as string);
+          
+          setTimeout(() => {
+            setIsUploading(false);
+            toast({
+              title: "Foto atualizada",
+              description: "A sua foto de perfil foi atualizada com sucesso.",
+            });
+          }, 800);
         }
-      }, 1500);
+      };
+      
+      // Inicia a leitura do arquivo como uma URL de dados
+      reader.readAsDataURL(file);
+      
+      // Limpa o input para permitir selecionar o mesmo arquivo novamente
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
   
@@ -190,6 +203,9 @@ export default function ProfilePage() {
                     {/* Seção do Avatar/Foto */}
                     <div className="flex flex-col gap-4 md:flex-row md:items-center">
                       <Avatar className="h-24 w-24">
+                        {profileImage ? (
+                          <AvatarImage src={profileImage} alt="Foto de perfil" />
+                        ) : null}
                         <AvatarFallback className="text-xl bg-primary/10 text-primary">
                           {getInitials(user.name)}
                         </AvatarFallback>
