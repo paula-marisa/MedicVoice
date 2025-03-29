@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { TableHeader, TableRow, TableHead, TableBody, TableCell, Table } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Header } from "../layout/header";
 import { 
   User, 
   UserPlus, 
@@ -18,7 +19,8 @@ import {
   Stethoscope,
   Hospital,
   Lock,
-  Key
+  Key,
+  ShieldCheck
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
@@ -252,14 +254,19 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="bg-white dark:bg-neutral-800 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <div className="flex items-center">
-            <ClipboardList className="h-8 w-8 text-primary-500 mr-2" />
-            <h1 className="text-xl font-semibold">Painel Administrativo</h1>
+      {/* Importamos o Header padrão e depois adicionamos conteúdo específico do admin */}
+      <div className="relative">
+        {/* Usar o Header padrão para manter a consistência da interface e os componentes do usuário */}
+        <Header />
+        
+        {/* Banner específico do admin abaixo do header */}
+        <div className="bg-primary/10 py-2">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center">
+            <ShieldCheck className="h-5 w-5 text-primary mr-2" />
+            <span className="font-semibold">Painel Administrativo</span>
           </div>
         </div>
-      </header>
+      </div>
       
       <main className="flex-grow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
