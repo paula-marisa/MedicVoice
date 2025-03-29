@@ -128,7 +128,7 @@ export default function PrivacyPolicy() {
         
         <div className="mt-8 border-t pt-4">
           <p className="text-sm text-muted-foreground">
-            Última atualização: {new Date().toLocaleDateString()}
+            Última atualização: {new Date().toLocaleDateString('pt-PT')}
           </p>
         </div>
       </div>

@@ -193,7 +193,7 @@ export default function Home() {
 
       // Criar um novo documento PDF
       const doc = new jsPDF();
-      const today = new Date().toLocaleDateString('pt-BR');
+      const today = new Date().toLocaleDateString('pt-PT');
       const userName = user?.name || 'Médico não identificado';
 
       // Adicionar título

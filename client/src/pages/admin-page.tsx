@@ -467,7 +467,10 @@ export default function AdminPage() {
                                 </TableCell>
                                 <TableCell>{userData.specialty || "-"}</TableCell>
                                 <TableCell>
-                                  {new Date(userData.createdAt).toLocaleDateString('pt-BR')}
+                                  {userData.createdAt ? 
+                                    new Date(userData.createdAt).toLocaleDateString('pt-PT') : 
+                                    "Data não disponível"
+                                  }
                                 </TableCell>
                                 <TableCell>
                                   <Button 
@@ -626,7 +629,12 @@ export default function AdminPage() {
                                 <TableCell className="font-medium">{report.utenteName || report.patientName}</TableCell>
                                 <TableCell>{report.processNumber}</TableCell>
                                 <TableCell>{report.doctor?.name || "Desconhecido"}</TableCell>
-                                <TableCell>{new Date(report.createdAt).toLocaleDateString('pt-BR')}</TableCell>
+                                <TableCell>
+                                {report.createdAt ? 
+                                  new Date(report.createdAt).toLocaleDateString('pt-PT') : 
+                                  "Data não disponível"
+                                }
+                              </TableCell>
                                 <TableCell>
                                   <span className={`px-2 py-1 rounded-full text-xs ${
                                     report.status === 'completed' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' :
@@ -702,8 +710,12 @@ export default function AdminPage() {
                             auditLogsData.map((log: any) => (
                               <TableRow key={log.id}>
                                 <TableCell>
-                                  {new Date(log.createdAt).toLocaleDateString('pt-BR')} {' '}
-                                  {new Date(log.createdAt).toLocaleTimeString('pt-BR')}
+                                  {log.createdAt ? (
+                                    <>
+                                      {new Date(log.createdAt).toLocaleDateString('pt-PT')} {' '}
+                                      {new Date(log.createdAt).toLocaleTimeString('pt-PT')}
+                                    </>
+                                  ) : "Data não disponível"}
                                 </TableCell>
                                 <TableCell>{log.user?.name || "Sistema"}</TableCell>
                                 <TableCell>
