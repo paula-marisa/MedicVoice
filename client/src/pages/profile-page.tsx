@@ -41,6 +41,8 @@ const medicalProfileSchema = z.object({
 type AdminProfileFormValues = z.infer<typeof adminProfileSchema>;
 type MedicalProfileFormValues = z.infer<typeof medicalProfileSchema>;
 
+import { Header } from "@/layout/header";
+
 export default function ProfilePage() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState("profile");
@@ -125,14 +127,15 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen flex-col bg-background">
+      <Header />
       <main className="flex-1">
         <div className="container max-w-7xl py-6">
           <div className="flex flex-col items-start gap-4 md:flex-row md:justify-between">
             <div>
               <h1 className="text-3xl font-bold tracking-tight">Perfil</h1>
               <p className="text-muted-foreground">
-                Gira e atualize as informações do seu perfil.
+                Atualize e faça a gestão das informações do seu perfil.
               </p>
             </div>
           </div>

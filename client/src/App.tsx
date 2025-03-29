@@ -11,8 +11,10 @@ import ProfilePage from "@/pages/profile-page";
 import PrivacyPolicy from "@/pages/privacy-policy";
 import { setupTheme } from "@/lib/theme";
 import { AuthProvider } from "./hooks/use-auth";
+
 import { ProtectedRoute } from "@/lib/protected-route";
 import { AdminRoute } from "./lib/admin-route";
+import { Header } from "@/layout/header";
 
 function Router() {
   return (
