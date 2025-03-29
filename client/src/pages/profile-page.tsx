@@ -44,7 +44,7 @@ type MedicalProfileFormValues = z.infer<typeof medicalProfileSchema>;
 import { Header } from "@/layout/header";
 
 export default function ProfilePage() {
-  const { user } = useAuth();
+  const { user, updateProfileImage } = useAuth();
   const [activeTab, setActiveTab] = useState("profile");
   const [isUploading, setIsUploading] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
@@ -128,7 +128,10 @@ export default function ProfilePage() {
       reader.onload = (e) => {
         // Quando o arquivo for lido, atualize o estado da imagem
         if (e.target?.result) {
-          setProfileImage(e.target.result as string);
+          const imageUrl = e.target.result as string;
+          setProfileImage(imageUrl);
+          // Atualiza a imagem no contexto de autenticação para ser usado em todo o aplicativo
+          updateProfileImage(imageUrl);
           
           setTimeout(() => {
             setIsUploading(false);

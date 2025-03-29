@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -14,7 +14,7 @@ import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { ClipboardList, User, LogOut, Settings, ShieldCheck } from "lucide-react";
 
 export function Header() {
-  const { user, logoutMutation } = useAuth();
+  const { user, profileImage, logoutMutation } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   
   // Obtém as iniciais do nome do usuário para o avatar
@@ -52,14 +52,27 @@ export function Header() {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                     <Avatar className="h-10 w-10">
-                      <AvatarFallback className="bg-primary/10 text-primary">
-                        {getInitials(user.name)}
-                      </AvatarFallback>
+                      {profileImage ? (
+                        <AvatarImage src={profileImage} alt={user.name} />
+                      ) : (
+                        <AvatarFallback className="bg-primary/10 text-primary">
+                          {getInitials(user.name)}
+                        </AvatarFallback>
+                      )}
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   <div className="flex items-center justify-start gap-2 p-2">
+                    <Avatar className="h-8 w-8">
+                      {profileImage ? (
+                        <AvatarImage src={profileImage} alt={user.name} />
+                      ) : (
+                        <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                          {getInitials(user.name)}
+                        </AvatarFallback>
+                      )}
+                    </Avatar>
                     <div className="flex flex-col space-y-0.5">
                       <p className="text-sm font-medium">{user.name}</p>
                       <p className="text-xs text-muted-foreground">

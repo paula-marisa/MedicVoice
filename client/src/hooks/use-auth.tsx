@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useContext } from "react";
+import { createContext, ReactNode, useContext, useState } from "react";
 import {
   useQuery,
   useMutation,
@@ -15,11 +15,13 @@ type RegisterData = InsertUser;
 // Tipo do contexto de autenticação
 interface AuthContextType {
   user: User | null;
+  profileImage: string | null;
   isLoading: boolean;
   error: Error | null;
   loginMutation: UseMutationResult<User, Error, LoginData>;
   logoutMutation: UseMutationResult<void, Error, void>;
   registerMutation: UseMutationResult<User, Error, RegisterData>;
+  updateProfileImage: (imageUrl: string) => void;
 }
 
 // Criação do contexto
@@ -37,6 +39,9 @@ export function useAuth() {
 // Provider de autenticação
 export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
+  const [profileImage, setProfileImage] = useState<string | null>(
+    localStorage.getItem('profileImage')
+  );
 
   // Query para obter usuário autenticado
   const {
@@ -236,15 +241,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
   });
 
+  // Função para atualizar a imagem de perfil
+  const updateProfileImage = (imageUrl: string) => {
+    setProfileImage(imageUrl);
+    localStorage.setItem('profileImage', imageUrl);
+  };
+
   return (
     <AuthContext.Provider 
       value={{
         user,
+        profileImage,
         isLoading,
         error,
         loginMutation,
         logoutMutation,
         registerMutation,
+        updateProfileImage,
       }}
     >
       {children}
