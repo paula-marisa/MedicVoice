@@ -285,7 +285,7 @@ export default function AdminPage() {
               </TabsTrigger>
               <TabsTrigger value="users">
                 <User className="h-4 w-4 mr-2" />
-                Gerir Utilizadores
+                Faça a Gestão de Utilizadores
               </TabsTrigger>
               <TabsTrigger value="patients">
                 <Hospital className="h-4 w-4 mr-2" />
@@ -426,9 +426,9 @@ export default function AdminPage() {
             <TabsContent value="users">
               <Card>
                 <CardHeader>
-                  <CardTitle>Gerir Utilizadores</CardTitle>
+                  <CardTitle>Gestão de Utilizadores</CardTitle>
                   <CardDescription>
-                    Visualize e gira todos os utilizadores registados no sistema.
+                    Visualize e faça a gestão de todos os utilizadores registados no sistema.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -518,7 +518,7 @@ export default function AdminPage() {
                     <div>
                       <h3 className="text-lg font-medium mb-2">Quantidade de Utentes</h3>
                       <p className="text-sm text-muted-foreground mb-4">
-                        Escolha quantos utentes de teste deseja criar. Serão gerados registros com dados simulados.
+                        Escolha quantos utentes de teste deseja criar. Serão gerados registos com dados simulados.
                       </p>
                       
                       <div className="flex items-center space-x-4">
