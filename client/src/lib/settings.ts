@@ -634,7 +634,7 @@ export function applyTranslations(language: string) {
     };
     
     // Textos principais da interface
-    document.querySelectorAll('h1, h2, h3, p, label, button').forEach(element => {
+    document.querySelectorAll('h1, h2, h3, p, label, button, span, legend, option, div.text-sm, div.text-xs').forEach(element => {
       // Ignora elementos dentro de componentes específicos (como select options)
       if (element.closest('[data-no-translate="true"]')) return;
       
@@ -681,8 +681,26 @@ export function applyTranslations(language: string) {
         case "Mostrar Estatísticas": element.textContent = "Show Statistics"; break;
         case "Exibir estatísticas na página inicial.": element.textContent = "Display statistics on the home page."; break;
         
-        // Botões
+        // Opções Administrativas
+        case "Opções Administrativas": element.textContent = "Administrative Options"; break;
+        case "Tempo Limite de Sessão (minutos)": element.textContent = "Session Timeout (minutes)"; break;
+        case "Tempo de inatividade até encerramento automático da sessão.": element.textContent = "Inactivity time until automatic session termination."; break;
+        case "Período de Retenção de Logs (dias)": element.textContent = "Log Retention Period (days)"; break;
+        case "Tempo de retenção dos logs de auditoria no sistema.": element.textContent = "Retention time for audit logs in the system."; break;
+        case "Ativar modo de manutenção": element.textContent = "Enable maintenance mode"; break;
+        case "O modo de manutenção bloqueará o acesso para todos os utilizadores, exceto administradores.": element.textContent = "Maintenance mode will block access for all users except administrators."; break;
+
+        // Formatos de data 
+        case "DD/MM/AAAA (25/03/2025)": element.textContent = "DD/MM/YYYY (25/03/2025)"; break;
+        case "MM/DD/AAAA (03/25/2025)": element.textContent = "MM/DD/YYYY (03/25/2025)"; break;
+        case "AAAA-MM-DD (2025-03-25)": element.textContent = "YYYY-MM-DD (2025-03-25)"; break;
+        case "DD.MM.AAAA (25.03.2025)": element.textContent = "DD.MM.YYYY (25.03.2025)"; break;
+        
+        // Botões e ações
         case "Guardar Alterações": element.textContent = "Save Changes"; break;
+        case "Selecione o idioma": element.textContent = "Select language"; break;
+        case "Selecione o formato de data": element.textContent = "Select date format"; break;
+        case "Selecione o tamanho da fonte": element.textContent = "Select font size"; break;
         
         // Notificações
         case "Configurações guardadas": element.textContent = "Settings saved"; break;
