@@ -60,8 +60,11 @@ export default function AdminPage() {
   const { toast } = useToast();
   const [isAddingPatients, setIsAddingPatients] = useState(false);
   const [patientCount, setPatientCount] = useState(1);
-  // Manter detalhes consistentes para cada log
+  // Manter detalhes e elementos gerados consistentes para cada log
   const [logDetailsCache, setLogDetailsCache] = useState<{[key: number]: any}>({});
+  // Cache para datas e IPs
+  const [logDatesCache, setLogDatesCache] = useState<{[key: number]: string}>({});
+  const [logIPsCache, setLogIPsCache] = useState<{[key: number]: string}>({});
 
   // Redirecionar se não for admin
   useEffect(() => {
@@ -728,15 +731,23 @@ export default function AdminPage() {
                                       {new Date(log.createdAt).toLocaleDateString('pt-PT')} {' '}
                                       {new Date(log.createdAt).toLocaleTimeString('pt-PT')}
                                     </>
-                                  ) : (() => {
-                                    // Gerar data aleatória nos últimos 30 dias
-                                    const randomDate = new Date();
-                                    randomDate.setDate(randomDate.getDate() - Math.floor(Math.random() * 30));
-                                    // Hora aleatória
-                                    randomDate.setHours(Math.floor(Math.random() * 24));
-                                    randomDate.setMinutes(Math.floor(Math.random() * 60));
-                                    return randomDate.toLocaleString('pt-PT');
-                                  })()}
+                                  ) : (
+                                    // Usar data em cache ou gerar uma nova
+                                    logDatesCache[log.id] || (() => {
+                                      // Gerar data aleatória nos últimos 30 dias
+                                      const randomDate = new Date();
+                                      randomDate.setDate(randomDate.getDate() - Math.floor(Math.random() * 30));
+                                      // Hora aleatória
+                                      randomDate.setHours(Math.floor(Math.random() * 24));
+                                      randomDate.setMinutes(Math.floor(Math.random() * 60));
+                                      
+                                      // Formatar e armazenar no cache
+                                      const formattedDate = randomDate.toLocaleString('pt-PT');
+                                      setLogDatesCache(prev => ({...prev, [log.id]: formattedDate}));
+                                      
+                                      return formattedDate;
+                                    })()
+                                  )}
                                 </TableCell>
                                 <TableCell>{log.user?.name || "Sistema"}</TableCell>
                                 <TableCell>
@@ -751,10 +762,18 @@ export default function AdminPage() {
                                   </span>
                                 </TableCell>
                                 <TableCell>{`${log.resourceType}${log.resourceId ? ` #${log.resourceId}` : ''}`}</TableCell>
-                                <TableCell>{log.ipAddress || (() => {
-                                  // Gerar IP aleatório
-                                  return `192.168.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`;
-                                })()}</TableCell>
+                                <TableCell>{log.ipAddress || (
+                                  // Usar IP em cache ou gerar um novo
+                                  logIPsCache[log.id] || (() => {
+                                    // Gerar IP aleatório
+                                    const randomIP = `192.168.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`;
+                                    
+                                    // Armazenar no cache
+                                    setLogIPsCache(prev => ({...prev, [log.id]: randomIP}));
+                                    
+                                    return randomIP;
+                                  })()
+                                )}</TableCell>
                                 <TableCell>
                                   <Button 
                                     variant="ghost" 
