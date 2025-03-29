@@ -210,7 +210,7 @@ export default function SettingsPage() {
             </div>
           </div>
           
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-6" data-no-translate="true">
             <TabsList className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 mb-8">
               <TabsTrigger value="general">
                 <Settings className="h-4 w-4 mr-2" />
