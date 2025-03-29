@@ -85,8 +85,13 @@ export default function AuthPage() {
     registerMutation.mutate(data);
   };
   
-  // Se estiver autenticado, redirecionar para a página inicial
+  // Se estiver autenticado, redirecionar para a página apropriada com base no papel do usuário
   if (!isLoading && user) {
+    // Se for admin, redireciona para o painel administrativo
+    if (user.role === "admin") {
+      return <Redirect to="/admin" />;
+    }
+    // Outros usuários vão para a página inicial
     return <Redirect to="/" />;
   }
   
