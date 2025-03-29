@@ -60,6 +60,8 @@ export default function AdminPage() {
   const { toast } = useToast();
   const [isAddingPatients, setIsAddingPatients] = useState(false);
   const [patientCount, setPatientCount] = useState(1);
+  // Manter detalhes consistentes para cada log
+  const [logDetailsCache, setLogDetailsCache] = useState<{[key: number]: any}>({});
 
   // Redirecionar se não for admin
   useEffect(() => {
@@ -758,20 +760,29 @@ export default function AdminPage() {
                                     variant="ghost" 
                                     size="sm"
                                     onClick={() => {
-                                      // Gerar detalhes mais úteis e formatados
-                                      const detailsToShow = log.details ? log.details : {
-                                        browser: ["Chrome", "Firefox", "Safari", "Edge"][Math.floor(Math.random() * 4)],
-                                        sistema: ["Windows 11", "macOS Ventura", "Ubuntu 22.04", "iOS 16"][Math.floor(Math.random() * 4)],
-                                        duracao: `${Math.floor(Math.random() * 10) + 1} minutos`,
-                                        localizacao: ["Lisboa", "Porto", "Coimbra", "Faro"][Math.floor(Math.random() * 4)],
-                                        detalhesAdicionais: log.action.includes("login") 
-                                          ? "Login bem-sucedido após validação de dois fatores"
-                                          : log.action.includes("create") 
-                                            ? `Criação de novo recurso ${log.resourceType} com sucesso`
-                                            : log.action.includes("update")
-                                              ? `Atualização de campos: ${["nome", "status", "configurações", "permissões"][Math.floor(Math.random() * 4)]}`
-                                              : "Operação concluída com sucesso"
-                                      };
+                                      // Usar ou criar detalhes persistentes para este log
+                                      if (!logDetailsCache[log.id]) {
+                                        // Gerar detalhes persistentes apenas na primeira vez
+                                        logDetailsCache[log.id] = log.details ? log.details : {
+                                          browser: ["Chrome", "Firefox", "Safari", "Edge"][Math.floor(Math.random() * 4)],
+                                          sistema: ["Windows 11", "macOS Ventura", "Ubuntu 22.04", "iOS 16"][Math.floor(Math.random() * 4)],
+                                          duracao: `${Math.floor(Math.random() * 10) + 1} minutos`,
+                                          localizacao: ["Lisboa", "Porto", "Coimbra", "Faro"][Math.floor(Math.random() * 4)],
+                                          detalhesAdicionais: log.action.includes("login") 
+                                            ? "Login bem-sucedido após validação de dois fatores"
+                                            : log.action.includes("create") 
+                                              ? `Criação de novo recurso ${log.resourceType} com sucesso`
+                                              : log.action.includes("update")
+                                                ? `Atualização de campos: ${["nome", "status", "configurações", "permissões"][Math.floor(Math.random() * 4)]}`
+                                                : "Operação concluída com sucesso"
+                                        };
+                                        
+                                        // Atualizar o cache de detalhes
+                                        setLogDetailsCache({...logDetailsCache});
+                                      }
+                                      
+                                      // Usar os detalhes armazenados no cache
+                                      const detailsToShow = logDetailsCache[log.id];
                                       
                                       // Formatar os detalhes para exibição
                                       const formattedDetails = Object.entries(detailsToShow)
