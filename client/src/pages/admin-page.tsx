@@ -637,9 +637,17 @@ export default function AdminPage() {
                           {filteredReports && filteredReports.length > 0 ? (
                             filteredReports.map((report: any) => (
                               <TableRow key={report.id}>
-                                <TableCell className="font-medium">{report.utenteName || report.patientName}</TableCell>
+                                <TableCell className="font-medium">{report.name}</TableCell>
                                 <TableCell>{report.processNumber}</TableCell>
-                                <TableCell>{report.doctor?.name || "Desconhecido"}</TableCell>
+                                <TableCell>
+                                  {report.doctor?.name || 
+                                   (() => {
+                                     // Buscar informações do médico
+                                     const user = usersData?.find(user => user.id === report.userId);
+                                     return user ? `${user.name} (${user.role === 'admin' ? 'Admin' : 'Médico'})` : "Desconhecido";
+                                   })()
+                                  }
+                                </TableCell>
                                 <TableCell>
                                 {report.createdAt ? 
                                   new Date(report.createdAt).toLocaleDateString('pt-PT') : 
@@ -653,11 +661,11 @@ export default function AdminPage() {
                               </TableCell>
                                 <TableCell>
                                   <span className={`px-2 py-1 rounded-full text-xs ${
-                                    report.status === 'completed' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' :
+                                    report.status === 'submitted' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' :
                                     report.status === 'in_progress' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300' :
                                     'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
                                   }`}>
-                                    {report.status === 'completed' ? 'Concluído' : 
+                                    {report.status === 'submitted' ? 'Enviado' : 
                                      report.status === 'in_progress' ? 'Em progresso' : 'Rascunho'}
                                   </span>
                                 </TableCell>

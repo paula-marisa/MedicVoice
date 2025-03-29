@@ -10,6 +10,8 @@ import AdminPage from "@/pages/admin-page";
 import ProfilePage from "@/pages/profile-page";
 import SettingsPage from "@/pages/settings-page";
 import PrivacyPolicy from "@/pages/privacy-policy";
+import ReportView from "@/pages/report-view";
+import ReportAudit from "@/pages/report-audit";
 import { setupTheme } from "@/lib/theme";
 import { AuthProvider } from "./hooks/use-auth";
 
@@ -30,6 +32,8 @@ function Router() {
       <AdminRoute path="/admin" component={AdminPage} />
       <ProtectedRoute path="/profile" component={ProfilePage} />
       <ProtectedRoute path="/settings" component={SettingsPage} />
+      <ProtectedRoute path="/reports/:id" component={ReportView} />
+      <ProtectedRoute path="/reports/:id/audit" component={ReportAudit} />
       <Route path="/privacy-policy">
         <PrivacyPolicy />
       </Route>
