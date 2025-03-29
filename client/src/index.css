@@ -2,6 +2,74 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Estilos para o modo de alto contraste */
+.high-contrast {
+  --background: black;
+  --foreground: white;
+  --text-contrast: white;
+  --border-contrast: white;
+  --card-contrast: #222;
+  
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+.high-contrast h1, 
+.high-contrast h2, 
+.high-contrast h3, 
+.high-contrast h4, 
+.high-contrast h5, 
+.high-contrast h6 {
+  color: var(--text-contrast);
+}
+
+.high-contrast button, 
+.high-contrast input, 
+.high-contrast select, 
+.high-contrast textarea {
+  border-color: var(--border-contrast);
+}
+
+.high-contrast .card {
+  background-color: var(--card-contrast);
+}
+
+/* Modo compacto */
+.compact-mode * {
+  margin: 0.25rem 0;
+  padding: 0.25rem;
+}
+
+.compact-mode .container {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.compact-mode .card {
+  padding: 0.5rem;
+}
+
+/* Estilos para diferentes tamanhos de texto */
+html {
+  font-size: 16px; /* Padrão */
+}
+
+html[data-fontsize="small"] {
+  font-size: 14px;
+}
+
+html[data-fontsize="medium"] {
+  font-size: 16px;
+}
+
+html[data-fontsize="large"] {
+  font-size: 18px;
+}
+
+html[data-fontsize="xl"] {
+  font-size: 20px;
+}
+
 @layer base {
   * {
     @apply border-border;

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { Header } from "@/layout/header";
@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { setTheme as setAppTheme, getTheme } from "@/lib/theme";
 import { 
   Settings, 
   Globe, 
@@ -30,15 +31,32 @@ import {
   Laptop
 } from "lucide-react";
 
+import {
+  getUserSettings,
+  saveUserSettings,
+  applyInterfaceSettings,
+  getTranslations,
+  formatDate,
+  LanguageSettings,
+  InterfaceSettings,
+  NotificationSettings,
+  PrivacySettings,
+  SoundSettings,
+  ReportSettings,
+  AdminSettings,
+  UserSettings
+} from "@/lib/settings";
+
 export default function SettingsPage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("general");
   
-  // Estados para as configurações
+  // Carrega as configurações do usuário do localStorage
+  const [settings, setSettings] = useState<UserSettings | null>(null);
   const [language, setLanguage] = useState("pt");
   const [dateFormat, setDateFormat] = useState("dd/mm/yyyy");
-  const [theme, setTheme] = useState("system");
+  const [theme, setTheme] = useState<"light" | "dark" | "system">("system");
   const [fontSize, setFontSize] = useState("medium");
   const [highContrast, setHighContrast] = useState(false);
   const [notifications, setNotifications] = useState({
@@ -72,12 +90,75 @@ export default function SettingsPage() {
     spellcheck: true,
   });
   
-  // Função para simular o salvamento das configurações
+  // Carrega as configurações do usuário quando o componente montar
+  useEffect(() => {
+    if (user) {
+      const userSettings = getUserSettings(user.id);
+      setSettings(userSettings);
+      
+      // Atualiza os estados com as configurações do usuário
+      setLanguage(userSettings.language.language);
+      setDateFormat(userSettings.language.dateFormat);
+      setTheme(userSettings.language.theme);
+      setFontSize(userSettings.interface.fontSize);
+      setHighContrast(userSettings.interface.highContrast);
+      setDisplay(userSettings.interface);
+      setNotifications(userSettings.notifications);
+      setPrivacy(userSettings.privacy);
+      setSound(userSettings.sound);
+      setReportSettings(userSettings.reports);
+      
+      // Aplica as configurações de interface
+      applyInterfaceSettings(userSettings.interface);
+      
+      // Aplica o tema
+      setAppTheme(userSettings.language.theme);
+    }
+  }, [user]);
+  
+  // Função para salvar as configurações
   const handleSaveSettings = () => {
-    toast({
-      title: "Configurações guardadas",
-      description: "As suas alterações foram guardadas com sucesso.",
-    });
+    if (!user || !settings) return;
+    
+    // Atualiza o objeto de configurações com os estados atuais
+    const updatedSettings: UserSettings = {
+      ...settings,
+      language: {
+        language,
+        dateFormat,
+        theme,
+      },
+      interface: {
+        ...display,
+        fontSize,
+        highContrast,
+      },
+      notifications,
+      privacy,
+      sound,
+      reports: reportSettings,
+    };
+    
+    // Salva as configurações no localStorage
+    const saved = saveUserSettings(user.id, updatedSettings);
+    
+    if (saved) {
+      // Aplica as configurações imediatamente
+      applyInterfaceSettings(updatedSettings.interface);
+      setAppTheme(theme);
+      
+      // Exibe mensagem de sucesso
+      toast({
+        title: "Configurações guardadas",
+        description: "As suas alterações foram guardadas com sucesso e aplicadas.",
+      });
+    } else {
+      toast({
+        title: "Erro ao guardar",
+        description: "Ocorreu um erro ao guardar as configurações. Tente novamente.",
+        variant: "destructive",
+      });
+    }
   };
   
   if (!user) return null;
@@ -185,7 +266,7 @@ export default function SettingsPage() {
                         <Label>Tema</Label>
                         <RadioGroup 
                           value={theme} 
-                          onValueChange={setTheme} 
+                          onValueChange={(value) => setTheme(value as "light" | "dark" | "system")} 
                           className="flex space-x-4"
                         >
                           <div className="flex items-center space-x-2">
