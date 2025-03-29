@@ -568,6 +568,66 @@ export function applyTranslations(language: string) {
   // Define o atributo lang no documento HTML
   document.documentElement.setAttribute('lang', language);
   
+  // Atualiza todos os textos da interface baseado no idioma selecionado
+  if (language === "en") {
+    // Textos principais
+    document.querySelectorAll('h1, h2, h3, p, label, button').forEach(element => {
+      // Ignora elementos dentro de componentes específicos (como select options)
+      if (element.closest('[data-no-translate="true"]')) return;
+      
+      // Tradução de textos comuns
+      switch(element.textContent?.trim()) {
+        // Cabeçalhos
+        case "Configurações": element.textContent = "Settings"; break;
+        case "Personalize o sistema de acordo com as suas preferências.": element.textContent = "Customize the system according to your preferences."; break;
+        case "Configurações Gerais": element.textContent = "General Settings"; break;
+        case "Configure as opções básicas do sistema.": element.textContent = "Configure the basic system options."; break;
+        case "Configurações de Interface": element.textContent = "Interface Settings"; break;
+        case "Personalize a aparência do sistema.": element.textContent = "Customize the system appearance."; break;
+        case "Configurações de Notificações": element.textContent = "Notification Settings"; break;
+        case "Determine como e quando deseja receber notificações.": element.textContent = "Determine how and when you want to receive notifications."; break;
+        case "Configurações de Privacidade": element.textContent = "Privacy Settings"; break;
+        case "Gerencie suas configurações de privacidade e proteção de dados.": element.textContent = "Manage your privacy and data protection settings."; break;
+        case "Configurações de Som": element.textContent = "Sound Settings"; break;
+        case "Ajuste as configurações de áudio do sistema.": element.textContent = "Adjust the system's audio settings."; break;
+        case "Configurações de Relatórios": element.textContent = "Report Settings"; break;
+        case "Personalize como os relatórios são criados e gerenciados.": element.textContent = "Customize how reports are created and managed."; break;
+        
+        // Tabs
+        case "Geral": element.textContent = "General"; break;
+        case "Interface": element.textContent = "Interface"; break;
+        case "Notificações": element.textContent = "Notifications"; break;
+        case "Privacidade": element.textContent = "Privacy"; break;
+        case "Som": element.textContent = "Sound"; break;
+        case "Relatórios": element.textContent = "Reports"; break;
+        
+        // Campos
+        case "Idioma": element.textContent = "Language"; break;
+        case "Idioma em que o sistema será exibido.": element.textContent = "Language in which the system will be displayed."; break;
+        case "Formato de Data": element.textContent = "Date Format"; break;
+        case "Como as datas serão exibidas no sistema.": element.textContent = "How dates will be displayed in the system."; break;
+        case "Tema": element.textContent = "Theme"; break;
+        case "Claro": element.textContent = "Light"; break;
+        case "Escuro": element.textContent = "Dark"; break;
+        case "Sistema": element.textContent = "System"; break;
+        case "Tamanho da Fonte": element.textContent = "Font Size"; break;
+        case "Pequeno": element.textContent = "Small"; break;
+        case "Médio": element.textContent = "Medium"; break;
+        case "Grande": element.textContent = "Large"; break;
+        case "Extra grande": element.textContent = "Extra Large"; break;
+        case "Mostrar Estatísticas": element.textContent = "Show Statistics"; break;
+        case "Exibir estatísticas na página inicial.": element.textContent = "Display statistics on the home page."; break;
+        
+        // Botões
+        case "Guardar Alterações": element.textContent = "Save Changes"; break;
+      }
+    });
+  } else {
+    // Se for português, recarrega a página para redefinir todos os textos originais
+    // Esta é uma solução mais simples, já que o padrão já é português
+    window.location.reload();
+  }
+  
   // Atualiza os elementos com atributos de data-i18n
   document.querySelectorAll('[data-i18n]').forEach(element => {
     const key = element.getAttribute('data-i18n');

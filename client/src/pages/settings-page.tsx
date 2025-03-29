@@ -157,13 +157,9 @@ export default function SettingsPage() {
       setCurrentTranslations(applyTranslations(language));
       
       // Altera os textos de acordo com o idioma escolhido
-      const messageTitle = language === 'en' ? "Settings saved" : 
-                          language === 'es' ? "Configuración guardada" : 
-                          language === 'fr' ? "Paramètres enregistrés" : "Configurações guardadas";
+      const messageTitle = language === 'en' ? "Settings saved" : "Configurações guardadas";
       
       const messageDescription = language === 'en' ? "Your changes have been successfully saved and applied." : 
-                               language === 'es' ? "Sus cambios han sido guardados y aplicados con éxito." : 
-                               language === 'fr' ? "Vos modifications ont été enregistrées et appliquées avec succès." : 
                                "As suas alterações foram guardadas com sucesso e aplicadas.";
       
       // Exibe mensagem de sucesso
@@ -172,13 +168,9 @@ export default function SettingsPage() {
         description: messageDescription,
       });
     } else {
-      const errorTitle = language === 'en' ? "Error saving" : 
-                       language === 'es' ? "Error al guardar" : 
-                       language === 'fr' ? "Erreur lors de l'enregistrement" : "Erro ao guardar";
+      const errorTitle = language === 'en' ? "Error saving" : "Erro ao guardar";
       
       const errorDescription = language === 'en' ? "An error occurred while saving the settings. Please try again." : 
-                             language === 'es' ? "Se produjo un error al guardar la configuración. Inténtelo de nuevo." : 
-                             language === 'fr' ? "Une erreur s'est produite lors de l'enregistrement des paramètres. Veuillez réessayer." : 
                              "Ocorreu um erro ao guardar as configurações. Tente novamente.";
       
       toast({
@@ -260,12 +252,9 @@ export default function SettingsPage() {
                           <SelectTrigger id="language" className="w-full">
                             <SelectValue placeholder="Selecione o idioma" />
                           </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="pt">Português (Portugal)</SelectItem>
-                            <SelectItem value="pt-br">Português (Brasil)</SelectItem>
+                          <SelectContent data-no-translate="true">
+                            <SelectItem value="pt">Português</SelectItem>
                             <SelectItem value="en">English</SelectItem>
-                            <SelectItem value="es">Español</SelectItem>
-                            <SelectItem value="fr">Français</SelectItem>
                           </SelectContent>
                         </Select>
                         <p className="text-sm text-muted-foreground">
