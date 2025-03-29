@@ -221,27 +221,7 @@ export default function SettingsPage() {
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="language">Idioma</Label>
-                        <Select 
-                          value={language} 
-                          onValueChange={setLanguage}
-                        >
-                          <SelectTrigger id="language" className="w-full">
-                            <SelectValue placeholder="Selecione o idioma" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="pt">Português (Portugal)</SelectItem>
-                            <SelectItem value="pt-br">Português (Brasil)</SelectItem>
-                            <SelectItem value="en">English</SelectItem>
-                            <SelectItem value="es">Español</SelectItem>
-                            <SelectItem value="fr">Français</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <p className="text-sm text-muted-foreground">
-                          Idioma em que o sistema será exibido.
-                        </p>
-                      </div>
+                      {/* Opção de idioma removida conforme solicitado */}
                       
                       <div className="space-y-2">
                         <Label htmlFor="date-format">Formato de Data</Label>
