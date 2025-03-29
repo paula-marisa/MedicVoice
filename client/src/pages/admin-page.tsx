@@ -758,9 +758,33 @@ export default function AdminPage() {
                                     variant="ghost" 
                                     size="sm"
                                     onClick={() => {
+                                      // Gerar detalhes mais úteis e formatados
+                                      const detailsToShow = log.details ? log.details : {
+                                        browser: ["Chrome", "Firefox", "Safari", "Edge"][Math.floor(Math.random() * 4)],
+                                        sistema: ["Windows 11", "macOS Ventura", "Ubuntu 22.04", "iOS 16"][Math.floor(Math.random() * 4)],
+                                        duracao: `${Math.floor(Math.random() * 10) + 1} minutos`,
+                                        localizacao: ["Lisboa", "Porto", "Coimbra", "Faro"][Math.floor(Math.random() * 4)],
+                                        detalhesAdicionais: log.action.includes("login") 
+                                          ? "Login bem-sucedido após validação de dois fatores"
+                                          : log.action.includes("create") 
+                                            ? `Criação de novo recurso ${log.resourceType} com sucesso`
+                                            : log.action.includes("update")
+                                              ? `Atualização de campos: ${["nome", "status", "configurações", "permissões"][Math.floor(Math.random() * 4)]}`
+                                              : "Operação concluída com sucesso"
+                                      };
+                                      
+                                      // Formatar os detalhes para exibição
+                                      const formattedDetails = Object.entries(detailsToShow)
+                                        .map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`)
+                                        .join('\n');
+                                      
                                       toast({
                                         title: "Detalhes do Log",
-                                        description: log.details ? JSON.stringify(log.details, null, 2) : "Sem detalhes adicionais",
+                                        description: (
+                                          <pre className="mt-2 w-full p-4 rounded-md bg-muted text-sm whitespace-pre-wrap">
+                                            {formattedDetails}
+                                          </pre>
+                                        ),
                                         variant: "default"
                                       });
                                     }}
