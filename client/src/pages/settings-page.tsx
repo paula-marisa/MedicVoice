@@ -126,11 +126,14 @@ export default function SettingsPage() {
   const handleSaveSettings = () => {
     if (!user || !settings) return;
     
+    // Captura o idioma atual antes de fazer as mudanças
+    const currentLanguage = language;
+    
     // Atualiza o objeto de configurações com os estados atuais
     const updatedSettings: UserSettings = {
       ...settings,
       language: {
-        language,
+        language: currentLanguage,
         dateFormat,
         theme,
       },
@@ -153,25 +156,39 @@ export default function SettingsPage() {
       applyInterfaceSettings(updatedSettings.interface);
       setAppTheme(theme);
       
-      // Atualiza as traduções imediatamente e aplica na interface
-      setCurrentTranslations(applyTranslations(language));
-      
-      // Altera os textos de acordo com o idioma escolhido
-      // Exibe mensagem de sucesso usando as traduções globais
-      toast({
-        title: window.appTranslations?.settingsSaved || (language === 'en' ? "Settings saved" : "Configurações guardadas"),
-        description: window.appTranslations?.settingsSavedDesc || (language === 'en' ? "Your changes have been successfully saved and applied." : "As suas alterações foram guardadas com sucesso e aplicadas."),
-      });
+      // Usamos mensagens de sucesso diretamente em vez de traduções dinâmicas
+      // para evitar problemas com mudanças de DOM durante a aplicação
+      if (currentLanguage === 'en') {
+        toast({
+          title: "Settings saved",
+          description: "Your changes have been successfully saved and applied.",
+        });
+        
+        // Para inglês, aplicamos as traduções após o toast
+        setTimeout(() => {
+          setCurrentTranslations(applyTranslations(currentLanguage));
+        }, 100);
+      } else {
+        toast({
+          title: "Configurações guardadas",
+          description: "As suas alterações foram guardadas com sucesso e aplicadas.",
+        });
+      }
     } else {
-      // Em caso de erro, usa as traduções globais
-      const errorTitle = window.appTranslations?.errorSaving || (language === 'en' ? "Error saving" : "Erro ao guardar");
-      const errorDescription = window.appTranslations?.errorSavingDesc || (language === 'en' ? "An error occurred while saving the settings. Please try again." : "Ocorreu um erro ao guardar as configurações. Tente novamente.");
-      
-      toast({
-        title: errorTitle,
-        description: errorDescription,
-        variant: "destructive",
-      });
+      // Em caso de erro, também usamos strings diretas
+      if (currentLanguage === 'en') {
+        toast({
+          title: "Error saving",
+          description: "An error occurred while saving the settings. Please try again.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Erro ao guardar",
+          description: "Ocorreu um erro ao guardar as configurações. Tente novamente.",
+          variant: "destructive",
+        });
+      }
     }
   };
   
@@ -239,8 +256,14 @@ export default function SettingsPage() {
                           value={language} 
                           onValueChange={(value) => {
                             setLanguage(value);
-                            // Atualiza as traduções imediatamente e aplica na interface
-                            setCurrentTranslations(applyTranslations(value));
+                            
+                            // Para evitar problemas de DOM, não aplicamos traduções ao mudar
+                            // o idioma no select, mas apenas quando salvar as configurações
+                            if (value === 'pt') {
+                              setCurrentTranslations(getTranslations('pt'));
+                            } else {
+                              setCurrentTranslations(getTranslations('en'));
+                            }
                           }}
                         >
                           <SelectTrigger id="language" className="w-full">
