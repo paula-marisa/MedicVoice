@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -49,6 +49,7 @@ export default function ProfilePage() {
   const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Dados fictícios para simular os campos específicos do perfil
   const mockAdminProfile = {
@@ -102,18 +103,34 @@ export default function ProfilePage() {
     console.log("Dados do perfil médico:", data);
   };
   
-  // Função para simular o upload de foto
+  // Função para abrir o seletor de arquivos
   const handlePhotoUpload = () => {
-    setIsUploading(true);
-    
-    // Simulação de upload
-    setTimeout(() => {
-      setIsUploading(false);
-      toast({
-        title: "Foto atualizada",
-        description: "A sua foto de perfil foi atualizada com sucesso.",
-      });
-    }, 1500);
+    // Clique no input file oculto ao clicar no botão
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+  
+  // Função para processar o arquivo selecionado
+  const handleFileSelected = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      setIsUploading(true);
+      
+      // Simulação de upload
+      setTimeout(() => {
+        setIsUploading(false);
+        toast({
+          title: "Foto atualizada",
+          description: "A sua foto de perfil foi atualizada com sucesso.",
+        });
+        
+        // Limpa o input para permitir selecionar o mesmo arquivo novamente
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+      }, 1500);
+    }
   };
   
   // Obter as iniciais do nome para o avatar
@@ -130,6 +147,14 @@ export default function ProfilePage() {
     <div className="flex min-h-screen flex-col bg-background">
       <Header />
       <main className="flex-1">
+        {/* Input file oculto para selecionar foto */}
+        <input 
+          type="file" 
+          ref={fileInputRef}
+          onChange={handleFileSelected}
+          accept="image/*"
+          style={{ display: 'none' }}
+        />
         <div className="container max-w-7xl py-6">
           <div className="flex flex-col items-start gap-4 md:flex-row md:justify-between">
             <div>
