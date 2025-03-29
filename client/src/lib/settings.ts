@@ -598,6 +598,14 @@ export function applyTranslations(language: string) {
   const previousLanguage = localStorage.getItem('currentLanguage') || 'pt';
   localStorage.setItem('currentLanguage', language);
   
+  // Se estiver na página de configurações, recarregar a página para aplicar consistentemente 
+  // as traduções e evitar problemas de DOM
+  if (window.location.pathname.includes('/settings')) {
+    localStorage.setItem('app_language', language);
+    window.location.reload();
+    return selectedTranslations;
+  }
+  
   // Atualiza todos os textos da interface baseado no idioma selecionado
   if (language === "en") {
     // Guarda todos os textos de toast e notificações em variáveis globais no window para acesso posterior
@@ -768,8 +776,10 @@ export function applyTranslations(language: string) {
       close: "Fechar"
     };
     
-    // Se estava em outro idioma e mudou para português, recarrega a página
-    if (previousLanguage !== 'pt') {
+    // Se estava em outro idioma e mudou para português na página de configurações, recarrega a página
+    if (previousLanguage !== 'pt' && window.location.pathname.includes('/settings')) {
+      // Guardar a seleção de idioma no localStorage
+      localStorage.setItem('app_language', 'pt');
       window.location.reload();
     }
     

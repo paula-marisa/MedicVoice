@@ -118,7 +118,10 @@ export default function SettingsPage() {
       
       setNotifications(userSettings.notifications);
       setPrivacy(userSettings.privacy);
-      setSound(userSettings.sound);
+      setSound({
+        ...userSettings.sound,
+        voiceFeedback: userSettings.sound.voiceFeedback || false,
+      });
       setReports(userSettings.reports);
       
       // Aplicar configurações carregadas
