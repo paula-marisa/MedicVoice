@@ -39,7 +39,14 @@ export const VoiceRecognition = forwardRef<VoiceRecognitionRef, VoiceRecognition
     const [interimTranscript, setInterimTranscript] = useState("");
     const [isHelpOpen, setIsHelpOpen] = useState(false);
     const [showPrivacyConsent, setShowPrivacyConsent] = useState(false);
-    const [hasDoctorConsent, setHasDoctorConsent] = useState(false);
+    // Verificar consentimento salvo no localStorage
+    const [hasDoctorConsent, setHasDoctorConsent] = useState(() => {
+      if (typeof window !== 'undefined') {
+        const savedConsent = localStorage.getItem('voice_recognition_consent');
+        return savedConsent === 'true';
+      }
+      return false;
+    });
     const [processNumber, setProcessNumber] = useState<string>("");
     
     const recognitionRef = useRef<any | null>(null);
@@ -352,6 +359,11 @@ export const VoiceRecognition = forwardRef<VoiceRecognitionRef, VoiceRecognition
     // Manipula o resultado do consentimento
     const handlePrivacyConsent = (consented: boolean) => {
       setHasDoctorConsent(consented);
+      
+      // Salvar o consentimento no localStorage para persistir entre sessões
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('voice_recognition_consent', consented ? 'true' : 'false');
+      }
       
       if (consented) {
         // Se o consentimento foi concedido, salvar no banco de dados (se houver identificação de paciente)
