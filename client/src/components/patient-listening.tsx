@@ -26,9 +26,8 @@ interface PatientListeningProps {
 
 // Interface para expor métodos para o componente pai
 export interface PatientListeningRef {
-  toggleListening: (field?: string) => void;
+  toggleListening: () => void;
   isListening: boolean;
-  activeField: string;
 }
 
 export const PatientListening = forwardRef<PatientListeningRef, PatientListeningProps>(
@@ -43,7 +42,6 @@ export const PatientListening = forwardRef<PatientListeningRef, PatientListening
     const [showPrivacyConsent, setShowPrivacyConsent] = useState(false);
     const [hasPatientConsent, setHasPatientConsent] = useState(false);
     const [processNumber, setProcessNumber] = useState<string>(""); // Número do processo do paciente atual
-    const [activeField, setActiveField] = useState<string>("symptoms"); // Campo que está sendo transcrito
     
     const recognitionRef = useRef<any | null>(null);
     const timerRef = useRef<number | null>(null);
@@ -105,8 +103,7 @@ export const PatientListening = forwardRef<PatientListeningRef, PatientListening
     // Expor métodos para o componente pai usando ref
     useImperativeHandle(ref, () => ({
       toggleListening,
-      isListening,
-      activeField
+      isListening
     }));
     
     // Mutação para salvar o consentimento no banco de dados
@@ -257,36 +254,17 @@ export const PatientListening = forwardRef<PatientListeningRef, PatientListening
       }
     };
   
-    const toggleListening = (field?: string) => {
-      // Atualizar o campo ativo se especificado
-      if (field) {
-        setActiveField(field);
-      }
-      
+    const toggleListening = () => {
       // Usando o estado atual para determinar a ação, não o estado do componente
       if (isListening) {
         stopListening();
       } else {
-        // Verificar primeiro o consentimento global no localStorage (definido no menu de perfil)
-        if (typeof window !== 'undefined') {
-          const globalConsent = localStorage.getItem('voice_recognition_consent');
-          
-          if (globalConsent === 'true') {
-            // Se tiver consentimento global, verificar consentimento específico
-            if (hasPatientConsent) {
-              startListening();
-            } else {
-              // Mostrar diálogo de consentimento específico
-              setShowPrivacyConsent(true);
-            }
-          } else {
-            // Se não tiver consentimento global, mostrar mensagem para ativar no perfil
-            notificationRef.current?.show({
-              message: "Ative o consentimento para gravação de voz no seu perfil",
-              type: "warning",
-              description: "Clique no seu avatar no canto superior direito e ative o consentimento para voz"
-            });
-          }
+        // Verificar se já temos consentimento
+        if (hasPatientConsent) {
+          startListening();
+        } else {
+          // Mostrar diálogo de consentimento
+          setShowPrivacyConsent(true);
         }
       }
       // Retorna o valor atualizado do estado para que o componente pai possa saber
@@ -348,16 +326,9 @@ export const PatientListening = forwardRef<PatientListeningRef, PatientListening
       // Passar os sintomas para o componente pai
       onSymptomsDetected(formattedSymptoms);
       
-      // Mostrar notificação com indicação do campo
-      const fieldDescriptions: Record<string, string> = {
-        symptoms: "Sintomas",
-        diagnosis: "Diagnóstico",
-        treatment: "Tratamento",
-        observations: "Observações"
-      };
-      
+      // Mostrar notificação
       notificationRef.current?.show({
-        message: `Texto adicionado ao campo ${fieldDescriptions[activeField] || "Sintomas"} com sucesso!`,
+        message: "Sintomas adicionados ao relatório com sucesso!",
         type: "success"
       });
       

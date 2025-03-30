@@ -23,25 +23,10 @@ interface ReportFormProps {
     text: string;
     field: string;
   };
-  // Botões específicos para cada campo
-  diagnoseButton?: React.ReactNode;
-  symptomsButton?: React.ReactNode;
-  treatmentButton?: React.ReactNode;
-  observationsButton?: React.ReactNode;
-  // Mantemos o antigo para compatibilidade
-  listenButton?: React.ReactNode;
+  listenButton?: React.ReactNode; // Componente de botão para escuta
 }
 
-export function ReportForm({ 
-  onReportChange, 
-  defaultValues, 
-  transcription, 
-  diagnoseButton, 
-  symptomsButton, 
-  treatmentButton, 
-  observationsButton,
-  listenButton 
-}: ReportFormProps) {
+export function ReportForm({ onReportChange, defaultValues, transcription, listenButton }: ReportFormProps) {
   const form = useForm<ReportFormValues>({
     resolver: zodResolver(reportSchema),
     defaultValues: {
@@ -81,12 +66,9 @@ export function ReportForm({
               name="diagnosis"
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex justify-between items-center">
-                    <Label htmlFor="diagnosis">
-                      Diagnóstico
-                    </Label>
-                    {diagnoseButton || listenButton}
-                  </div>
+                  <Label htmlFor="diagnosis">
+                    Diagnóstico
+                  </Label>
                   <FormControl>
                     <Textarea
                       id="diagnosis"
@@ -110,7 +92,7 @@ export function ReportForm({
                     <Label htmlFor="symptoms">
                       Sintomas
                     </Label>
-                    {symptomsButton || listenButton}
+                    {listenButton}
                   </div>
                   <FormControl>
                     <Textarea
@@ -131,12 +113,9 @@ export function ReportForm({
               name="treatment"
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex justify-between items-center">
-                    <Label htmlFor="treatment">
-                      Tratamento Recomendado
-                    </Label>
-                    {treatmentButton || listenButton}
-                  </div>
+                  <Label htmlFor="treatment">
+                    Tratamento Recomendado
+                  </Label>
                   <FormControl>
                     <Textarea
                       id="treatment"
@@ -156,12 +135,9 @@ export function ReportForm({
               name="observations"
               render={({ field }) => (
                 <FormItem>
-                  <div className="flex justify-between items-center">
-                    <Label htmlFor="observations">
-                      Observações
-                    </Label>
-                    {observationsButton || listenButton}
-                  </div>
+                  <Label htmlFor="observations">
+                    Observações
+                  </Label>
                   <FormControl>
                     <Textarea
                       id="observations"

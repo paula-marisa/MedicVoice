@@ -11,7 +11,6 @@ import { PatientListening, PatientListeningRef } from "@/components/patient-list
 import { ListenButton } from "@/components/listen-button";
 import { ExportOptions } from "@/components/export-options";
 import { Notification } from "@/components/ui/notification";
-import { PrivacyConsentDialog } from "@/components/privacy-consent-dialog";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -20,31 +19,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { jsPDF } from "jspdf";
 
 export default function Home() {
-  // Estado para controlar o consentimento para coleta de dados
-  const [showConsentDialog, setShowConsentDialog] = useState(false);
-  // Inicializar o estado a partir do localStorage, se disponível
-  const [hasUserConsent, setHasUserConsent] = useState(() => {
-    // Verificar se o consentimento já foi dado e está salvo no localStorage
-    if (typeof window !== 'undefined') {
-      const savedConsent = localStorage.getItem('voice_recognition_consent');
-      return savedConsent === 'true';
-    }
-    return false;
-  });
-  
   // State para autenticação
   const { user } = useAuth();
-  
-  // Verificar se é a primeira visita e mostrar o diálogo de consentimento
-  useEffect(() => {
-    // Se for médico ou enfermeiro, mostra diálogo de consentimento apenas se não houver consentimento salvo
-    if (user && (user.role === 'doctor' || user.role === 'nurse')) {
-      const savedConsent = localStorage.getItem('voice_recognition_consent');
-      if (savedConsent !== 'true') {
-        setShowConsentDialog(true);
-      }
-    }
-  }, [user]);
   
   // State para dados do utente e relatório
   const [patient, setPatient] = useState<UtenteFormValues>({
@@ -65,11 +41,7 @@ export default function Home() {
   
   // Estado para controlar a escuta do utente
   const [isListening, setIsListening] = useState(false);
-  const [activeField, setActiveField] = useState<string>("symptoms");
   const patientListeningRef = useRef<PatientListeningRef | null>(null);
-  
-  // Ref para o componente VoiceRecognition (ditado do médico)
-  const voiceRecognitionRef = useRef<any>(null);
   
   // Refs
   const notificationRef = useRef<{ show: (props: any) => void }>(null);
@@ -196,26 +168,21 @@ export default function Home() {
   };
   
   // Handle symptoms detected by the patient listening component
-  const handleSymptomsDetected = (text: string) => {
-    // Usar o campo que está ativo no momento da transcrição
-    const field = activeField || "symptoms";
-    
-    // Update the report field with detected text
+  const handleSymptomsDetected = (symptoms: string) => {
+    // Update symptoms field with detected symptoms
     const updatedReport = { ...report };
     
-    // Se o campo já tem conteúdo, vamos adicionar a nova transcrição
-    if (updatedReport[field as keyof ReportFormValues] && 
-        updatedReport[field as keyof ReportFormValues].trim() !== "") {
-      updatedReport[field as keyof ReportFormValues] = 
-        updatedReport[field as keyof ReportFormValues] + "\n\n" + text;
+    // If symptoms field already has content, append the new symptoms
+    if (updatedReport.symptoms && updatedReport.symptoms.trim() !== "") {
+      updatedReport.symptoms = updatedReport.symptoms + "\n\n" + symptoms;
     } else {
-      updatedReport[field as keyof ReportFormValues] = text;
+      updatedReport.symptoms = symptoms;
     }
     
     setReport(updatedReport);
     
     // Also update transcription state to trigger any UI updates
-    setTranscription({ text, field });
+    setTranscription({ text: symptoms, field: "symptoms" });
   };
 
   // Handle PDF export
@@ -461,68 +428,26 @@ export default function Home() {
   };
   
   // Função para alternar a escuta do paciente através do botão inline
-  const togglePatientListening = (field: string = "symptoms") => {
-    // Determinar se o campo é de fala do paciente ou do médico
-    const isPatientField = field === "symptoms";
-    
-    if (isPatientField) {
-      // Usar o componente PatientListening para o campo de sintomas (escuta do paciente)
-      if (patientListeningRef.current) {
-        // Armazenar o campo para o qual a transcrição será enviada
-        setActiveField(field);
-        patientListeningRef.current.toggleListening(field);
-        
-        // Atualiza imediatamente o estado local
-        try {
-          // Usamos um pequeno atraso para garantir que o estado do componente foi atualizado
-          setTimeout(() => {
-            if (patientListeningRef.current) {
-              setIsListening(patientListeningRef.current.isListening);
-            }
-          }, 50);
-        } catch (error) {
-          console.error("Erro ao atualizar estado de escuta:", error);
-        }
-      } else {
-        notificationRef.current?.show({
-          message: "Componente de escuta não está disponível",
-          type: "error"
-        });
+  const togglePatientListening = () => {
+    if (patientListeningRef.current) {
+      patientListeningRef.current.toggleListening();
+      
+      // Atualiza imediatamente o estado local
+      try {
+        // Usamos um pequeno atraso para garantir que o estado do componente foi atualizado
+        setTimeout(() => {
+          if (patientListeningRef.current) {
+            setIsListening(patientListeningRef.current.isListening);
+          }
+        }, 50);
+      } catch (error) {
+        console.error("Erro ao atualizar estado de escuta:", error);
       }
     } else {
-      // Para os campos do médico (diagnóstico, tratamento, observações),
-      // verificamos primeiro se o médico já deu consentimento
-      if (!hasUserConsent) {
-        // Se não tiver consentimento, mostrar diálogo
-        setShowConsentDialog(true);
-        return;
-      }
-      
-      // Se já tem consentimento, usar o VoiceRecognition diretamente
-      if (voiceRecognitionRef.current) {
-        // Atualizar o campo ativo para que a transcrição seja enviada corretamente
-        setActiveField(field);
-        
-        // Iniciar gravação com o campo específico
-        voiceRecognitionRef.current.toggleRecording(field);
-        
-        // Mostrar notificação de início de ditado
-        const fieldLabels: Record<string, string> = {
-          diagnosis: "diagnóstico",
-          treatment: "tratamento",
-          observations: "observações"
-        };
-        
-        notificationRef.current?.show({
-          message: `Iniciando ditado para o campo de ${fieldLabels[field] || field}. Por favor, dite o texto.`,
-          type: "info"
-        });
-      } else {
-        notificationRef.current?.show({
-          message: "Componente de ditado não está disponível",
-          type: "error"
-        });
-      }
+      notificationRef.current?.show({
+        message: "Componente de escuta não está disponível",
+        type: "error"
+      });
     }
   };
   
@@ -534,57 +459,14 @@ export default function Home() {
   };
 
   // Criar um componente de botão para ser injetado no ReportForm
-  // Usamos diferentes componentes conforme o campo do formulário
-  const DiagnosisListenButton = () => {
-    // Só mostrar o botão se o usuário deu consentimento para coleta de voz
-    if (!hasUserConsent) return null;
-    
-    return (
-      <ListenButton 
-        isListening={isListening} 
-        onClick={() => togglePatientListening("diagnosis")}
-        size="sm"
-        variant="inline"
-      />
-    );
-  };
-  
   const SymptomsListenButton = () => (
     <ListenButton 
       isListening={isListening} 
-      onClick={() => togglePatientListening("symptoms")}
+      onClick={togglePatientListening}
       size="sm"
       variant="inline"
     />
   );
-  
-  const TreatmentListenButton = () => {
-    // Só mostrar o botão se o usuário deu consentimento para coleta de voz
-    if (!hasUserConsent) return null;
-    
-    return (
-      <ListenButton 
-        isListening={isListening} 
-        onClick={() => togglePatientListening("treatment")}
-        size="sm"
-        variant="inline"
-      />
-    );
-  };
-  
-  const ObservationsListenButton = () => {
-    // Só mostrar o botão se o usuário deu consentimento para coleta de voz
-    if (!hasUserConsent) return null;
-    
-    return (
-      <ListenButton 
-        isListening={isListening} 
-        onClick={() => togglePatientListening("observations")}
-        size="sm"
-        variant="inline"
-      />
-    );
-  };
 
   return (
     <>
@@ -608,10 +490,7 @@ export default function Home() {
                   onReportChange={setReport} 
                   defaultValues={report} 
                   transcription={transcription}
-                  diagnoseButton={<DiagnosisListenButton />}
-                  symptomsButton={<SymptomsListenButton />}
-                  treatmentButton={<TreatmentListenButton />}
-                  observationsButton={<ObservationsListenButton />}
+                  listenButton={<SymptomsListenButton />}
                 />
                 
                 <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3">
@@ -644,13 +523,12 @@ export default function Home() {
                     notificationRef={notificationRef}
                     ref={patientListeningRef}
                   />
-                  
-                  <VoiceRecognition 
-                    onTranscriptionComplete={handleTranscriptionComplete} 
-                    notificationRef={notificationRef}
-                    ref={voiceRecognitionRef}
-                  />
                 </div>
+                
+                <VoiceRecognition 
+                  onTranscriptionComplete={handleTranscriptionComplete} 
+                  notificationRef={notificationRef}
+                />
                 
                 <ExportOptions 
                   onExportPDF={handleExportPDF} 
@@ -676,10 +554,7 @@ export default function Home() {
                     onReportChange={setReport} 
                     defaultValues={report} 
                     transcription={transcription}
-                    diagnoseButton={<DiagnosisListenButton />}
-                    symptomsButton={<SymptomsListenButton />}
-                    treatmentButton={<TreatmentListenButton />}
-                    observationsButton={<ObservationsListenButton />}
+                    listenButton={<SymptomsListenButton />}
                   />
                   
                   <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3">
@@ -706,13 +581,12 @@ export default function Home() {
                       notificationRef={notificationRef}
                       ref={patientListeningRef}
                     />
-                    
-                    <VoiceRecognition 
-                      onTranscriptionComplete={handleTranscriptionComplete} 
-                      notificationRef={notificationRef}
-                      ref={voiceRecognitionRef}
-                    />
                   </div>
+                  
+                  <VoiceRecognition 
+                    onTranscriptionComplete={handleTranscriptionComplete} 
+                    notificationRef={notificationRef}
+                  />
                   
                   <ExportOptions 
                     onExportPDF={handleExportPDF} 
@@ -732,51 +606,6 @@ export default function Home() {
       <Footer />
       
       <Notification ref={notificationRef} />
-      
-      {/* Diálogo de consentimento para coleta de dados de voz */}
-      <PrivacyConsentDialog
-        open={showConsentDialog}
-        onOpenChange={setShowConsentDialog}
-        onConsent={(consentGranted) => {
-          setHasUserConsent(consentGranted);
-          setShowConsentDialog(false);
-          
-          // Salvar o consentimento no localStorage para persistir entre sessões
-          if (typeof window !== 'undefined') {
-            localStorage.setItem('voice_recognition_consent', consentGranted ? 'true' : 'false');
-          }
-          
-          if (consentGranted) {
-            notificationRef.current?.show({
-              message: "Consentimento concedido. Os botões de gravação de voz foram ativados.",
-              type: "success"
-            });
-          } else {
-            notificationRef.current?.show({
-              message: "Consentimento não concedido. Os botões de gravação de voz não estarão disponíveis.",
-              type: "info"
-            });
-          }
-        }}
-        title="Consentimento para Reconhecimento de Voz"
-        description="Para usar os recursos de reconhecimento de voz, precisamos do seu consentimento para coletar e processar dados de voz, conforme as regulamentações RGPD (UE) e LGPD (Brasil)."
-        privacyItems={[
-          {
-            id: "consent-voice-collect",
-            description: "Autorizo a coleta temporária do meu áudio para fins de transcrição e criação de relatórios médicos."
-          },
-          {
-            id: "consent-voice-process",
-            description: "Entendo que os dados de voz serão processados localmente e não armazenados permanentemente."
-          },
-          {
-            id: "consent-voice-retention",
-            description: "Estou ciente de que a transcrição resultante será armazenada como parte do relatório médico."
-          }
-        ]}
-        dataRetentionPeriod="Período de retenção do relatório médico (5 anos)"
-        privacyPolicyUrl="/privacy-policy"
-      />
     </>
   );
 }

@@ -238,9 +238,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       queryClient.setQueryData(["/api/user"], null);
       setProfileImage(null);
       
-      // Não remover o consentimento do localStorage ao fazer logout
-      // O consentimento deve persistir entre sessões de login
-      
       // Exibe mensagem de sucesso
       toast({
         title: "Logout realizado",
