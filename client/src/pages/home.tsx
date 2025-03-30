@@ -517,19 +517,18 @@ export default function Home() {
               </div>
               
               <div className="lg:col-span-1 space-y-6">
-                {/* Os componentes ficam escondidos, apenas para manter referência */}
-                <div style={{ display: 'none', height: 0, width: 0, overflow: 'hidden' }}>
+                <div style={{ display: 'none' }}>
                   <PatientListening
                     onSymptomsDetected={handleSymptomsDetected}
                     notificationRef={notificationRef}
                     ref={patientListeningRef}
                   />
-                  
-                  <VoiceRecognition 
-                    onTranscriptionComplete={handleTranscriptionComplete} 
-                    notificationRef={notificationRef}
-                  />
                 </div>
+                
+                <VoiceRecognition 
+                  onTranscriptionComplete={handleTranscriptionComplete} 
+                  notificationRef={notificationRef}
+                />
                 
                 <ExportOptions 
                   onExportPDF={handleExportPDF} 
@@ -575,19 +574,19 @@ export default function Home() {
                 </div>
                 
                 <div className="lg:col-span-1 space-y-6">
-                  {/* Os componentes ficam escondidos, apenas para manter referência */}
-                  <div style={{ display: 'none', height: 0, width: 0, overflow: 'hidden' }}>
+                  {/* O componente PatientListening fica aqui, escondido, apenas para manter referência */}
+                  <div style={{ display: 'none' }}>
                     <PatientListening
                       onSymptomsDetected={handleSymptomsDetected}
                       notificationRef={notificationRef}
                       ref={patientListeningRef}
                     />
-                    
-                    <VoiceRecognition 
-                      onTranscriptionComplete={handleTranscriptionComplete} 
-                      notificationRef={notificationRef}
-                    />
                   </div>
+                  
+                  <VoiceRecognition 
+                    onTranscriptionComplete={handleTranscriptionComplete} 
+                    notificationRef={notificationRef}
+                  />
                   
                   <ExportOptions 
                     onExportPDF={handleExportPDF} 
