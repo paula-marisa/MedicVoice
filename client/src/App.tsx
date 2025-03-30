@@ -25,11 +25,35 @@ function AppRoutes() {
   const { user, isLoading } = useAuth();
   const [initialVisitChecked, setInitialVisitChecked] = useState(false);
   const [shouldForceLogin, setShouldForceLogin] = useState(false);
+  const [currentPath, setCurrentPath] = useState(window.location.pathname);
+
+  // Monitorar mudanças na URL
+  useEffect(() => {
+    const handleLocationChange = () => {
+      setCurrentPath(window.location.pathname);
+    };
+    
+    // Adicionar listener para mudanças de URL
+    window.addEventListener('popstate', handleLocationChange);
+    
+    // Sobrescrever o método pushState para detectar mudanças programáticas
+    const originalPushState = window.history.pushState;
+    window.history.pushState = function() {
+      // @ts-ignore
+      originalPushState.apply(this, arguments);
+      handleLocationChange();
+    };
+    
+    return () => {
+      window.removeEventListener('popstate', handleLocationChange);
+      window.history.pushState = originalPushState;
+    };
+  }, []);
 
   // Verificar se é a primeira visita ou se não está logado
   useEffect(() => {
     // Sempre verificamos se o usuário não está na página de autenticação
-    const isAuthPage = window.location.pathname === "/auth" || window.location.pathname === "/login";
+    const isAuthPage = currentPath === "/auth" || currentPath === "/login";
     
     // Se já estiver na página de autenticação, não forçamos outro redirecionamento
     if (isAuthPage) {
@@ -46,7 +70,7 @@ function AppRoutes() {
     sessionStorage.removeItem('hasVisited');
     
     setInitialVisitChecked(true);
-  }, [user, isLoading]);
+  }, [user, isLoading, currentPath]);
 
   // Aguardar a verificação inicial para evitar redirecionamentos indesejados
   if (!initialVisitChecked) {
@@ -62,8 +86,8 @@ function AppRoutes() {
 
   // Adiciona o cabeçalho apenas se o usuário estiver autenticado e não estiver nas páginas de autenticação
   const showHeader = user && 
-                     window.location.pathname !== "/auth" && 
-                     window.location.pathname !== "/login";
+                     currentPath !== "/auth" && 
+                     currentPath !== "/login";
 
   return (
     <>
