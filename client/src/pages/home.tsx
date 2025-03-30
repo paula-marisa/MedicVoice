@@ -431,6 +431,18 @@ export default function Home() {
   const togglePatientListening = () => {
     if (patientListeningRef.current) {
       patientListeningRef.current.toggleListening();
+      
+      // Atualiza imediatamente o estado local
+      try {
+        // Usamos um pequeno atraso para garantir que o estado do componente foi atualizado
+        setTimeout(() => {
+          if (patientListeningRef.current) {
+            setIsListening(patientListeningRef.current.isListening);
+          }
+        }, 50);
+      } catch (error) {
+        console.error("Erro ao atualizar estado de escuta:", error);
+      }
     } else {
       notificationRef.current?.show({
         message: "Componente de escuta não está disponível",
@@ -439,17 +451,12 @@ export default function Home() {
     }
   };
   
-  // Efeito para monitorar mudanças no estado de escuta via ref
-  useEffect(() => {
-    // Configuramos um intervalor para verificar o estado do componente
-    const interval = setInterval(() => {
-      if (patientListeningRef.current) {
-        setIsListening(patientListeningRef.current.isListening);
-      }
-    }, 200); // Verificar a cada 200ms
-    
-    return () => clearInterval(interval);
-  }, []);
+  // Definimos uma função para atualizar o estado de escuta
+  const updateListeningState = () => {
+    if (patientListeningRef.current) {
+      setIsListening(patientListeningRef.current.isListening);
+    }
+  };
 
   // Efeito para montar o botão de escuta no formulário após o render
   useEffect(() => {

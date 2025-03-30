@@ -255,6 +255,7 @@ export const PatientListening = forwardRef<PatientListeningRef, PatientListening
     };
   
     const toggleListening = () => {
+      // Usando o estado atual para determinar a ação, não o estado do componente
       if (isListening) {
         stopListening();
       } else {
@@ -266,6 +267,8 @@ export const PatientListening = forwardRef<PatientListeningRef, PatientListening
           setShowPrivacyConsent(true);
         }
       }
+      // Retorna o valor atualizado do estado para que o componente pai possa saber
+      return !isListening;
     };
     
     // Manipula o resultado do consentimento
