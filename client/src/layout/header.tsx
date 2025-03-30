@@ -93,7 +93,7 @@ export function Header() {
                   <DropdownMenuSeparator />
                   
                   {/* Menu contextual: mostra ou esconde itens com base na localização atual */}
-                  {location !== "/" && location !== "/reports" && (
+                  {location !== "/" && location !== "/reports" && user.role !== "admin" && (
                     <DropdownMenuItem asChild className="cursor-pointer">
                       <Link href="/">
                         <ClipboardList className="mr-2 h-4 w-4" />
