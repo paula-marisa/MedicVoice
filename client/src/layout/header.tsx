@@ -37,7 +37,7 @@ export function Header() {
         <div className="flex justify-between items-center h-16">
           {/* Logo e nome do app */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2">
+            <Link href={user?.role === "admin" ? "/admin" : "/"} className="flex items-center space-x-2">
               <ClipboardList className="h-8 w-8 text-primary" />
               <span className="font-medium text-xl">Assistente de Relatórios</span>
             </Link>

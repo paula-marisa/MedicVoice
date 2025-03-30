@@ -60,6 +60,12 @@ function AppRoutes() {
     return <Redirect to="/auth" />;
   }
 
+  // Se o usuário for admin e estiver tentando acessar a página inicial, 
+  // redirecionar para o painel administrativo
+  if (user?.role === "admin" && window.location.pathname === "/") {
+    return <Redirect to="/admin" />;
+  }
+
   return (
     <Switch>
       <Route path="/auth">
@@ -68,13 +74,29 @@ function AppRoutes() {
       <Route path="/login">
         <AuthPage />
       </Route>
-      <ProtectedRoute path="/" component={Home} />
+      
+      {/* Página inicial - apenas para médicos */}
+      <Route path="/">
+        {user?.role === "admin" ? <Redirect to="/admin" /> : <Home />}
+      </Route>
+      
       <AdminRoute path="/admin" component={AdminPage} />
       <ProtectedRoute path="/profile" component={ProfilePage} />
       <ProtectedRoute path="/settings" component={SettingsPage} />
-      <ProtectedRoute path="/reports/:id" component={ReportView} />
-      <ProtectedRoute path="/reports/:id/audit" component={ReportAudit} />
-      <ProtectedRoute path="/reports/:id/history" component={PatientHistory} />
+      
+      {/* Rotas de relatórios - apenas para médicos */}
+      <Route path="/reports/:id">
+        {user?.role === "admin" ? <Redirect to="/admin" /> : <ReportView />}
+      </Route>
+      
+      <Route path="/reports/:id/audit">
+        {user?.role === "admin" ? <Redirect to="/admin" /> : <ReportAudit />}
+      </Route>
+      
+      <Route path="/reports/:id/history">
+        {user?.role === "admin" ? <Redirect to="/admin" /> : <PatientHistory />}
+      </Route>
+      
       <Route path="/privacy-policy">
         <PrivacyPolicy />
       </Route>
