@@ -12,6 +12,7 @@ import SettingsPage from "@/pages/settings-page";
 import PrivacyPolicy from "@/pages/privacy-policy";
 import ReportView from "@/pages/report-view";
 import ReportAudit from "@/pages/report-audit";
+import PatientHistory from "@/pages/patient-history";
 import { setupTheme } from "@/lib/theme";
 import { AuthProvider } from "./hooks/use-auth";
 
@@ -34,6 +35,7 @@ function Router() {
       <ProtectedRoute path="/settings" component={SettingsPage} />
       <ProtectedRoute path="/reports/:id" component={ReportView} />
       <ProtectedRoute path="/reports/:id/audit" component={ReportAudit} />
+      <ProtectedRoute path="/reports/:id/history" component={PatientHistory} />
       <Route path="/privacy-policy">
         <PrivacyPolicy />
       </Route>

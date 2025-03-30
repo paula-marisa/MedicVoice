@@ -677,7 +677,7 @@ export default function AdminPage() {
                                       </Link>
                                     </Button>
                                     <Button variant="outline" size="sm" asChild>
-                                      <Link to={`/reports/${report.id}/audit`}>
+                                      <Link to={`/reports/${report.id}/history`}>
                                         Histórico
                                       </Link>
                                     </Button>

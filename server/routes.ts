@@ -252,8 +252,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      // Check if the user is the owner of the report
-      if (report.userId !== req.user.id) {
+      // Check if the user is the owner of the report or an admin
+      if (report.userId !== req.user.id && req.user.role !== "admin") {
         return res.status(403).json({
           success: false,
           message: "Acesso negado"
@@ -266,6 +266,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       log(`Error fetching medical report: ${error}`, "api");
+      res.status(500).json({
+        success: false,
+        message: "Erro interno do servidor"
+      });
+    }
+  });
+  
+  // Get medical reports by patient process number
+  app.get("/api/medical-reports/by-process/:processNumber", ensureAuthenticated, async (req, res) => {
+    try {
+      const { processNumber } = req.params;
+      
+      if (!processNumber) {
+        return res.status(400).json({
+          success: false,
+          message: "Número de processo não fornecido"
+        });
+      }
+      
+      // Get all reports by process number
+      const allReports = await storage.getAllMedicalReports();
+      const patientReports = allReports.filter(report => 
+        report.processNumber.toLowerCase() === processNumber.toLowerCase()
+      );
+      
+      // If user is not admin, filter to only show reports created by this user
+      const filteredReports = req.user.role === "admin" 
+        ? patientReports
+        : patientReports.filter(report => report.userId === req.user.id);
+      
+      res.json({
+        success: true,
+        data: filteredReports
+      });
+    } catch (error) {
+      log(`Error fetching reports by process number: ${error}`, "api");
       res.status(500).json({
         success: false,
         message: "Erro interno do servidor"

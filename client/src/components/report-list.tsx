@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "wouter";
 import { 
   Card, 
   CardHeader, 
@@ -138,6 +139,25 @@ export function ReportList({ onEditReport }: ReportListProps) {
                             </TooltipTrigger>
                             <TooltipContent>
                               <p>Editar relatório</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                        
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button 
+                                variant="ghost" 
+                                size="icon"
+                                asChild
+                              >
+                                <Link to={`/reports/${report.id}/history`}>
+                                  <FileText size={16} />
+                                </Link>
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Histórico do utente</p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
