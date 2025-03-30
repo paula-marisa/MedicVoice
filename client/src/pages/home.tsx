@@ -44,6 +44,9 @@ export default function Home() {
   const [activeField, setActiveField] = useState<string>("symptoms");
   const patientListeningRef = useRef<PatientListeningRef | null>(null);
   
+  // Ref para o componente VoiceRecognition (ditado do médico)
+  const voiceRecognitionRef = useRef<any>(null);
+  
   // Refs
   const notificationRef = useRef<{ show: (props: any) => void }>(null);
   
@@ -435,27 +438,60 @@ export default function Home() {
   
   // Função para alternar a escuta do paciente através do botão inline
   const togglePatientListening = (field: string = "symptoms") => {
-    if (patientListeningRef.current) {
-      // Armazenar o campo para o qual a transcrição será enviada
-      setActiveField(field);
-      patientListeningRef.current.toggleListening();
-      
-      // Atualiza imediatamente o estado local
-      try {
-        // Usamos um pequeno atraso para garantir que o estado do componente foi atualizado
-        setTimeout(() => {
-          if (patientListeningRef.current) {
-            setIsListening(patientListeningRef.current.isListening);
-          }
-        }, 50);
-      } catch (error) {
-        console.error("Erro ao atualizar estado de escuta:", error);
+    // Determinar se o campo é de fala do paciente ou do médico
+    const isPatientField = field === "symptoms";
+    
+    if (isPatientField) {
+      // Usar o componente PatientListening para o campo de sintomas (escuta do paciente)
+      if (patientListeningRef.current) {
+        // Armazenar o campo para o qual a transcrição será enviada
+        setActiveField(field);
+        patientListeningRef.current.toggleListening(field);
+        
+        // Atualiza imediatamente o estado local
+        try {
+          // Usamos um pequeno atraso para garantir que o estado do componente foi atualizado
+          setTimeout(() => {
+            if (patientListeningRef.current) {
+              setIsListening(patientListeningRef.current.isListening);
+            }
+          }, 50);
+        } catch (error) {
+          console.error("Erro ao atualizar estado de escuta:", error);
+        }
+      } else {
+        notificationRef.current?.show({
+          message: "Componente de escuta não está disponível",
+          type: "error"
+        });
       }
     } else {
-      notificationRef.current?.show({
-        message: "Componente de escuta não está disponível",
-        type: "error"
-      });
+      // Para os campos do médico (diagnóstico, tratamento, observações),
+      // usando o VoiceRecognition diretamente
+      if (voiceRecognitionRef.current) {
+        // Atualizar o campo ativo para que a transcrição seja enviada corretamente
+        setActiveField(field);
+        
+        // Iniciar gravação com o campo específico
+        voiceRecognitionRef.current.toggleRecording(field);
+        
+        // Mostrar notificação de início de ditado
+        const fieldLabels: Record<string, string> = {
+          diagnosis: "diagnóstico",
+          treatment: "tratamento",
+          observations: "observações"
+        };
+        
+        notificationRef.current?.show({
+          message: `Iniciando ditado para o campo de ${fieldLabels[field] || field}. Por favor, dite o texto.`,
+          type: "info"
+        });
+      } else {
+        notificationRef.current?.show({
+          message: "Componente de ditado não está disponível",
+          type: "error"
+        });
+      }
     }
   };
   
@@ -567,6 +603,7 @@ export default function Home() {
                 <VoiceRecognition 
                   onTranscriptionComplete={handleTranscriptionComplete} 
                   notificationRef={notificationRef}
+                  ref={voiceRecognitionRef}
                 />
                 
                 <ExportOptions 
@@ -628,6 +665,7 @@ export default function Home() {
                   <VoiceRecognition 
                     onTranscriptionComplete={handleTranscriptionComplete} 
                     notificationRef={notificationRef}
+                    ref={voiceRecognitionRef}
                   />
                   
                   <ExportOptions 
