@@ -26,9 +26,9 @@ function AppRoutes() {
   const [initialVisitChecked, setInitialVisitChecked] = useState(false);
   const [shouldForceLogin, setShouldForceLogin] = useState(false);
 
-  // Verificar se é a primeira visita da sessão
+  // Verificar se é a primeira visita ou se não está logado
   useEffect(() => {
-    // Verificamos se a página atual já é a página de autenticação
+    // Sempre verificamos se o usuário não está na página de autenticação
     const isAuthPage = window.location.pathname === "/auth" || window.location.pathname === "/login";
     
     // Se já estiver na página de autenticação, não forçamos outro redirecionamento
@@ -37,16 +37,16 @@ function AppRoutes() {
       return;
     }
     
-    // Verificamos se é a primeira visita da sessão
-    const hasVisited = sessionStorage.getItem('hasVisited');
-    if (!hasVisited) {
-      // Se for a primeira visita, forçamos o login e marcamos que já visitou
-      sessionStorage.setItem('hasVisited', 'true');
+    // Se não estiver logado, forçamos o redirecionamento para o login
+    if (!user && !isLoading) {
       setShouldForceLogin(true);
     }
     
+    // Sempre limpa a variável hasVisited na inicialização para garantir login na primeira visita
+    sessionStorage.removeItem('hasVisited');
+    
     setInitialVisitChecked(true);
-  }, []);
+  }, [user, isLoading]);
 
   // Aguardar a verificação inicial para evitar redirecionamentos indesejados
   if (!initialVisitChecked) {
