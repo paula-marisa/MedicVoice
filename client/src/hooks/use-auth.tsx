@@ -244,6 +244,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         description: "Sessão encerrada com sucesso",
         variant: "default",
       });
+      
+      // Redireciona para a página de login
+      window.location.href = "/auth";
     },
     onError: (error: Error) => {
       console.error("Erro no logout (callback):", error);

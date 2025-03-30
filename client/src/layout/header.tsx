@@ -28,8 +28,13 @@ export function Header() {
       .slice(0, 2);
   };
   
+  // Obtém a função de navegação para redirecionamento
+  const [, navigate] = useLocation();
+  
   const handleLogout = () => {
     logoutMutation.mutate();
+    // Fechamos o menu dropdown após o clique
+    setIsMenuOpen(false);
   };
   
   return (
