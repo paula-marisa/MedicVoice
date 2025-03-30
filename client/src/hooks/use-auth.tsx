@@ -238,6 +238,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       queryClient.setQueryData(["/api/user"], null);
       setProfileImage(null);
       
+      // Limpar consentimento do localStorage ao fazer logout
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('voice_recognition_consent');
+        console.log("Consentimento de voz removido do localStorage");
+      }
+      
       // Exibe mensagem de sucesso
       toast({
         title: "Logout realizado",
