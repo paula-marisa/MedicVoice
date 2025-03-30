@@ -23,20 +23,40 @@ import { Header } from "@/layout/header";
 // Componente interno para as rotas que verifica se precisa redirecionar para login
 function AppRoutes() {
   const { user, isLoading } = useAuth();
-  const [firstVisit, setFirstVisit] = useState(true);
+  const [initialVisitChecked, setInitialVisitChecked] = useState(false);
+  const [shouldForceLogin, setShouldForceLogin] = useState(false);
 
   // Verificar se é a primeira visita da sessão
   useEffect(() => {
-    const hasVisited = sessionStorage.getItem('hasVisited');
-    if (hasVisited) {
-      setFirstVisit(false);
-    } else {
-      sessionStorage.setItem('hasVisited', 'true');
+    // Verificamos se a página atual já é a página de autenticação
+    const isAuthPage = window.location.pathname === "/auth" || window.location.pathname === "/login";
+    
+    // Se já estiver na página de autenticação, não forçamos outro redirecionamento
+    if (isAuthPage) {
+      setInitialVisitChecked(true);
+      return;
     }
+    
+    // Verificamos se é a primeira visita da sessão
+    const hasVisited = sessionStorage.getItem('hasVisited');
+    if (!hasVisited) {
+      // Se for a primeira visita, forçamos o login e marcamos que já visitou
+      sessionStorage.setItem('hasVisited', 'true');
+      setShouldForceLogin(true);
+    }
+    
+    setInitialVisitChecked(true);
   }, []);
 
-  // Se for a primeira visita ou não estiver autenticado, redirecionar para a página de login
-  if (firstVisit || (!user && !isLoading)) {
+  // Aguardar a verificação inicial para evitar redirecionamentos indesejados
+  if (!initialVisitChecked) {
+    return <div className="flex items-center justify-center min-h-screen">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+    </div>;
+  }
+
+  // Se deve forçar o login e não estiver na página de autenticação
+  if (shouldForceLogin) {
     return <Redirect to="/auth" />;
   }
 
