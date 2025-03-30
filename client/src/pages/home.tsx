@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import ReactDOM from "react-dom/client";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Header } from "@/layout/header";
 import { Footer } from "@/layout/footer";
@@ -6,7 +7,8 @@ import { UtenteForm, type UtenteFormValues } from "@/components/utente-form";
 import { ReportForm, type ReportFormValues } from "@/components/report-form";
 import { ReportList } from "@/components/report-list";
 import { VoiceRecognition } from "@/components/voice-recognition";
-import { PatientListening } from "@/components/patient-listening";
+import { PatientListening, PatientListeningRef } from "@/components/patient-listening";
+import { ListenButton } from "@/components/listen-button";
 import { ExportOptions } from "@/components/export-options";
 import { Notification } from "@/components/ui/notification";
 import { Button } from "@/components/ui/button";
@@ -36,6 +38,10 @@ export default function Home() {
   });
   
   const [transcription, setTranscription] = useState<{ text: string, field: string } | undefined>();
+  
+  // Estado para controlar a escuta do utente
+  const [isListening, setIsListening] = useState(false);
+  const patientListeningRef = useRef<PatientListeningRef | null>(null);
   
   // Refs
   const notificationRef = useRef<{ show: (props: any) => void }>(null);
@@ -420,6 +426,57 @@ export default function Home() {
     setCurrentReportId(null);
     handleClearForm();
   };
+  
+  // Função para alternar a escuta do paciente através do botão inline
+  const togglePatientListening = () => {
+    if (patientListeningRef.current) {
+      patientListeningRef.current.toggleListening();
+    } else {
+      notificationRef.current?.show({
+        message: "Componente de escuta não está disponível",
+        type: "error"
+      });
+    }
+  };
+  
+  // Efeito para monitorar mudanças no estado de escuta via ref
+  useEffect(() => {
+    // Configuramos um intervalor para verificar o estado do componente
+    const interval = setInterval(() => {
+      if (patientListeningRef.current) {
+        setIsListening(patientListeningRef.current.isListening);
+      }
+    }, 200); // Verificar a cada 200ms
+    
+    return () => clearInterval(interval);
+  }, []);
+
+  // Efeito para montar o botão de escuta no formulário após o render
+  useEffect(() => {
+    // Encontra o container criado no ReportForm
+    const container = document.getElementById('symptoms-listen-button-container');
+    
+    if (container) {
+      // Limpa qualquer conteúdo anterior
+      container.innerHTML = '';
+      
+      // Cria um elemento div para o React renderizar o botão
+      const buttonContainer = document.createElement('div');
+      buttonContainer.className = 'listen-button-mount-point';
+      container.appendChild(buttonContainer);
+      
+      // Renderiza o botão no DOM
+      const root = ReactDOM.createRoot(buttonContainer);
+      root.render(
+        <ListenButton 
+          isListening={isListening} 
+          onClick={togglePatientListening}
+          size="sm"
+          variant="inline"
+        />
+      );
+    }
+  }, [isListening]);
 
   return (
     <>
@@ -472,6 +529,7 @@ export default function Home() {
                 <PatientListening
                   onSymptomsDetected={handleSymptomsDetected}
                   notificationRef={notificationRef}
+                  ref={patientListeningRef}
                 />
               
                 <VoiceRecognition 
@@ -525,6 +583,7 @@ export default function Home() {
                   <PatientListening
                     onSymptomsDetected={handleSymptomsDetected}
                     notificationRef={notificationRef}
+                    ref={patientListeningRef}
                   />
                   
                   <VoiceRecognition 

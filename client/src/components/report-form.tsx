@@ -87,9 +87,13 @@ export function ReportForm({ onReportChange, defaultValues, transcription }: Rep
               name="symptoms"
               render={({ field }) => (
                 <FormItem>
-                  <Label htmlFor="symptoms">
-                    Sintomas
-                  </Label>
+                  <div className="flex justify-between items-center">
+                    <Label htmlFor="symptoms">
+                      Sintomas
+                    </Label>
+                    {/* Este é um espaço reservado para o componente ListenButton que será adicionado na página Home */}
+                    <div id="symptoms-listen-button-container" className="h-8"></div>
+                  </div>
                   <FormControl>
                     <Textarea
                       id="symptoms"
