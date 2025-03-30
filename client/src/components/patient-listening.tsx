@@ -26,8 +26,9 @@ interface PatientListeningProps {
 
 // Interface para expor métodos para o componente pai
 export interface PatientListeningRef {
-  toggleListening: () => void;
+  toggleListening: (field?: string) => void;
   isListening: boolean;
+  activeField: string;
 }
 
 export const PatientListening = forwardRef<PatientListeningRef, PatientListeningProps>(
@@ -42,6 +43,7 @@ export const PatientListening = forwardRef<PatientListeningRef, PatientListening
     const [showPrivacyConsent, setShowPrivacyConsent] = useState(false);
     const [hasPatientConsent, setHasPatientConsent] = useState(false);
     const [processNumber, setProcessNumber] = useState<string>(""); // Número do processo do paciente atual
+    const [activeField, setActiveField] = useState<string>("symptoms"); // Campo que está sendo transcrito
     
     const recognitionRef = useRef<any | null>(null);
     const timerRef = useRef<number | null>(null);
@@ -103,7 +105,8 @@ export const PatientListening = forwardRef<PatientListeningRef, PatientListening
     // Expor métodos para o componente pai usando ref
     useImperativeHandle(ref, () => ({
       toggleListening,
-      isListening
+      isListening,
+      activeField
     }));
     
     // Mutação para salvar o consentimento no banco de dados
@@ -254,7 +257,12 @@ export const PatientListening = forwardRef<PatientListeningRef, PatientListening
       }
     };
   
-    const toggleListening = () => {
+    const toggleListening = (field?: string) => {
+      // Atualizar o campo ativo se especificado
+      if (field) {
+        setActiveField(field);
+      }
+      
       // Usando o estado atual para determinar a ação, não o estado do componente
       if (isListening) {
         stopListening();
@@ -326,9 +334,16 @@ export const PatientListening = forwardRef<PatientListeningRef, PatientListening
       // Passar os sintomas para o componente pai
       onSymptomsDetected(formattedSymptoms);
       
-      // Mostrar notificação
+      // Mostrar notificação com indicação do campo
+      const fieldDescriptions: Record<string, string> = {
+        symptoms: "Sintomas",
+        diagnosis: "Diagnóstico",
+        treatment: "Tratamento",
+        observations: "Observações"
+      };
+      
       notificationRef.current?.show({
-        message: "Sintomas adicionados ao relatório com sucesso!",
+        message: `Texto adicionado ao campo ${fieldDescriptions[activeField] || "Sintomas"} com sucesso!`,
         type: "success"
       });
       

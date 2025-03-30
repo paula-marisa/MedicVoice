@@ -41,6 +41,7 @@ export default function Home() {
   
   // Estado para controlar a escuta do utente
   const [isListening, setIsListening] = useState(false);
+  const [activeField, setActiveField] = useState<string>("symptoms");
   const patientListeningRef = useRef<PatientListeningRef | null>(null);
   
   // Refs
@@ -168,21 +169,26 @@ export default function Home() {
   };
   
   // Handle symptoms detected by the patient listening component
-  const handleSymptomsDetected = (symptoms: string) => {
-    // Update symptoms field with detected symptoms
+  const handleSymptomsDetected = (text: string) => {
+    // Usar o campo que está ativo no momento da transcrição
+    const field = activeField || "symptoms";
+    
+    // Update the report field with detected text
     const updatedReport = { ...report };
     
-    // If symptoms field already has content, append the new symptoms
-    if (updatedReport.symptoms && updatedReport.symptoms.trim() !== "") {
-      updatedReport.symptoms = updatedReport.symptoms + "\n\n" + symptoms;
+    // Se o campo já tem conteúdo, vamos adicionar a nova transcrição
+    if (updatedReport[field as keyof ReportFormValues] && 
+        updatedReport[field as keyof ReportFormValues].trim() !== "") {
+      updatedReport[field as keyof ReportFormValues] = 
+        updatedReport[field as keyof ReportFormValues] + "\n\n" + text;
     } else {
-      updatedReport.symptoms = symptoms;
+      updatedReport[field as keyof ReportFormValues] = text;
     }
     
     setReport(updatedReport);
     
     // Also update transcription state to trigger any UI updates
-    setTranscription({ text: symptoms, field: "symptoms" });
+    setTranscription({ text, field });
   };
 
   // Handle PDF export
@@ -428,8 +434,10 @@ export default function Home() {
   };
   
   // Função para alternar a escuta do paciente através do botão inline
-  const togglePatientListening = () => {
+  const togglePatientListening = (field: string = "symptoms") => {
     if (patientListeningRef.current) {
+      // Armazenar o campo para o qual a transcrição será enviada
+      setActiveField(field);
       patientListeningRef.current.toggleListening();
       
       // Atualiza imediatamente o estado local
@@ -459,10 +467,38 @@ export default function Home() {
   };
 
   // Criar um componente de botão para ser injetado no ReportForm
+  // Usamos diferentes componentes conforme o campo do formulário
+  const DiagnosisListenButton = () => (
+    <ListenButton 
+      isListening={isListening} 
+      onClick={() => togglePatientListening("diagnosis")}
+      size="sm"
+      variant="inline"
+    />
+  );
+  
   const SymptomsListenButton = () => (
     <ListenButton 
       isListening={isListening} 
-      onClick={togglePatientListening}
+      onClick={() => togglePatientListening("symptoms")}
+      size="sm"
+      variant="inline"
+    />
+  );
+  
+  const TreatmentListenButton = () => (
+    <ListenButton 
+      isListening={isListening} 
+      onClick={() => togglePatientListening("treatment")}
+      size="sm"
+      variant="inline"
+    />
+  );
+  
+  const ObservationsListenButton = () => (
+    <ListenButton 
+      isListening={isListening} 
+      onClick={() => togglePatientListening("observations")}
       size="sm"
       variant="inline"
     />
@@ -490,7 +526,10 @@ export default function Home() {
                   onReportChange={setReport} 
                   defaultValues={report} 
                   transcription={transcription}
-                  listenButton={<SymptomsListenButton />}
+                  diagnoseButton={<DiagnosisListenButton />}
+                  symptomsButton={<SymptomsListenButton />}
+                  treatmentButton={<TreatmentListenButton />}
+                  observationsButton={<ObservationsListenButton />}
                 />
                 
                 <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3">
@@ -554,7 +593,10 @@ export default function Home() {
                     onReportChange={setReport} 
                     defaultValues={report} 
                     transcription={transcription}
-                    listenButton={<SymptomsListenButton />}
+                    diagnoseButton={<DiagnosisListenButton />}
+                    symptomsButton={<SymptomsListenButton />}
+                    treatmentButton={<TreatmentListenButton />}
+                    observationsButton={<ObservationsListenButton />}
                   />
                   
                   <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3">
