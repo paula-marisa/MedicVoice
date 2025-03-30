@@ -517,11 +517,13 @@ export default function Home() {
               </div>
               
               <div className="lg:col-span-1 space-y-6">
-                <PatientListening
-                  onSymptomsDetected={handleSymptomsDetected}
-                  notificationRef={notificationRef}
-                  ref={patientListeningRef}
-                />
+                <div style={{ display: 'none' }}>
+                  <PatientListening
+                    onSymptomsDetected={handleSymptomsDetected}
+                    notificationRef={notificationRef}
+                    ref={patientListeningRef}
+                  />
+                </div>
               
                 <VoiceRecognition 
                   onTranscriptionComplete={handleTranscriptionComplete} 
@@ -572,11 +574,13 @@ export default function Home() {
                 </div>
                 
                 <div className="lg:col-span-1 space-y-6">
-                  <PatientListening
-                    onSymptomsDetected={handleSymptomsDetected}
-                    notificationRef={notificationRef}
-                    ref={patientListeningRef}
-                  />
+                  <div style={{ display: 'none' }}>
+                    <PatientListening
+                      onSymptomsDetected={handleSymptomsDetected}
+                      notificationRef={notificationRef}
+                      ref={patientListeningRef}
+                    />
+                  </div>
                   
                   <VoiceRecognition 
                     onTranscriptionComplete={handleTranscriptionComplete} 

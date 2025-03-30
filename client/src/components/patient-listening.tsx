@@ -371,51 +371,24 @@ export const PatientListening = forwardRef<PatientListeningRef, PatientListening
               </div>
             </div>
             
-            <div className="flex items-center justify-center mb-6">
-              <div className="w-full bg-neutral-100 dark:bg-neutral-800 rounded-lg p-6 text-center">
-                <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium mb-2">
-                  {isListening ? (
-                    <Badge variant="destructive" className="flex items-center gap-1">
-                      <span className="relative flex h-3 w-3">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-                      </span>
-                      Escutando...
-                    </Badge>
-                  ) : (
-                    <Badge variant="outline" className="flex items-center gap-1">
-                      Escuta inativa
-                    </Badge>
-                  )}
+            {isListening && (
+              <div className="mt-4 text-sm text-left bg-white dark:bg-neutral-900 p-3 rounded border overflow-y-auto max-h-24">
+                {transcript && <p className="text-neutral-800 dark:text-neutral-200">{transcript}</p>}
+                {interimTranscript && (
+                  <p className="text-neutral-500 italic">{interimTranscript}</p>
+                )}
+                <div className="flex items-center mt-2">
+                  <Badge variant="destructive" className="flex items-center gap-1">
+                    <span className="relative flex h-3 w-3">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                    </span>
+                    Escutando...
+                  </Badge>
+                  <span className="ml-2 text-sm">{formattedTime()}</span>
                 </div>
-                <div className="text-2xl font-semibold">{formattedTime()}</div>
-                
-                {/* Mostrar texto sendo transcrito em tempo real */}
-                {isListening && (
-                  <div className="mt-4 text-sm text-left bg-white dark:bg-neutral-900 p-3 rounded border overflow-y-auto max-h-24">
-                    {transcript && <p className="text-neutral-800 dark:text-neutral-200">{transcript}</p>}
-                    {interimTranscript && (
-                      <p className="text-neutral-500 italic">{interimTranscript}</p>
-                    )}
-                  </div>
-                )}
               </div>
-            </div>
-            
-            <div className="flex flex-col items-center">
-              <Button 
-                size="lg"
-                variant={isListening ? "destructive" : "default"}
-                className="h-16 w-16 rounded-full flex items-center justify-center"
-                onClick={toggleListening}
-              >
-                {isListening ? (
-                  <Ear className="h-6 w-6" />
-                ) : (
-                  <Stethoscope className="h-6 w-6" />
-                )}
-              </Button>
-            </div>
+            )}
           </CardContent>
         </Card>
         
