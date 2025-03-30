@@ -60,8 +60,12 @@ function AppRoutes() {
     return <Redirect to="/auth" />;
   }
 
-  // Adiciona o cabeçalho para todos os usuários autenticados, mesmo em páginas admin 
-  const showHeader = user && window.location.pathname !== "/auth" && window.location.pathname !== "/login";
+  // Adiciona o cabeçalho apenas se o usuário estiver autenticado, não estiver em páginas de autenticação,
+  // e não estiver na página de admin (que tem seu próprio cabeçalho)
+  const showHeader = user && 
+                     window.location.pathname !== "/auth" && 
+                     window.location.pathname !== "/login" &&
+                     !window.location.pathname.startsWith("/admin");
 
   return (
     <>
