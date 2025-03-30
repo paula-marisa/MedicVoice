@@ -66,7 +66,7 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<string>("register");
   const [searchReport, setSearchReport] = useState<string>("");
   const [, setLocation] = useLocation();
-  const { user, registerMutation, logoutMutation } = useAuth();
+  const { user, profileImage, registerMutation, logoutMutation } = useAuth();
   const { toast } = useToast();
   const [isAddingPatients, setIsAddingPatients] = useState(false);
   const [patientCount, setPatientCount] = useState(1);
@@ -76,6 +76,16 @@ export default function AdminPage() {
   // Cache para datas e IPs
   const [logDatesCache, setLogDatesCache] = useState<{[key: number]: string}>({});
   const [logIPsCache, setLogIPsCache] = useState<{[key: number]: string}>({});
+  
+  // Obtém as iniciais do nome do usuário para o avatar
+  const getInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map((part) => part[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
 
   // Redirecionar se não for admin
   useEffect(() => {
