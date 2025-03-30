@@ -346,12 +346,26 @@ export const VoiceRecognition = forwardRef<VoiceRecognitionRef, VoiceRecognition
       if (isRecording) {
         stopRecording();
       } else {
-        // Verificar se já temos consentimento
-        if (hasDoctorConsent) {
-          startRecording();
-        } else {
-          // Mostrar diálogo de consentimento
-          setShowPrivacyConsent(true);
+        // Verificar primeiro o consentimento global no localStorage (definido no menu de perfil)
+        if (typeof window !== 'undefined') {
+          const globalConsent = localStorage.getItem('voice_recognition_consent');
+          
+          if (globalConsent === 'true') {
+            // Se tiver consentimento global, verificar consentimento específico
+            if (hasDoctorConsent) {
+              startRecording();
+            } else {
+              // Mostrar diálogo de consentimento específico
+              setShowPrivacyConsent(true);
+            }
+          } else {
+            // Se não tiver consentimento global, mostrar mensagem para ativar no perfil
+            notificationRef.current?.show({
+              message: "Ative o consentimento para gravação de voz no seu perfil",
+              type: "warning",
+              description: "Clique no seu avatar no canto superior direito e ative o consentimento para voz"
+            });
+          }
         }
       }
     };
