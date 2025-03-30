@@ -518,6 +518,7 @@ export function VoiceRecognition({ onTranscriptionComplete, notificationRef, pat
           }
         ]}
         dataRetentionPeriod="90 dias"
+        privacyPolicyUrl="/privacy-policy"
       />
 
       {/* Diálogo de ajuda */}

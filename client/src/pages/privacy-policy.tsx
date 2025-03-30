@@ -1,136 +1,165 @@
-import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, FileText, Shield } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
+import { Link } from "wouter";
 
 export default function PrivacyPolicy() {
   return (
-    <div className="container max-w-4xl py-10 space-y-8">
-      <div className="flex justify-between items-center pb-4 border-b">
-        <div className="flex items-center gap-2">
-          <FileText className="h-6 w-6 text-primary" />
-          <h1 className="text-2xl font-bold">Política de Privacidade</h1>
-        </div>
-        <Button variant="ghost" asChild>
-          <Link href="/">
-            <ChevronLeft className="h-4 w-4 mr-2" />
+    <div className="container max-w-4xl py-10">
+      <div className="mb-6">
+        <Button variant="ghost" size="sm" asChild className="gap-1 mb-6">
+          <Link to="/">
+            <ArrowLeft className="h-4 w-4" />
             Voltar
           </Link>
         </Button>
+        <h1 className="text-3xl font-bold mb-4">Política de Privacidade</h1>
+        <p className="text-muted-foreground mb-8">
+          Última atualização: {new Date().toLocaleDateString('pt-PT')}
+        </p>
       </div>
-      
-      <div className="prose dark:prose-invert max-w-none">
-        <div className="flex items-center gap-2 text-primary mb-2">
-          <Shield className="h-5 w-5" />
-          <h2 className="text-primary m-0">Conformidade com RGPD/LGPD</h2>
-        </div>
-        
-        <p>
-          O Assistente de Relatórios Médicos foi desenvolvido com foco na conformidade com o Regulamento Geral de Proteção de Dados (RGPD/GDPR) da União Europeia e a Lei Geral de Proteção de Dados (LGPD) do Brasil. Esta política de privacidade descreve como coletamos, usamos, armazenamos e protegemos seus dados.
-        </p>
-        
-        <h3>1. Quais dados coletamos</h3>
-        <p>
-          Nossa aplicação coleta diferentes tipos de dados:
-        </p>
-        <ul>
-          <li>
-            <strong>Dados de conta e autenticação:</strong> Nome de usuário, senha (armazenada de forma segura e criptografada), nome completo, especialidade médica
-          </li>
-          <li>
-            <strong>Dados de relatórios médicos:</strong> Informações inseridas manualmente ou por meio de ditado de voz sobre diagnósticos, tratamentos e observações de pacientes
-          </li>
-          <li>
-            <strong>Dados de áudio temporários:</strong> Durante o uso das funcionalidades de reconhecimento de voz (ditado médico e escuta do paciente), processamos dados de áudio para transcrição, que são processados localmente no navegador
-          </li>
-          <li>
-            <strong>Dados de auditoria:</strong> Para rastreabilidade e segurança, registramos informações sobre ações realizadas na plataforma, incluindo criação, atualização e exportação de relatórios, junto com endereço IP e timestamp
-          </li>
-        </ul>
-        
-        <h3>2. Como usamos seus dados</h3>
-        <p>
-          Utilizamos os dados coletados exclusivamente para:
-        </p>
-        <ul>
-          <li>Fornecer as funcionalidades da plataforma, incluindo criação e gestão de relatórios médicos</li>
-          <li>Facilitar o fluxo de trabalho médico com ferramentas de reconhecimento de voz e análise de sintomas</li>
-          <li>Manter registros de auditoria para fins de segurança e conformidade</li>
-          <li>Melhorar nossas funcionalidades com base em dados agregados e anonimizados de uso</li>
-        </ul>
-        
-        <h3>3. Base legal para processamento</h3>
-        <p>
-          Processamos seus dados com base nas seguintes justificativas legais:
-        </p>
-        <ul>
-          <li><strong>Consentimento:</strong> Para funcionalidades específicas como reconhecimento de voz, sempre solicitamos seu consentimento explícito antes de ativar a coleta</li>
-          <li><strong>Execução de contrato:</strong> Para fornecer os serviços acordados em nossos termos de uso</li>
-          <li><strong>Interesse legítimo:</strong> Para manter a segurança e funcionalidade da plataforma</li>
-          <li><strong>Obrigação legal:</strong> Para manter registros conforme exigido por regulamentações de saúde</li>
-        </ul>
-        
-        <h3>4. Retenção de dados</h3>
-        <p>
-          Mantemos seus dados apenas pelo tempo necessário:
-        </p>
-        <ul>
-          <li><strong>Dados de conta:</strong> Mantidos enquanto sua conta estiver ativa</li>
-          <li><strong>Relatórios médicos:</strong> Armazenados conforme períodos legais de retenção de prontuários médicos</li>
-          <li><strong>Dados de transcrição temporários:</strong> Excluídos imediatamente após o processamento ou em até 24 horas</li>
-          <li><strong>Logs de auditoria:</strong> Mantidos por 90 dias para fins de segurança e conformidade</li>
-        </ul>
-        
-        <h3>5. Seus direitos como titular de dados</h3>
-        <p>
-          De acordo com o RGPD e LGPD, você tem os seguintes direitos:
-        </p>
-        <ul>
-          <li><strong>Acesso:</strong> Solicitar quais dados pessoais temos sobre você</li>
-          <li><strong>Retificação:</strong> Corrigir dados imprecisos</li>
-          <li><strong>Exclusão:</strong> Solicitar a remoção de seus dados</li>
-          <li><strong>Restrição:</strong> Limitar como usamos seus dados</li>
-          <li><strong>Portabilidade:</strong> Receber seus dados em formato estruturado</li>
-          <li><strong>Objeção:</strong> Contestar o processamento de seus dados</li>
-          <li><strong>Retirada de consentimento:</strong> Revogar permissões previamente concedidas</li>
-        </ul>
-        <p>
-          Para exercer qualquer desses direitos, entre em contato com nossa equipe através da página de suporte ou pelo e-mail privacy@exemplo.com.
-        </p>
-        
-        <h3>6. Segurança de dados</h3>
-        <p>
-          Implementamos medidas técnicas e organizacionais para proteger seus dados:
-        </p>
-        <ul>
-          <li>Criptografia de dados em repouso e em trânsito</li>
-          <li>Controles de acesso estritos baseados em funções</li>
-          <li>Logs de auditoria para todas as atividades de processamento de dados</li>
-          <li>Processamento local sempre que possível</li>
-          <li>Backup regular e procedimentos de recuperação de desastres</li>
-        </ul>
-        
-        <h3>7. Compartilhamento de dados</h3>
-        <p>
-          Não compartilhamos seus dados com terceiros, exceto:
-        </p>
-        <ul>
-          <li>Quando você solicita explicitamente a exportação para sistemas externos (como SClínico)</li>
-          <li>Quando exigido por lei ou ordem judicial</li>
-        </ul>
-        <p>
-          Em todos os casos de compartilhamento de dados, garantimos que as medidas adequadas de proteção sejam implementadas.
-        </p>
-        
-        <h3>8. Atualizações desta política</h3>
-        <p>
-          Esta política de privacidade pode ser atualizada periodicamente para refletir alterações em nossas práticas. Notificaremos sobre alterações significativas via e-mail ou notificação na aplicação.
-        </p>
-        
-        <div className="mt-8 border-t pt-4">
-          <p className="text-sm text-muted-foreground">
-            Última atualização: {new Date().toLocaleDateString('pt-PT')}
+
+      <div className="space-y-8 text-sm leading-6">
+        <section>
+          <h2 className="text-xl font-semibold mb-3">1. Introdução</h2>
+          <p className="mb-3">
+            Esta Política de Privacidade descreve como o Assistente de Relatórios Médicos coleta, utiliza, processa e protege as suas informações pessoais e os dados relacionados aos pacientes durante a utilização do nosso serviço.
           </p>
-        </div>
+          <p>
+            Esta política está em conformidade com o Regulamento Geral de Proteção de Dados (RGPD) da União Europeia e com a Lei Geral de Proteção de Dados (LGPD) do Brasil, garantindo a proteção e privacidade dos seus dados e dos dados dos pacientes que possa processar através da nossa plataforma.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="text-xl font-semibold mb-3">2. Dados Coletados</h2>
+          <p className="mb-3">
+            O Assistente de Relatórios Médicos coleta e processa os seguintes tipos de dados:
+          </p>
+
+          <h3 className="text-lg font-medium mt-4 mb-2">2.1. Dados do Profissional de Saúde</h3>
+          <ul className="list-disc pl-6 space-y-2">
+            <li>Informações de conta (nome, e-mail, especialidade médica)</li>
+            <li>Credenciais de acesso (nome de utilizador e senha encriptada)</li>
+            <li>Registos de atividade na plataforma</li>
+            <li>Preferências de utilização</li>
+          </ul>
+
+          <h3 className="text-lg font-medium mt-4 mb-2">2.2. Dados dos Pacientes</h3>
+          <ul className="list-disc pl-6 space-y-2">
+            <li>Informações demográficas (nome, idade, género, número de processo)</li>
+            <li>Dados clínicos (sintomas, diagnósticos, tratamentos)</li>
+            <li>Registos áudio temporários (quando a funcionalidade de escuta do utente é utilizada)</li>
+            <li>Transcrições de áudio (processadas a partir dos registos áudio)</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 className="text-xl font-semibold mb-3">3. Finalidade do Processamento de Dados</h2>
+          <p className="mb-3">
+            Os dados coletados são utilizados exclusivamente para:
+          </p>
+
+          <ul className="list-disc pl-6 space-y-2">
+            <li>Facilitar a criação e gestão de relatórios médicos</li>
+            <li>Permitir a transcrição de consultas médicas com o consentimento do paciente</li>
+            <li>Melhorar a eficiência do atendimento médico</li>
+            <li>Garantir a segurança e integridade dos dados</li>
+            <li>Cumprir com obrigações legais e regulatórias</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 className="text-xl font-semibold mb-3">4. Processamento de Áudio e Reconhecimento de Voz</h2>
+          <p className="mb-3">
+            Quando as funcionalidades de reconhecimento de voz ou escuta do utente são utilizadas, aplicam-se as seguintes condições:
+          </p>
+
+          <ul className="list-disc pl-6 space-y-2">
+            <li>O consentimento explícito é sempre solicitado antes de iniciar qualquer gravação</li>
+            <li>Os dados de áudio são processados temporariamente e não são armazenados permanentemente</li>
+            <li>As transcrições geradas são utilizadas apenas para facilitar a criação do relatório médico</li>
+            <li>Os dados são processados com medidas de segurança apropriadas para garantir a confidencialidade</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 className="text-xl font-semibold mb-3">5. Medidas de Segurança</h2>
+          <p className="mb-3">
+            Implementamos medidas técnicas e organizacionais para proteger os seus dados pessoais contra:
+          </p>
+
+          <ul className="list-disc pl-6 space-y-2">
+            <li>Acesso não autorizado</li>
+            <li>Divulgação, alteração ou destruição não autorizada</li>
+            <li>Perda acidental</li>
+          </ul>
+
+          <p className="mt-3">
+            Estas medidas incluem encriptação de dados, controles de acesso rigorosos, auditorias de segurança regulares e formação contínua da nossa equipe.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="text-xl font-semibold mb-3">6. Retenção de Dados</h2>
+          <p className="mb-3">
+            Os dados são retidos apenas pelo período necessário para cumprir as finalidades para as quais foram coletados, conforme detalhado abaixo:
+          </p>
+
+          <ul className="list-disc pl-6 space-y-2">
+            <li>Dados de áudio temporários: excluídos imediatamente após o processamento (geralmente dentro de minutos)</li>
+            <li>Transcrições: retidas por até 90 dias, ou até que o relatório médico seja finalizado</li>
+            <li>Relatórios médicos: retidos conforme exigido pela legislação aplicável e políticas de retenção médica</li>
+            <li>Registos de consentimento: mantidos por pelo menos 5 anos conforme exigido pelo RGPD e LGPD</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2 className="text-xl font-semibold mb-3">7. Direitos dos Titulares dos Dados</h2>
+          <p className="mb-3">
+            De acordo com o RGPD e a LGPD, os titulares dos dados têm os seguintes direitos:
+          </p>
+
+          <ul className="list-disc pl-6 space-y-2">
+            <li>Direito de acesso aos dados pessoais</li>
+            <li>Direito de retificação de dados inexatos</li>
+            <li>Direito ao apagamento dos dados ("direito ao esquecimento")</li>
+            <li>Direito à limitação do processamento</li>
+            <li>Direito à portabilidade dos dados</li>
+            <li>Direito de oposição ao processamento</li>
+            <li>Direito de não estar sujeito a decisões automatizadas, incluindo criação de perfil</li>
+          </ul>
+
+          <p className="mt-3">
+            Para exercer qualquer um destes direitos, entre em contato conosco através dos canais indicados no final desta política.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="text-xl font-semibold mb-3">8. Transferências Internacionais de Dados</h2>
+          <p>
+            Não realizamos transferências de dados para fora do Espaço Económico Europeu (EEE) ou do Brasil. Todos os dados são processados e armazenados em servidores localizados dentro do EEE, em conformidade com as legislações de proteção de dados aplicáveis.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="text-xl font-semibold mb-3">9. Alterações a Esta Política</h2>
+          <p>
+            Podemos atualizar esta política periodicamente. Quando fizermos alterações significativas, iremos notificá-lo através de um aviso visível na nossa plataforma. Incentivamos a consulta regular desta política para estar informado sobre como estamos protegendo as suas informações.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="text-xl font-semibold mb-3">10. Contacto</h2>
+          <p className="mb-3">
+            Se tiver dúvidas sobre esta Política de Privacidade ou sobre as nossas práticas de proteção de dados, entre em contato conosco:
+          </p>
+
+          <div className="bg-muted p-4 rounded-md">
+            <p><strong>Assistente de Relatórios Médicos</strong></p>
+            <p>E-mail: privacidade@relatoriospediatricos.pt</p>
+            <p>Telefone: +351 210 000 000</p>
+            <p>Endereço: Avenida da República, 50, 1050-196 Lisboa, Portugal</p>
+          </div>
+        </section>
       </div>
     </div>
   );

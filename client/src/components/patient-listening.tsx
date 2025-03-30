@@ -464,6 +464,7 @@ export const PatientListening = forwardRef<PatientListeningRef, PatientListening
             }
           ]}
           dataRetentionPeriod="90 dias"
+          privacyPolicyUrl="/privacy-policy"
         />
         
         {/* Diálogo de resultado da análise de sintomas */}

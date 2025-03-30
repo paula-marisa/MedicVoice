@@ -10,7 +10,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
-import { Info, Lock, Shield } from "lucide-react";
+import { Info, Lock, Shield, ExternalLink } from "lucide-react";
 
 interface PrivacyConsentDialogProps {
   open: boolean;
@@ -23,6 +23,7 @@ interface PrivacyConsentDialogProps {
     description: string;
   }>;
   dataRetentionPeriod?: string;
+  privacyPolicyUrl?: string;
 }
 
 export function PrivacyConsentDialog({
@@ -32,7 +33,8 @@ export function PrivacyConsentDialog({
   title,
   description,
   privacyItems,
-  dataRetentionPeriod = "90 dias"
+  dataRetentionPeriod = "90 dias",
+  privacyPolicyUrl
 }: PrivacyConsentDialogProps) {
   const [itemConsents, setItemConsents] = useState<{ [key: string]: boolean }>(
     privacyItems.reduce((acc, item) => ({ ...acc, [item.id]: false }), {})
@@ -100,9 +102,19 @@ export function PrivacyConsentDialog({
           <div className="bg-muted/50 rounded-lg p-3">
             <div className="flex items-start space-x-2">
               <Info className="w-4 h-4 text-muted-foreground mt-0.5" />
-              <p className="text-xs text-muted-foreground">
-                Todos os dados processados serão mantidos de forma segura e criptografada por um período máximo de {dataRetentionPeriod}, conforme as políticas de proteção de dados. Você pode solicitar a exclusão antecipada destes dados a qualquer momento.
-              </p>
+              <div className="space-y-2">
+                <p className="text-xs text-muted-foreground">
+                  Todos os dados processados serão mantidos de forma segura e criptografada por um período máximo de {dataRetentionPeriod}, conforme as políticas de proteção de dados. Você pode solicitar a exclusão antecipada destes dados a qualquer momento.
+                </p>
+                {privacyPolicyUrl && (
+                  <p className="text-xs">
+                    <a href={privacyPolicyUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
+                      Ver política de privacidade completa
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </p>
+                )}
+              </div>
             </div>
           </div>
         </div>
