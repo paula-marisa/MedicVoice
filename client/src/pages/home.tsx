@@ -598,13 +598,13 @@ export default function Home() {
                     notificationRef={notificationRef}
                     ref={patientListeningRef}
                   />
+                  
+                  <VoiceRecognition 
+                    onTranscriptionComplete={handleTranscriptionComplete} 
+                    notificationRef={notificationRef}
+                    ref={voiceRecognitionRef}
+                  />
                 </div>
-                
-                <VoiceRecognition 
-                  onTranscriptionComplete={handleTranscriptionComplete} 
-                  notificationRef={notificationRef}
-                  ref={voiceRecognitionRef}
-                />
                 
                 <ExportOptions 
                   onExportPDF={handleExportPDF} 
@@ -660,13 +660,13 @@ export default function Home() {
                       notificationRef={notificationRef}
                       ref={patientListeningRef}
                     />
+                    
+                    <VoiceRecognition 
+                      onTranscriptionComplete={handleTranscriptionComplete} 
+                      notificationRef={notificationRef}
+                      ref={voiceRecognitionRef}
+                    />
                   </div>
-                  
-                  <VoiceRecognition 
-                    onTranscriptionComplete={handleTranscriptionComplete} 
-                    notificationRef={notificationRef}
-                    ref={voiceRecognitionRef}
-                  />
                   
                   <ExportOptions 
                     onExportPDF={handleExportPDF} 
