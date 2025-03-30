@@ -458,32 +458,15 @@ export default function Home() {
     }
   };
 
-  // Efeito para montar o botão de escuta no formulário após o render
-  useEffect(() => {
-    // Encontra o container criado no ReportForm
-    const container = document.getElementById('symptoms-listen-button-container');
-    
-    if (container) {
-      // Limpa qualquer conteúdo anterior
-      container.innerHTML = '';
-      
-      // Cria um elemento div para o React renderizar o botão
-      const buttonContainer = document.createElement('div');
-      buttonContainer.className = 'listen-button-mount-point';
-      container.appendChild(buttonContainer);
-      
-      // Renderiza o botão no DOM
-      const root = ReactDOM.createRoot(buttonContainer);
-      root.render(
-        <ListenButton 
-          isListening={isListening} 
-          onClick={togglePatientListening}
-          size="sm"
-          variant="inline"
-        />
-      );
-    }
-  }, [isListening]);
+  // Criar um componente de botão para ser injetado no ReportForm
+  const SymptomsListenButton = () => (
+    <ListenButton 
+      isListening={isListening} 
+      onClick={togglePatientListening}
+      size="sm"
+      variant="inline"
+    />
+  );
 
   return (
     <>
@@ -506,7 +489,8 @@ export default function Home() {
                 <ReportForm 
                   onReportChange={setReport} 
                   defaultValues={report} 
-                  transcription={transcription} 
+                  transcription={transcription}
+                  listenButton={<SymptomsListenButton />}
                 />
                 
                 <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3">
@@ -567,7 +551,8 @@ export default function Home() {
                   <ReportForm 
                     onReportChange={setReport} 
                     defaultValues={report} 
-                    transcription={transcription} 
+                    transcription={transcription}
+                    listenButton={<SymptomsListenButton />}
                   />
                   
                   <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3">

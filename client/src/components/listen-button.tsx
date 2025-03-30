@@ -60,10 +60,16 @@ export function ListenButton({
     return (
       <div className={`flex items-center gap-2 ${className}`}>
         <Button
+          type="button"
           size="sm"
           variant={isListening ? "destructive" : "outline"}
           className={`rounded-full ${buttonSize} flex items-center justify-center relative`}
-          onClick={onClick}
+          onClick={(e) => { 
+            e.preventDefault(); 
+            e.stopPropagation(); 
+            onClick(); 
+            return false; 
+          }}
           title={isListening ? "Parar Escuta" : "Iniciar Escuta"}
         >
           {isListening ? (
@@ -93,10 +99,16 @@ export function ListenButton({
   return (
     <div className={`flex flex-col items-center ${className}`}>
       <Button 
+        type="button"
         size="lg"
         variant={isListening ? "destructive" : "default"}
         className={`${buttonSize} rounded-full mb-2 flex items-center justify-center`}
-        onClick={onClick}
+        onClick={(e) => { 
+          e.preventDefault(); 
+          e.stopPropagation(); 
+          onClick(); 
+          return false; 
+        }}
       >
         {isListening ? (
           <Ear className={iconSize} />

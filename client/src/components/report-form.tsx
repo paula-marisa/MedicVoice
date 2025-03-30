@@ -22,10 +22,11 @@ interface ReportFormProps {
   transcription?: {
     text: string;
     field: string;
-  }
+  };
+  listenButton?: React.ReactNode; // Componente de botão para escuta
 }
 
-export function ReportForm({ onReportChange, defaultValues, transcription }: ReportFormProps) {
+export function ReportForm({ onReportChange, defaultValues, transcription, listenButton }: ReportFormProps) {
   const form = useForm<ReportFormValues>({
     resolver: zodResolver(reportSchema),
     defaultValues: {
@@ -91,8 +92,7 @@ export function ReportForm({ onReportChange, defaultValues, transcription }: Rep
                     <Label htmlFor="symptoms">
                       Sintomas
                     </Label>
-                    {/* Este é um espaço reservado para o componente ListenButton que será adicionado na página Home */}
-                    <div id="symptoms-listen-button-container" className="h-8"></div>
+                    {listenButton}
                   </div>
                   <FormControl>
                     <Textarea
