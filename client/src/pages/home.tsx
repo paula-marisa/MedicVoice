@@ -517,7 +517,8 @@ export default function Home() {
               </div>
               
               <div className="lg:col-span-1 space-y-6">
-                <div style={{ display: 'none' }}>
+                {/* O componente PatientListening fica aqui, escondido, apenas para manter referência */}
+                <div style={{ display: 'none', height: 0, width: 0, overflow: 'hidden' }}>
                   <PatientListening
                     onSymptomsDetected={handleSymptomsDetected}
                     notificationRef={notificationRef}
@@ -574,7 +575,8 @@ export default function Home() {
                 </div>
                 
                 <div className="lg:col-span-1 space-y-6">
-                  <div style={{ display: 'none' }}>
+                  {/* O componente PatientListening fica aqui, escondido, apenas para manter referência */}
+                  <div style={{ display: 'none', height: 0, width: 0, overflow: 'hidden' }}>
                     <PatientListening
                       onSymptomsDetected={handleSymptomsDetected}
                       notificationRef={notificationRef}
