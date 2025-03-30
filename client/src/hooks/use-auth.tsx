@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useContext, useState } from "react";
+import { createContext, ReactNode, useContext, useState, useEffect } from "react";
 import {
   useQuery,
   useMutation,
@@ -39,9 +39,8 @@ export function useAuth() {
 // Provider de autenticação
 export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
-  const [profileImage, setProfileImage] = useState<string | null>(
-    localStorage.getItem('profileImage')
-  );
+  // Carrega o perfil do usuário quando ele for autenticado
+  const [profileImage, setProfileImage] = useState<string | null>(null);
 
   // Query para obter usuário autenticado
   const {
@@ -85,6 +84,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   const user = userData || null;
+  
+  // Carrega a imagem de perfil específica do usuário quando o usuário muda
+  useEffect(() => {
+    if (user) {
+      const savedImage = localStorage.getItem(`profileImage_${user.id}`);
+      if (savedImage) {
+        setProfileImage(savedImage);
+      } else {
+        setProfileImage(null);
+      }
+    } else {
+      setProfileImage(null);
+    }
+  }, [user]);
 
   // Mutation para login
   const loginMutation = useMutation<User, Error, LoginData>({
@@ -221,8 +234,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
     onSuccess: () => {
       console.log("Logout bem-sucedido");
-      // Limpa o cache do usuário
+      // Limpa o cache do usuário e a imagem de perfil
       queryClient.setQueryData(["/api/user"], null);
+      setProfileImage(null);
       
       // Exibe mensagem de sucesso
       toast({
@@ -244,7 +258,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Função para atualizar a imagem de perfil
   const updateProfileImage = (imageUrl: string) => {
     setProfileImage(imageUrl);
-    localStorage.setItem('profileImage', imageUrl);
+    if (user) {
+      localStorage.setItem(`profileImage_${user.id}`, imageUrl);
+    }
   };
 
   return (
