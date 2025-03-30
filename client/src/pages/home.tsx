@@ -11,6 +11,7 @@ import { PatientListening, PatientListeningRef } from "@/components/patient-list
 import { ListenButton } from "@/components/listen-button";
 import { ExportOptions } from "@/components/export-options";
 import { Notification } from "@/components/ui/notification";
+import { PrivacyConsentDialog } from "@/components/privacy-consent-dialog";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { queryClient, apiRequest } from "@/lib/queryClient";
@@ -21,6 +22,14 @@ import { jsPDF } from "jspdf";
 export default function Home() {
   // State para autenticação
   const { user } = useAuth();
+  
+  // Verificar se é a primeira visita e mostrar o diálogo de consentimento
+  useEffect(() => {
+    // Se for médico ou enfermeiro, mostra diálogo de consentimento na primeira visita
+    if (user && (user.role === 'doctor' || user.role === 'nurse')) {
+      setShowConsentDialog(true);
+    }
+  }, [user]);
   
   // State para dados do utente e relatório
   const [patient, setPatient] = useState<UtenteFormValues>({
@@ -46,6 +55,10 @@ export default function Home() {
   
   // Ref para o componente VoiceRecognition (ditado do médico)
   const voiceRecognitionRef = useRef<any>(null);
+  
+  // Estado para controlar o consentimento para coleta de dados
+  const [showConsentDialog, setShowConsentDialog] = useState(false);
+  const [hasUserConsent, setHasUserConsent] = useState(false);
   
   // Refs
   const notificationRef = useRef<{ show: (props: any) => void }>(null);
@@ -504,14 +517,19 @@ export default function Home() {
 
   // Criar um componente de botão para ser injetado no ReportForm
   // Usamos diferentes componentes conforme o campo do formulário
-  const DiagnosisListenButton = () => (
-    <ListenButton 
-      isListening={isListening} 
-      onClick={() => togglePatientListening("diagnosis")}
-      size="sm"
-      variant="inline"
-    />
-  );
+  const DiagnosisListenButton = () => {
+    // Só mostrar o botão se o usuário deu consentimento para coleta de voz
+    if (!hasUserConsent) return null;
+    
+    return (
+      <ListenButton 
+        isListening={isListening} 
+        onClick={() => togglePatientListening("diagnosis")}
+        size="sm"
+        variant="inline"
+      />
+    );
+  };
   
   const SymptomsListenButton = () => (
     <ListenButton 
@@ -522,23 +540,33 @@ export default function Home() {
     />
   );
   
-  const TreatmentListenButton = () => (
-    <ListenButton 
-      isListening={isListening} 
-      onClick={() => togglePatientListening("treatment")}
-      size="sm"
-      variant="inline"
-    />
-  );
+  const TreatmentListenButton = () => {
+    // Só mostrar o botão se o usuário deu consentimento para coleta de voz
+    if (!hasUserConsent) return null;
+    
+    return (
+      <ListenButton 
+        isListening={isListening} 
+        onClick={() => togglePatientListening("treatment")}
+        size="sm"
+        variant="inline"
+      />
+    );
+  };
   
-  const ObservationsListenButton = () => (
-    <ListenButton 
-      isListening={isListening} 
-      onClick={() => togglePatientListening("observations")}
-      size="sm"
-      variant="inline"
-    />
-  );
+  const ObservationsListenButton = () => {
+    // Só mostrar o botão se o usuário deu consentimento para coleta de voz
+    if (!hasUserConsent) return null;
+    
+    return (
+      <ListenButton 
+        isListening={isListening} 
+        onClick={() => togglePatientListening("observations")}
+        size="sm"
+        variant="inline"
+      />
+    );
+  };
 
   return (
     <>
@@ -686,6 +714,46 @@ export default function Home() {
       <Footer />
       
       <Notification ref={notificationRef} />
+      
+      {/* Diálogo de consentimento para coleta de dados de voz */}
+      <PrivacyConsentDialog
+        open={showConsentDialog}
+        onOpenChange={setShowConsentDialog}
+        onConsent={(consentGranted) => {
+          setHasUserConsent(consentGranted);
+          setShowConsentDialog(false);
+          
+          if (consentGranted) {
+            notificationRef.current?.show({
+              message: "Consentimento concedido. Os botões de gravação de voz foram ativados.",
+              type: "success"
+            });
+          } else {
+            notificationRef.current?.show({
+              message: "Consentimento não concedido. Os botões de gravação de voz não estarão disponíveis.",
+              type: "info"
+            });
+          }
+        }}
+        title="Consentimento para Reconhecimento de Voz"
+        description="Para usar os recursos de reconhecimento de voz, precisamos do seu consentimento para coletar e processar dados de voz, conforme as regulamentações RGPD (UE) e LGPD (Brasil)."
+        privacyItems={[
+          {
+            id: "consent-voice-collect",
+            description: "Autorizo a coleta temporária do meu áudio para fins de transcrição e criação de relatórios médicos."
+          },
+          {
+            id: "consent-voice-process",
+            description: "Entendo que os dados de voz serão processados localmente e não armazenados permanentemente."
+          },
+          {
+            id: "consent-voice-retention",
+            description: "Estou ciente de que a transcrição resultante será armazenada como parte do relatório médico."
+          }
+        ]}
+        dataRetentionPeriod="Período de retenção do relatório médico (5 anos)"
+        privacyPolicyUrl="/privacy-policy"
+      />
     </>
   );
 }
