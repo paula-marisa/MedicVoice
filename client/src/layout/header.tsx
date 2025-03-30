@@ -9,14 +9,27 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuCheckboxItem,
+  DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { ClipboardList, User, LogOut, Settings, ShieldCheck } from "lucide-react";
+import { ClipboardList, User, LogOut, Settings, ShieldCheck, Mic, Check, X } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export function Header() {
   const { user, profileImage, logoutMutation } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [location] = useLocation();
+  const [voiceRecognitionConsent, setVoiceRecognitionConsent] = useState(false);
+  const { toast } = useToast();
+  
+  // Verificar se há consentimento salvo no localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined' && user && (user.role === 'doctor' || user.role === 'nurse')) {
+      const savedConsent = localStorage.getItem('voice_recognition_consent');
+      setVoiceRecognitionConsent(savedConsent === 'true');
+    }
+  }, [user]);
   
   // Obtém as iniciais do nome do usuário para o avatar
   const getInitials = (name: string) => {
@@ -35,6 +48,28 @@ export function Header() {
     logoutMutation.mutate();
     // Fechamos o menu dropdown após o clique
     setIsMenuOpen(false);
+  };
+  
+  // Função para alternar o consentimento de reconhecimento de voz
+  const toggleVoiceConsent = () => {
+    const newConsentValue = !voiceRecognitionConsent;
+    
+    // Atualizar o estado local
+    setVoiceRecognitionConsent(newConsentValue);
+    
+    // Salvar no localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('voice_recognition_consent', newConsentValue ? 'true' : 'false');
+    }
+    
+    // Mostrar mensagem de confirmação
+    toast({
+      title: newConsentValue ? "Consentimento ativado" : "Consentimento desativado",
+      description: newConsentValue 
+        ? "Gravação de voz permitida para transcrição médica" 
+        : "Gravação de voz desativada",
+      variant: "default",
+    });
   };
   
   return (
@@ -127,6 +162,31 @@ export function Header() {
                         <span>Painel Administrativo</span>
                       </Link>
                     </DropdownMenuItem>
+                  )}
+                  
+                  {/* Opção de consentimento de voz apenas para médicos e enfermeiros */}
+                  {(user.role === 'doctor' || user.role === 'nurse') && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuLabel className="flex items-center space-x-2">
+                        <Mic className="h-4 w-4" />
+                        <span>Consentimento para Voz</span>
+                      </DropdownMenuLabel>
+                      <DropdownMenuCheckboxItem
+                        checked={voiceRecognitionConsent}
+                        onCheckedChange={toggleVoiceConsent}
+                        className="cursor-pointer"
+                      >
+                        <div className="flex items-center">
+                          {voiceRecognitionConsent ? (
+                            <Check className="mr-2 h-4 w-4 text-green-500" />
+                          ) : (
+                            <X className="mr-2 h-4 w-4 text-red-500" />
+                          )}
+                          <span>Permitir gravação de voz</span>
+                        </div>
+                      </DropdownMenuCheckboxItem>
+                    </>
                   )}
                   
                   <DropdownMenuSeparator />
