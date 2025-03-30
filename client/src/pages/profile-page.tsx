@@ -238,8 +238,8 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <main className="flex-1">
+    <div className="container py-6">
+      <main>
         {/* Input file oculto para selecionar foto */}
         <input 
           type="file" 

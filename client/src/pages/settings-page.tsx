@@ -168,8 +168,8 @@ export default function SettingsPage() {
   const isAdmin = user.role === "admin";
   
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <main className="flex-1">
+    <div className="container py-6">
+      <main>
         <div className="container max-w-7xl py-6">
           <div className="flex flex-col items-start gap-4 md:flex-row md:justify-between">
             <div>
