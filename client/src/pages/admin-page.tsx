@@ -8,6 +8,15 @@ import { Button } from "@/components/ui/button";
 import { TableHeader, TableRow, TableHead, TableBody, TableCell, Table } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { 
   User, 
   UserPlus, 
@@ -19,7 +28,9 @@ import {
   Hospital,
   Lock,
   Key,
-  ShieldCheck
+  ShieldCheck,
+  LogOut,
+  Settings
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
@@ -55,10 +66,11 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<string>("register");
   const [searchReport, setSearchReport] = useState<string>("");
   const [, setLocation] = useLocation();
-  const { user, registerMutation } = useAuth();
+  const { user, registerMutation, logoutMutation } = useAuth();
   const { toast } = useToast();
   const [isAddingPatients, setIsAddingPatients] = useState(false);
   const [patientCount, setPatientCount] = useState(1);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   // Manter detalhes e elementos gerados consistentes para cada log
   const [logDetailsCache, setLogDetailsCache] = useState<{[key: number]: any}>({});
   // Cache para datas e IPs
@@ -258,6 +270,30 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      {/* Header específico para o painel admin */}
+      <header className="bg-white dark:bg-neutral-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <Link href="/admin" className="flex items-center space-x-2">
+              <ClipboardList className="h-8 w-8 text-primary" />
+              <span className="font-medium text-xl">Assistente de Relatórios</span>
+            </Link>
+
+            <div className="flex items-center space-x-3">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => logoutMutation.mutate()}
+                className="text-red-600 dark:text-red-400 border-red-200 dark:border-red-800/30 hover:bg-red-50 dark:hover:bg-red-900/20"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Sair
+              </Button>
+            </div>
+          </div>
+        </div>
+      </header>
+      
       {/* Banner específico do admin abaixo do header */}
       <div className="relative">
         <div className="bg-primary/10 py-2">
