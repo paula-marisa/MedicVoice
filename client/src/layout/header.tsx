@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link } from "wouter";
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ import { ClipboardList, User, LogOut, Settings, ShieldCheck } from "lucide-react
 export function Header() {
   const { user, profileImage, logoutMutation } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [location] = useLocation();
   
   // Obtém as iniciais do nome do usuário para o avatar
   const getInitials = (name: string) => {
@@ -85,20 +86,36 @@ export function Header() {
                     </div>
                   </div>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild className="cursor-pointer">
-                    <Link href="/profile">
-                      <User className="mr-2 h-4 w-4" />
-                      <span>Perfil</span>
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild className="cursor-pointer">
-                    <Link href="/settings">
-                      <Settings className="mr-2 h-4 w-4" />
-                      <span>Configurações</span>
-                    </Link>
-                  </DropdownMenuItem>
                   
-                  {user && user.role === "admin" && window.location.pathname !== "/admin" && (
+                  {/* Menu contextual: mostra ou esconde itens com base na localização atual */}
+                  {location !== "/" && location !== "/reports" && (
+                    <DropdownMenuItem asChild className="cursor-pointer">
+                      <Link href="/">
+                        <ClipboardList className="mr-2 h-4 w-4" />
+                        <span>Relatórios</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  
+                  {location !== "/profile" && (
+                    <DropdownMenuItem asChild className="cursor-pointer">
+                      <Link href="/profile">
+                        <User className="mr-2 h-4 w-4" />
+                        <span>Perfil</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  
+                  {location !== "/settings" && (
+                    <DropdownMenuItem asChild className="cursor-pointer">
+                      <Link href="/settings">
+                        <Settings className="mr-2 h-4 w-4" />
+                        <span>Configurações</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+                  
+                  {user && user.role === "admin" && location !== "/admin" && (
                     <DropdownMenuItem asChild className="cursor-pointer">
                       <Link href="/admin">
                         <ShieldCheck className="mr-2 h-4 w-4" />
