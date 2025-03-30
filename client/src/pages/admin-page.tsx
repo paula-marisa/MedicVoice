@@ -280,74 +280,7 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Header específico para o painel admin */}
-      <header className="bg-white dark:bg-neutral-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link href="/admin" className="flex items-center space-x-2">
-              <ClipboardList className="h-8 w-8 text-primary" />
-              <span className="font-medium text-xl">Assistente de Relatórios</span>
-            </Link>
 
-            <div className="flex items-center space-x-4">
-              <ThemeToggle />
-            
-              {user ? (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                      <Avatar className="h-10 w-10">
-                        {profileImage ? (
-                          <AvatarImage src={profileImage} alt={user.name} />
-                        ) : (
-                          <AvatarFallback className="bg-primary/10 text-primary">
-                            {getInitials(user.name)}
-                          </AvatarFallback>
-                        )}
-                      </Avatar>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
-                    <div className="flex items-center justify-start gap-2 p-2">
-                      <Avatar className="h-8 w-8">
-                        {profileImage ? (
-                          <AvatarImage src={profileImage} alt={user.name} />
-                        ) : (
-                          <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                            {getInitials(user.name)}
-                          </AvatarFallback>
-                        )}
-                      </Avatar>
-                      <div className="flex flex-col space-y-0.5">
-                        <p className="text-sm font-medium">{user.name}</p>
-                        <p className="text-xs text-muted-foreground">Administrador</p>
-                      </div>
-                    </div>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild className="cursor-pointer">
-                      <Link href="/profile">
-                        <User className="mr-2 h-4 w-4" />
-                        <span>Perfil</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild className="cursor-pointer">
-                      <Link href="/settings">
-                        <Settings className="mr-2 h-4 w-4" />
-                        <span>Configurações</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem className="cursor-pointer text-red-600 dark:text-red-400" onClick={() => logoutMutation.mutate()}>
-                      <LogOut className="mr-2 h-4 w-4" />
-                      <span>Sair</span>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              ) : null}
-            </div>
-          </div>
-        </div>
-      </header>
       
       {/* Banner específico do admin abaixo do header */}
       <div className="relative">
