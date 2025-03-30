@@ -168,7 +168,7 @@ export function UtenteForm({ onUtenteChange, defaultValues, disabled = false }: 
                 ) : (
                   <Search className="h-4 w-4 mr-2" />
                 )}
-                Buscar
+                Procurar
               </Button>
             </div>
             
