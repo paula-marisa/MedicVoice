@@ -57,7 +57,7 @@ export default function Home() {
         message: "Relatório salvo com sucesso!",
         type: "success"
       });
-      queryClient.invalidateQueries({ queryKey: ["/api/medical-reports"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/my-reports"] });
     },
     onError: (error) => {
       notificationRef.current?.show({
