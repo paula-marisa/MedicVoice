@@ -10,6 +10,7 @@ import { ArrowLeft, Clock, User, Activity, FileText } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Timeline, TimelineItem, TimelineConnector, TimelineContent, TimelineDot, TimelineHeader, TimelineSeparator, TimelineTitle } from "@/components/ui/timeline";
+import { useAuth } from "@/hooks/use-auth";
 
 interface AuditReport {
   report: {
@@ -51,6 +52,10 @@ interface AuditReport {
 export default function ReportAudit() {
   const [, params] = useRoute("/reports/:id/audit");
   const reportId = params?.id;
+  const { user } = useAuth();
+  
+  // Determinar para onde voltar baseado no papel do usuário
+  const backToPath = user?.role === "admin" ? "/admin" : "/";
   
   // Buscar histórico de auditoria do relatório
   const { data, isLoading, error } = useQuery<{ success: boolean, data: AuditReport }>({
@@ -137,7 +142,7 @@ export default function ReportAudit() {
             <h2 className="text-xl font-semibold mb-4">Erro ao carregar histórico</h2>
             <p className="text-muted-foreground mb-6">Não foi possível carregar o histórico deste relatório.</p>
             <Button asChild>
-              <Link to="/">Voltar à página inicial</Link>
+              <Link to={backToPath}>Voltar à página inicial</Link>
             </Button>
           </div>
         </main>

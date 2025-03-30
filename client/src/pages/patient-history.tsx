@@ -22,10 +22,15 @@ import {
 } from "@/components/ui/table";
 import { Header } from "@/layout/header";
 import { Footer } from "@/layout/footer";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function PatientHistory() {
   const { id } = useParams();
   const [processNumber, setProcessNumber] = useState<string | null>(null);
+  const { user } = useAuth();
+  
+  // Determinar para onde voltar baseado no papel do usuário
+  const backToPath = user?.role === "admin" ? "/admin" : "/";
 
   // Obter o relatório atual para acessar o número do processo
   const { data: reportData, isLoading: reportLoading } = useQuery<{ success: boolean; data: MedicalReport }>({
@@ -89,7 +94,7 @@ export default function PatientHistory() {
       <div className="flex flex-col justify-center items-center min-h-screen gap-4">
         <h1 className="text-xl font-semibold">Relatório não encontrado</h1>
         <Button asChild>
-          <Link to="/">Voltar para página inicial</Link>
+          <Link to={backToPath}>Voltar para página inicial</Link>
         </Button>
       </div>
     );

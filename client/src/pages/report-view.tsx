@@ -11,11 +11,16 @@ import { MedicalReport } from "@shared/schema";
 import { Link } from "wouter";
 import { ArrowLeft, Printer, Download } from "lucide-react";
 import { jsPDF } from "jspdf";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function ReportView() {
   const [, params] = useRoute("/reports/:id");
   const reportId = params?.id;
   const [loadError, setLoadError] = useState<string | null>(null);
+  const { user } = useAuth();
+
+  // Determinar para onde voltar baseado no papel do usuário
+  const backToPath = user?.role === "admin" ? "/admin" : "/";
 
   // Buscar detalhes do relatório
   const { data: reportData, isLoading, error } = useQuery<{ success: boolean, data: MedicalReport }>({
@@ -127,7 +132,9 @@ export default function ReportView() {
             <h2 className="text-xl font-semibold mb-4">Erro ao carregar relatório</h2>
             <p className="text-muted-foreground mb-6">{loadError || "Relatório não encontrado"}</p>
             <Button asChild>
-              <Link to="/">Voltar à página inicial</Link>
+              <Link to={user?.role === "admin" ? "/admin" : "/"}>
+                Voltar à página inicial
+              </Link>
             </Button>
           </div>
         </main>
@@ -144,7 +151,7 @@ export default function ReportView() {
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 print:py-2">
         <div className="print:hidden mb-6">
           <Button variant="outline" asChild className="mb-8">
-            <Link to="/">
+            <Link to={backToPath}>
               <ArrowLeft className="mr-2 h-4 w-4" />
               Voltar
             </Link>
