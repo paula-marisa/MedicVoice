@@ -41,7 +41,7 @@ const medicalProfileSchema = z.object({
 type AdminProfileFormValues = z.infer<typeof adminProfileSchema>;
 type MedicalProfileFormValues = z.infer<typeof medicalProfileSchema>;
 
-import { Header } from "@/layout/header";
+
 
 export default function ProfilePage() {
   const { user, updateProfileImage } = useAuth();
