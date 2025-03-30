@@ -20,14 +20,29 @@ import { useAuth } from "@/hooks/use-auth";
 import { jsPDF } from "jspdf";
 
 export default function Home() {
+  // Estado para controlar o consentimento para coleta de dados
+  const [showConsentDialog, setShowConsentDialog] = useState(false);
+  // Inicializar o estado a partir do localStorage, se disponível
+  const [hasUserConsent, setHasUserConsent] = useState(() => {
+    // Verificar se o consentimento já foi dado e está salvo no localStorage
+    if (typeof window !== 'undefined') {
+      const savedConsent = localStorage.getItem('voice_recognition_consent');
+      return savedConsent === 'true';
+    }
+    return false;
+  });
+  
   // State para autenticação
   const { user } = useAuth();
   
   // Verificar se é a primeira visita e mostrar o diálogo de consentimento
   useEffect(() => {
-    // Se for médico ou enfermeiro, mostra diálogo de consentimento na primeira visita
+    // Se for médico ou enfermeiro, mostra diálogo de consentimento apenas se não houver consentimento salvo
     if (user && (user.role === 'doctor' || user.role === 'nurse')) {
-      setShowConsentDialog(true);
+      const savedConsent = localStorage.getItem('voice_recognition_consent');
+      if (savedConsent !== 'true') {
+        setShowConsentDialog(true);
+      }
     }
   }, [user]);
   
@@ -55,10 +70,6 @@ export default function Home() {
   
   // Ref para o componente VoiceRecognition (ditado do médico)
   const voiceRecognitionRef = useRef<any>(null);
-  
-  // Estado para controlar o consentimento para coleta de dados
-  const [showConsentDialog, setShowConsentDialog] = useState(false);
-  const [hasUserConsent, setHasUserConsent] = useState(false);
   
   // Refs
   const notificationRef = useRef<{ show: (props: any) => void }>(null);
@@ -729,6 +740,11 @@ export default function Home() {
         onConsent={(consentGranted) => {
           setHasUserConsent(consentGranted);
           setShowConsentDialog(false);
+          
+          // Salvar o consentimento no localStorage para persistir entre sessões
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('voice_recognition_consent', consentGranted ? 'true' : 'false');
+          }
           
           if (consentGranted) {
             notificationRef.current?.show({
