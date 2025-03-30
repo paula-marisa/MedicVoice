@@ -480,7 +480,14 @@ export default function Home() {
       }
     } else {
       // Para os campos do médico (diagnóstico, tratamento, observações),
-      // usando o VoiceRecognition diretamente
+      // verificamos primeiro se o médico já deu consentimento
+      if (!hasUserConsent) {
+        // Se não tiver consentimento, mostrar diálogo
+        setShowConsentDialog(true);
+        return;
+      }
+      
+      // Se já tem consentimento, usar o VoiceRecognition diretamente
       if (voiceRecognitionRef.current) {
         // Atualizar o campo ativo para que a transcrição seja enviada corretamente
         setActiveField(field);
