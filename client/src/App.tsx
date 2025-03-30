@@ -60,50 +60,75 @@ function AppRoutes() {
     return <Redirect to="/auth" />;
   }
 
-  // Se o usuário for admin e estiver tentando acessar a página inicial, 
-  // redirecionar para o painel administrativo
-  if (user?.role === "admin" && window.location.pathname === "/") {
-    return <Redirect to="/admin" />;
-  }
+  // Adiciona o cabeçalho apenas se o usuário estiver autenticado e não estiver em páginas de autenticação
+  const showHeader = user && window.location.pathname !== "/auth" && window.location.pathname !== "/login";
 
   return (
-    <Switch>
-      <Route path="/auth">
-        <AuthPage />
-      </Route>
-      <Route path="/login">
-        <AuthPage />
-      </Route>
-      
-      {/* Página inicial - apenas para médicos */}
-      <Route path="/">
-        {user?.role === "admin" ? <Redirect to="/admin" /> : <Home />}
-      </Route>
-      
-      <AdminRoute path="/admin" component={AdminPage} />
-      <ProtectedRoute path="/profile" component={ProfilePage} />
-      <ProtectedRoute path="/settings" component={SettingsPage} />
-      
-      {/* Rotas de relatórios - apenas para médicos */}
-      <Route path="/reports/:id">
-        {user?.role === "admin" ? <Redirect to="/admin" /> : <ReportView />}
-      </Route>
-      
-      <Route path="/reports/:id/audit">
-        {user?.role === "admin" ? <Redirect to="/admin" /> : <ReportAudit />}
-      </Route>
-      
-      <Route path="/reports/:id/history">
-        {user?.role === "admin" ? <Redirect to="/admin" /> : <PatientHistory />}
-      </Route>
-      
-      <Route path="/privacy-policy">
-        <PrivacyPolicy />
-      </Route>
-      <Route>
-        <NotFound />
-      </Route>
-    </Switch>
+    <>
+      {showHeader && <Header />}
+      <Switch>
+        <Route path="/auth">
+          <AuthPage />
+        </Route>
+        <Route path="/login">
+          <AuthPage />
+        </Route>
+        
+        {/* Rota de administrador */}
+        <AdminRoute path="/admin" component={AdminPage} />
+        
+        {/* Página inicial */}
+        <Route path="/">
+          {user ? (
+            user.role === "admin" ? <Redirect to="/admin" /> : <Home />
+          ) : (
+            <Redirect to="/auth" />
+          )}
+        </Route>
+        
+        {/* Rotas protegidas comuns */}
+        <ProtectedRoute path="/profile" component={ProfilePage} />
+        <ProtectedRoute path="/settings" component={SettingsPage} />
+        
+        {/* Rotas de relatórios médicos - restritas a médicos */}
+        <Route path="/reports/:id">
+          {!user ? (
+            <Redirect to="/auth" />
+          ) : user.role === "admin" ? (
+            <Redirect to="/admin" />
+          ) : (
+            <ReportView />
+          )}
+        </Route>
+        
+        <Route path="/reports/:id/audit">
+          {!user ? (
+            <Redirect to="/auth" />
+          ) : user.role === "admin" ? (
+            <Redirect to="/admin" />
+          ) : (
+            <ReportAudit />
+          )}
+        </Route>
+        
+        <Route path="/reports/:id/history">
+          {!user ? (
+            <Redirect to="/auth" />
+          ) : user.role === "admin" ? (
+            <Redirect to="/admin" />
+          ) : (
+            <PatientHistory />
+          )}
+        </Route>
+        
+        <Route path="/privacy-policy">
+          <PrivacyPolicy />
+        </Route>
+        <Route>
+          <NotFound />
+        </Route>
+      </Switch>
+    </>
   );
 }
 
