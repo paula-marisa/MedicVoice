@@ -384,7 +384,7 @@ export const PatientListening = forwardRef<PatientListeningRef, PatientListening
                     </Badge>
                   ) : (
                     <Badge variant="outline" className="flex items-center gap-1">
-                      Pronto para escutar
+                      Escuta inativa
                     </Badge>
                   )}
                 </div>
@@ -406,7 +406,7 @@ export const PatientListening = forwardRef<PatientListeningRef, PatientListening
               <Button 
                 size="lg"
                 variant={isListening ? "destructive" : "default"}
-                className="h-16 w-16 rounded-full mb-3 flex items-center justify-center"
+                className="h-16 w-16 rounded-full flex items-center justify-center"
                 onClick={toggleListening}
               >
                 {isListening ? (
@@ -415,9 +415,6 @@ export const PatientListening = forwardRef<PatientListeningRef, PatientListening
                   <Stethoscope className="h-6 w-6" />
                 )}
               </Button>
-              <span className="text-sm text-neutral-600 dark:text-neutral-400">
-                {isListening ? "Parar Escuta" : "Iniciar Escuta"}
-              </span>
             </div>
           </CardContent>
         </Card>
