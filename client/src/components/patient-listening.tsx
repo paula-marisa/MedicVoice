@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Mic, MicOff, Info, Ear, Stethoscope, ExternalLink, Shield } from "lucide-react";
+import { Mic, MicOff, Info, Ear, Stethoscope, ExternalLink, Shield, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
 import { analyzeSymptoms, formatSymptomsReport } from "@/lib/symptoms-analyzer";
@@ -409,34 +409,43 @@ export function PatientListening({ onSymptomsDetected, notificationRef, patientP
       {/* Diálogo de informações */}
       <AlertDialog open={isInfoOpen} onOpenChange={setIsInfoOpen}>
         <AlertDialogContent>
-          <AlertDialogHeader>
+          <div className="flex justify-between items-start">
             <AlertDialogTitle>Escuta e Análise Automática de Sintomas</AlertDialogTitle>
-            <AlertDialogDescription>
-              <div className="space-y-4 mt-2">
-                <div>
-                  <p className="text-sm">
-                    Este componente permite escutar o que o utente relata durante a consulta e automaticamente 
-                    extrair os sintomas mencionados para incluir no relatório médico.
-                  </p>
-                </div>
-                
-                <div>
-                  <h3 className="font-medium text-sm">Como usar:</h3>
-                  <ul className="list-disc ml-5 text-sm mt-1">
-                    <li>Inicie a escuta quando o utente começar a descrever seus sintomas</li>
-                    <li>Deixe-o falar naturalmente, como em uma consulta normal</li>
-                    <li>O sistema irá capturar o que foi dito e analisar os sintomas mencionados</li>
-                    <li>Ao finalizar, você poderá revisar os sintomas detectados</li>
-                    <li>Confirme para adicionar os sintomas ao relatório de forma estruturada</li>
-                  </ul>
-                </div>
-                
-                <div className="text-sm pt-2 border-t">
-                  <p>O reconhecimento funciona melhor em ambientes silenciosos e quando o utente fala claramente.</p>
-                </div>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-8 w-8 p-0 rounded-full"
+              onClick={() => setIsInfoOpen(false)}
+            >
+              <X className="h-4 w-4" />
+              <span className="sr-only">Fechar</span>
+            </Button>
+          </div>
+          <AlertDialogDescription>
+            <div className="space-y-4 mt-2">
+              <div>
+                <p className="text-sm">
+                  Este componente permite escutar o que o utente relata durante a consulta e automaticamente 
+                  extrair os sintomas mencionados para incluir no relatório médico.
+                </p>
               </div>
-            </AlertDialogDescription>
-          </AlertDialogHeader>
+              
+              <div>
+                <h3 className="font-medium text-sm">Como usar:</h3>
+                <ul className="list-disc ml-5 text-sm mt-1">
+                  <li>Inicie a escuta quando o utente começar a descrever seus sintomas</li>
+                  <li>Deixe-o falar naturalmente, como em uma consulta normal</li>
+                  <li>O sistema irá capturar o que foi dito e analisar os sintomas mencionados</li>
+                  <li>Ao finalizar, você poderá revisar os sintomas detectados</li>
+                  <li>Confirme para adicionar os sintomas ao relatório de forma estruturada</li>
+                </ul>
+              </div>
+              
+              <div className="text-sm pt-2 border-t">
+                <p>O reconhecimento funciona melhor em ambientes silenciosos e quando o utente fala claramente.</p>
+              </div>
+            </div>
+          </AlertDialogDescription>
         </AlertDialogContent>
       </AlertDialog>
       
@@ -474,48 +483,57 @@ export function PatientListening({ onSymptomsDetected, notificationRef, patientP
       {/* Diálogo de resultado da análise de sintomas */}
       <AlertDialog open={showAnalysisResult} onOpenChange={setShowAnalysisResult}>
         <AlertDialogContent className="max-w-3xl">
-          <AlertDialogHeader>
+          <div className="flex justify-between items-start">
             <AlertDialogTitle>Sintomas Detectados</AlertDialogTitle>
-            <AlertDialogDescription>
-              <div className="mt-4">
-                <h3 className="text-sm font-medium mb-2">Texto capturado do utente:</h3>
-                <div className="bg-neutral-100 dark:bg-neutral-800 p-3 rounded-md mb-4 text-sm max-h-32 overflow-y-auto">
-                  {transcript}
-                </div>
-                
-                <h3 className="text-sm font-medium mb-2">Sintomas detectados:</h3>
-                {detectedSymptoms.length > 0 ? (
-                  <div className="space-y-2">
-                    {detectedSymptoms.map((symptom, index) => (
-                      <div key={index} className="bg-white dark:bg-neutral-900 border rounded-md p-3">
-                        <div className="flex justify-between items-start">
-                          <span className="font-medium">{symptom.symptom}</span>
-                          <Badge variant={symptom.confidence > 0.7 ? "default" : 
-                                          symptom.confidence > 0.5 ? "secondary" : "outline"}>
-                            Confiança: {Math.round(symptom.confidence * 100)}%
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
-                          "{symptom.context}"
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-center text-neutral-500 dark:text-neutral-400 py-4">
-                    Nenhum sintoma detectado no texto. Tente novamente com mais detalhes.
-                  </p>
-                )}
-                
-                {detectedSymptoms.length > 0 && (
-                  <div className="mt-4 p-3 bg-neutral-100 dark:bg-neutral-800 rounded-md">
-                    <h3 className="text-sm font-medium mb-2">Texto a ser adicionado ao relatório:</h3>
-                    <p className="text-sm">{formatSymptomsReport(detectedSymptoms)}</p>
-                  </div>
-                )}
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-8 w-8 p-0 rounded-full"
+              onClick={() => setShowAnalysisResult(false)}
+            >
+              <X className="h-4 w-4" />
+              <span className="sr-only">Fechar</span>
+            </Button>
+          </div>
+          <AlertDialogDescription>
+            <div className="mt-4">
+              <h3 className="text-sm font-medium mb-2">Texto capturado do utente:</h3>
+              <div className="bg-neutral-100 dark:bg-neutral-800 p-3 rounded-md mb-4 text-sm max-h-32 overflow-y-auto">
+                {transcript}
               </div>
-            </AlertDialogDescription>
-          </AlertDialogHeader>
+              
+              <h3 className="text-sm font-medium mb-2">Sintomas detectados:</h3>
+              {detectedSymptoms.length > 0 ? (
+                <div className="space-y-2">
+                  {detectedSymptoms.map((symptom, index) => (
+                    <div key={index} className="bg-white dark:bg-neutral-900 border rounded-md p-3">
+                      <div className="flex justify-between items-start">
+                        <span className="font-medium">{symptom.symptom}</span>
+                        <Badge variant={symptom.confidence > 0.7 ? "default" : 
+                                       symptom.confidence > 0.5 ? "secondary" : "outline"}>
+                          Confiança: {Math.round(symptom.confidence * 100)}%
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
+                        "{symptom.context}"
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-center text-neutral-500 dark:text-neutral-400 py-4">
+                  Nenhum sintoma detectado no texto. Tente novamente com mais detalhes.
+                </p>
+              )}
+              
+              {detectedSymptoms.length > 0 && (
+                <div className="mt-4 p-3 bg-neutral-100 dark:bg-neutral-800 rounded-md">
+                  <h3 className="text-sm font-medium mb-2">Texto a ser adicionado ao relatório:</h3>
+                  <p className="text-sm">{formatSymptomsReport(detectedSymptoms)}</p>
+                </div>
+              )}
+            </div>
+          </AlertDialogDescription>
           <AlertDialogFooter className="flex justify-between items-center mt-4">
             <Button variant="outline" onClick={() => setShowAnalysisResult(false)}>
               Cancelar
