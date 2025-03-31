@@ -90,16 +90,16 @@ html[data-fontsize="xl"] {
     height: 100%;
     z-index: -1;
     pointer-events: none;
-    opacity: 0.06;
+    opacity: 0.12;
     background-image: url('/caduceus.svg');
-    background-size: 500px 600px;
-    background-position: 85% 50%;
+    background-size: 600px 720px;
+    background-position: 80% 50%;
     background-repeat: no-repeat;
   }
   
   /* Ajustes para tema escuro - caduceu em amarelo */
   .dark body::before {
-    opacity: 0.08;
+    opacity: 0.15;
     background-image: url('/caduceus-yellow.svg');
   }
 

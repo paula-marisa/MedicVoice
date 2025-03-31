@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 600" width="500" height="600">
   <!-- Caduceu médico - versão para modo claro (preto) -->
-  <g stroke="black" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <g stroke="#333333" stroke-width="12" fill="none" stroke-linecap="round" stroke-linejoin="round">
     <!-- Vara central -->
     <line x1="250" y1="100" x2="250" y2="500" />
     
