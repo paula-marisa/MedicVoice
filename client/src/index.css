@@ -80,7 +80,7 @@ html[data-fontsize="xl"] {
     position: relative;
   }
   
-  /* Padrão médico minimalista usando CSS puro */
+  /* Símbolo médico grande em CSS para o fundo */
   body::before {
     content: "";
     position: fixed;
@@ -90,62 +90,63 @@ html[data-fontsize="xl"] {
     height: 100%;
     z-index: -1;
     pointer-events: none;
-    opacity: 0.015;
+    opacity: 0.07;
+    
+    /* Símbolo médico grande - cruz médica com círculo */
     background-image: 
-      /* Linha de eletrocardiograma simplificada */
-      linear-gradient(to right, 
-        transparent 0%, transparent 20%, 
-        #777 20%, #777 20.3%, 
-        transparent 20.3%, transparent 25%,
-        #777 25%, #777 25.3%,
-        transparent 25.3%, transparent 27.5%,
-        #777 27.5%, #777 27.8%, 
-        transparent 27.8%, transparent 100%
-      ),
-      /* Cruz médica muito sutil */
-      linear-gradient(90deg,
-        transparent calc(50% - 0.5px),
-        #999 calc(50% - 0.5px),
-        #999 calc(50% + 0.5px),
-        transparent calc(50% + 0.5px)
-      ),
+      /* Cruz vertical */
       linear-gradient(0deg,
-        transparent calc(50% - 0.5px),
-        #999 calc(50% - 0.5px),
-        #999 calc(50% + 0.5px),
-        transparent calc(50% + 0.5px)
+        transparent calc(50% - 100px),
+        rgba(100, 130, 180, 0.25) calc(50% - 100px),
+        rgba(100, 130, 180, 0.25) calc(50% + 100px),
+        transparent calc(50% + 100px)
+      ),
+      /* Cruz horizontal */
+      linear-gradient(90deg,
+        transparent calc(50% - 100px),
+        rgba(100, 130, 180, 0.25) calc(50% - 100px),
+        rgba(100, 130, 180, 0.25) calc(50% + 100px),
+        transparent calc(50% + 100px)
+      ),
+      /* Círculo em volta da cruz */
+      radial-gradient(
+        circle at center,
+        transparent 220px,
+        rgba(100, 130, 180, 0.15) 220px,
+        rgba(100, 130, 180, 0.15) 240px,
+        transparent 240px
       );
-    background-size: 400px 200px, 40px 40px, 40px 40px;
-    background-position: center, 90% 10%, 10% 80%;
-    transform: rotate(3deg);
+    
+    background-size: 800px 800px;
+    background-position: 85% 50%;
+    background-repeat: no-repeat;
   }
   
-  /* Ajustes para tema escuro */
+  /* Ajustes para tema escuro - símbolo em amarelo */
   .dark body::before {
-    opacity: 0.02;
+    opacity: 0.08;
     background-image: 
-      /* Linha de eletrocardiograma simplificada */
-      linear-gradient(to right, 
-        transparent 0%, transparent 20%, 
-        #aaa 20%, #aaa 20.3%, 
-        transparent 20.3%, transparent 25%,
-        #aaa 25%, #aaa 25.3%,
-        transparent 25.3%, transparent 27.5%,
-        #aaa 27.5%, #aaa 27.8%, 
-        transparent 27.8%, transparent 100%
-      ),
-      /* Cruz médica muito sutil */
-      linear-gradient(90deg,
-        transparent calc(50% - 0.5px),
-        #aaa calc(50% - 0.5px),
-        #aaa calc(50% + 0.5px),
-        transparent calc(50% + 0.5px)
-      ),
+      /* Cruz vertical */
       linear-gradient(0deg,
-        transparent calc(50% - 0.5px),
-        #aaa calc(50% - 0.5px),
-        #aaa calc(50% + 0.5px),
-        transparent calc(50% + 0.5px)
+        transparent calc(50% - 100px),
+        rgba(255, 215, 0, 0.2) calc(50% - 100px),
+        rgba(255, 215, 0, 0.2) calc(50% + 100px),
+        transparent calc(50% + 100px)
+      ),
+      /* Cruz horizontal */
+      linear-gradient(90deg,
+        transparent calc(50% - 100px),
+        rgba(255, 215, 0, 0.2) calc(50% - 100px),
+        rgba(255, 215, 0, 0.2) calc(50% + 100px),
+        transparent calc(50% + 100px)
+      ),
+      /* Círculo em volta da cruz */
+      radial-gradient(
+        circle at center,
+        transparent 220px,
+        rgba(255, 215, 0, 0.15) 220px,
+        rgba(255, 215, 0, 0.15) 240px,
+        transparent 240px
       );
   }
 
