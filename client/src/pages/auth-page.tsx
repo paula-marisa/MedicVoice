@@ -8,9 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { ClipboardList, User, Lock } from "lucide-react";
+import { ClipboardList, User, Lock, AlertTriangle } from "lucide-react";
 import { Footer } from "@/layout/footer";
 import { RequestAccessDialog } from "@/components/request-access-dialog";
+import { PasswordRecoveryDialog } from "@/components/password-recovery-dialog";
+import { useToast } from "@/hooks/use-toast";
 
 // Esquema de validação de login
 const loginSchema = z.object({
@@ -23,7 +25,10 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 export default function AuthPage() {
   const [showRegister, setShowRegister] = useState<boolean>(true);
   const [requestDialogOpen, setRequestDialogOpen] = useState<boolean>(false);
+  const [recoveryDialogOpen, setRecoveryDialogOpen] = useState<boolean>(false);
+  const [failedAttempts, setFailedAttempts] = useState<number>(0);
   const { user, isLoading, loginMutation } = useAuth();
+  const { toast } = useToast();
   
   // Verificar se existem usuários no sistema
   useEffect(() => {
@@ -44,6 +49,17 @@ export default function AuthPage() {
       });
   }, []);
   
+  // Reset das tentativas falhas após um período (5 minutos)
+  useEffect(() => {
+    if (failedAttempts > 0) {
+      const timer = setTimeout(() => {
+        setFailedAttempts(0);
+      }, 5 * 60 * 1000); // 5 minutos
+      
+      return () => clearTimeout(timer);
+    }
+  }, [failedAttempts]);
+  
   // Formulário de login
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -55,11 +71,41 @@ export default function AuthPage() {
   
   // Função para submeter login
   const onLoginSubmit = (data: LoginFormValues) => {
-    loginMutation.mutate(data);
+    loginMutation.mutate(data, {
+      onError: () => {
+        // Incrementa contagem de tentativas falhas
+        const newCount = failedAttempts + 1;
+        setFailedAttempts(newCount);
+        
+        // Após 3 tentativas, sugere recuperação de senha
+        if (newCount >= 3) {
+          toast({
+            title: "Várias tentativas falhas de login",
+            description: "Esqueceu sua senha? Você pode recuperá-la através do link abaixo.",
+            variant: "destructive",
+            action: (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setRecoveryDialogOpen(true)}
+                className="mt-2 w-full"
+              >
+                Recuperar senha
+              </Button>
+            ),
+          });
+        }
+      }
+    });
   };
   
   // Se estiver autenticado, redirecionar para a página apropriada com base no papel do usuário
   if (!isLoading && user) {
+    // Reset das tentativas falhas após login bem-sucedido
+    if (failedAttempts > 0) {
+      setFailedAttempts(0);
+    }
+    
     // Se for admin, redireciona para o painel administrativo
     if (user.role === "admin") {
       return <Redirect to="/admin" />;
@@ -140,6 +186,25 @@ export default function AuthPage() {
                   </div>
                 )}
                 
+                {failedAttempts >= 3 && (
+                  <div className="bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 p-3 rounded flex items-start gap-3">
+                    <AlertTriangle className="h-5 w-5 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium">Muitas tentativas malsucedidas</p>
+                      <p className="text-sm">
+                        Esqueceu sua senha? 
+                        <button 
+                          type="button"
+                          className="ml-1 text-primary hover:underline"
+                          onClick={() => setRecoveryDialogOpen(true)}
+                        >
+                          Clique aqui para recuperá-la
+                        </button>.
+                      </p>
+                    </div>
+                  </div>
+                )}
+                
                 <Button 
                   type="submit" 
                   className="w-full" 
@@ -169,10 +234,15 @@ export default function AuthPage() {
       
       <Footer />
       
-      {/* Diálogo de solicitação de acesso */}
+      {/* Diálogos */}
       <RequestAccessDialog 
         open={requestDialogOpen} 
         onOpenChange={setRequestDialogOpen} 
+      />
+      
+      <PasswordRecoveryDialog
+        open={recoveryDialogOpen}
+        onOpenChange={setRecoveryDialogOpen}
       />
     </div>
   );

@@ -1303,6 +1303,81 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Endpoint para solicitar recuperação de senha
+  app.post("/api/reset-password", async (req: Request, res: Response) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({
+          success: false,
+          message: "E-mail é obrigatório"
+        });
+      }
+      
+      // Buscar usuário pelo e-mail (buscamos nas solicitações de acesso primeiro)
+      const pendingRequests = await storage.getPendingAccessRequests();
+      const matchingRequest = pendingRequests.find(request => request.email.toLowerCase() === email.toLowerCase());
+      
+      // Se não encontrarmos o e-mail nas solicitações, checamos os usuários
+      // Na prática precisaríamos de um campo de e-mail na tabela de usuários
+      // Para este exemplo, vamos simular uma resposta de sucesso
+      
+      // Log da tentativa de recuperação (sem dados sensíveis)
+      await storage.createAuditLog({
+        userId: null,
+        action: "request",
+        resourceType: "password_reset",
+        resourceId: null,
+        details: {
+          email: email,
+          ipAddress: req.ip,
+          requestTime: new Date().toISOString()
+        },
+        ipAddress: req.ip
+      });
+      
+      // Registrar esta recuperação de senha como uma comunicação
+      if (matchingRequest) {
+        // Enviar e-mail em uma aplicação real
+        
+        // Notificar os administradores (em uma aplicação real, isso enviaria um e-mail)
+        const adminUsers = await storage.getAllUsers().then(users => 
+          users.filter(user => user.role === "admin")
+        );
+        
+        // Log para cada administrador que deve ser notificado
+        for (const admin of adminUsers) {
+          await storage.createAuditLog({
+            userId: admin.id,
+            action: "notify",
+            resourceType: "password_reset",
+            resourceId: null,
+            details: {
+              adminId: admin.id,
+              userEmail: email,
+              requestTime: new Date().toISOString()
+            },
+            ipAddress: req.ip
+          });
+        }
+      }
+      
+      // Sempre retornar sucesso para não revelar se o e-mail existe ou não (segurança)
+      return res.status(200).json({
+        success: true,
+        message: "Se o e-mail estiver registrado, você receberá instruções para redefinir sua senha."
+      });
+      
+    } catch (error) {
+      log(`Error processing password reset: ${error}`, "api");
+      res.status(500).json({
+        success: false,
+        message: "Erro interno do servidor"
+      });
+    }
+  });
+
   // Approve/reject access request (admin only)
   app.put("/api/access-requests/:id", ensureAdmin, async (req: Request, res: Response) => {
     try {
