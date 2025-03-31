@@ -79,9 +79,18 @@ export default function AuthPage() {
         <div className="w-full max-w-md">
           <Card className="w-full">
             <CardHeader>
-              <CardTitle>Acesso do Profissional</CardTitle>
+              <CardTitle>Login</CardTitle>
               <CardDescription>
-                Faça login com suas credenciais para acessar o sistema.
+                Para efetuar o login é necessário introduzir as credencias fornecidas, caso não tenha é necessário solicitar as mesmas {" "}
+                <button 
+                  type="button"
+                  className="text-primary hover:underline"
+                  onClick={() => {
+                    alert("Por favor, contacte o administrador do sistema para obter credenciais de acesso.");
+                  }}
+                >
+                  clicando aqui
+                </button>.
               </CardDescription>
             </CardHeader>
             <CardContent>
