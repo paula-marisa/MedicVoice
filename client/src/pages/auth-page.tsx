@@ -83,7 +83,7 @@ export default function AuthPage() {
             <CardHeader>
               <CardTitle>Login</CardTitle>
               <CardDescription>
-                Para efetuar o login é necessário introduzir as credencias fornecidas, caso não tenha é necessário solicitar as mesmas {" "}
+                Para efetuar o login é necessário introduzir as suas credencias, caso não as tenha pode solicitar {" "}
                 <button 
                   type="button"
                   className="text-primary hover:underline"
