@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 600" width="500" height="600">
+  <!-- Caduceu médico - versão para modo claro (preto) -->
+  <g stroke="black" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Vara central -->
+    <line x1="250" y1="100" x2="250" y2="500" />
+    
+    <!-- Círculo superior -->
+    <circle cx="250" cy="80" r="25" />
+    
+    <!-- Asas -->
+    <path d="M250,130 C150,80 100,150 80,200 C180,180 220,130 250,130" />
+    <path d="M250,130 C350,80 400,150 420,200 C320,180 280,130 250,130" />
+    
+    <!-- Serpente 1 -->
+    <path d="M250,180 C200,180 180,220 200,250 C220,280 280,280 300,310 C320,340 290,380 250,380" />
+    
+    <!-- Serpente 2 -->
+    <path d="M250,180 C300,180 320,220 300,250 C280,280 220,280 200,310 C180,340 210,380 250,380" />
+    
+    <!-- Cauda das serpentes -->
+    <line x1="250" y1="380" x2="250" y2="480" />
+    <line x1="230" y1="430" x2="270" y2="430" />
+  </g>
+</svg>

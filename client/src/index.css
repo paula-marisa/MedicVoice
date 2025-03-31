@@ -80,7 +80,7 @@ html[data-fontsize="xl"] {
     position: relative;
   }
   
-  /* Símbolo médico grande em CSS para o fundo */
+  /* Símbolo médico Caduceu usando SVG para o fundo */
   body::before {
     content: "";
     position: fixed;
@@ -90,64 +90,17 @@ html[data-fontsize="xl"] {
     height: 100%;
     z-index: -1;
     pointer-events: none;
-    opacity: 0.07;
-    
-    /* Símbolo médico grande - cruz médica com círculo */
-    background-image: 
-      /* Cruz vertical */
-      linear-gradient(0deg,
-        transparent calc(50% - 100px),
-        rgba(100, 130, 180, 0.25) calc(50% - 100px),
-        rgba(100, 130, 180, 0.25) calc(50% + 100px),
-        transparent calc(50% + 100px)
-      ),
-      /* Cruz horizontal */
-      linear-gradient(90deg,
-        transparent calc(50% - 100px),
-        rgba(100, 130, 180, 0.25) calc(50% - 100px),
-        rgba(100, 130, 180, 0.25) calc(50% + 100px),
-        transparent calc(50% + 100px)
-      ),
-      /* Círculo em volta da cruz */
-      radial-gradient(
-        circle at center,
-        transparent 220px,
-        rgba(100, 130, 180, 0.15) 220px,
-        rgba(100, 130, 180, 0.15) 240px,
-        transparent 240px
-      );
-    
-    background-size: 800px 800px;
+    opacity: 0.06;
+    background-image: url('/caduceus.svg');
+    background-size: 500px 600px;
     background-position: 85% 50%;
     background-repeat: no-repeat;
   }
   
-  /* Ajustes para tema escuro - símbolo em amarelo */
+  /* Ajustes para tema escuro - caduceu em amarelo */
   .dark body::before {
     opacity: 0.08;
-    background-image: 
-      /* Cruz vertical */
-      linear-gradient(0deg,
-        transparent calc(50% - 100px),
-        rgba(255, 215, 0, 0.2) calc(50% - 100px),
-        rgba(255, 215, 0, 0.2) calc(50% + 100px),
-        transparent calc(50% + 100px)
-      ),
-      /* Cruz horizontal */
-      linear-gradient(90deg,
-        transparent calc(50% - 100px),
-        rgba(255, 215, 0, 0.2) calc(50% - 100px),
-        rgba(255, 215, 0, 0.2) calc(50% + 100px),
-        transparent calc(50% + 100px)
-      ),
-      /* Círculo em volta da cruz */
-      radial-gradient(
-        circle at center,
-        transparent 220px,
-        rgba(255, 215, 0, 0.15) 220px,
-        rgba(255, 215, 0, 0.15) 240px,
-        transparent 240px
-      );
+    background-image: url('/caduceus-yellow.svg');
   }
 
   /* Garantir que conteúdos importantes fiquem visíveis sobre o padrão de fundo */
