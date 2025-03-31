@@ -7,6 +7,20 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <meta name="description" content="Aplicativo web de reconhecimento de voz para preenchimento automático de relatórios médicos em português" />
+    <style>
+      body {
+        background-image: url('/medical-pattern.svg');
+        background-size: 100px;
+        background-repeat: repeat;
+        background-attachment: fixed;
+      }
+      
+      .dark body .cardio-line,
+      .dark body .medical-cross {
+        stroke: #fff !important;
+        stroke-opacity: 0.05 !important;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
