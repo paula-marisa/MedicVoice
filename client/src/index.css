@@ -77,5 +77,30 @@ html[data-fontsize="xl"] {
 
   body {
     @apply font-sans antialiased bg-background text-foreground;
+    position: relative;
+  }
+
+  /* Fundo com padrão médico para o modo claro */
+  .light body {
+    background-image: url('/medical-pattern.svg');
+    background-size: 1200px 1200px;
+    background-attachment: fixed;
+    background-blend-mode: overlay;
+  }
+  
+  /* Fundo com padrão médico para o modo escuro */
+  .dark body {
+    background-image: url('/medical-pattern-dark.svg');
+    background-size: 1200px 1200px;
+    background-attachment: fixed;
+    background-blend-mode: soft-light;
+  }
+  
+  /* Garantir que conteúdos importantes fiquem visíveis */
+  .card, 
+  .dialog-content,
+  .popover-content,
+  .sheet-content {
+    @apply bg-background/95 backdrop-blur-sm;
   }
 }

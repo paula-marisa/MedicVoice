@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="1200" viewBox="0 0 1200 1200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Padrão de fundo médico minimalista com linhas finas (versão escura) -->
+  
+  <!-- Definição dos traços para modo escuro -->
+  <defs>
+    <pattern id="medical-pattern-dark" width="300" height="300" patternUnits="userSpaceOnUse" patternTransform="rotate(10)">
+      <!-- Linha de cardiograma -->
+      <path d="M0,150 L40,150 L60,80 L80,220 L100,150 L140,150" 
+            fill="none" 
+            stroke="#ffffff" 
+            stroke-width="0.5" 
+            stroke-opacity="0.035"
+            class="cardiogram-line" />
+      
+      <!-- Cruz médica -->
+      <path d="M250,130 L250,170 M230,150 L270,150" 
+            fill="none" 
+            stroke="#ffffff" 
+            stroke-width="0.6" 
+            stroke-opacity="0.03"
+            class="medical-cross" />
+      
+      <!-- Círculo (estetoscópio) -->
+      <circle cx="200" cy="70" r="12" 
+              fill="none" 
+              stroke="#ffffff" 
+              stroke-width="0.4" 
+              stroke-opacity="0.03"
+              class="stethoscope" />
+      
+      <!-- Pulso cardíaco secundário -->
+      <path d="M160,260 L180,260 L190,230 L200,290 L210,260 L230,260" 
+            fill="none" 
+            stroke="#ffffff" 
+            stroke-width="0.4" 
+            stroke-opacity="0.025"
+            class="small-pulse" />
+      
+      <!-- Símbolo de saúde (+) -->
+      <path d="M40,40 L40,60 M30,50 L50,50" 
+            fill="none" 
+            stroke="#ffffff" 
+            stroke-width="0.6" 
+            stroke-opacity="0.03"
+            class="health-symbol" />
+            
+      <!-- Linha curva (DNA / Medicina) -->
+      <path d="M80,90 C100,70 120,110 140,90" 
+            fill="none" 
+            stroke="#ffffff" 
+            stroke-width="0.4" 
+            stroke-opacity="0.03"
+            class="dna-curve" />
+    </pattern>
+  </defs>
+  
+  <!-- Aplicação do padrão no background -->
+  <rect width="100%" height="100%" fill="url(#medical-pattern-dark)" />
+</svg>
