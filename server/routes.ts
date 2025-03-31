@@ -5,9 +5,11 @@ import {
   insertMedicalReportSchema, 
   insertCommunicationLogSchema,
   insertPatientConsentSchema,
+  insertAccessRequestSchema,
   type User, 
   type InsertMedicalReport,
-  type InsertPatientConsent
+  type InsertPatientConsent,
+  type InsertAccessRequest
 } from "@shared/schema";
 import { z } from "zod";
 import { ZodError } from "zod";
@@ -1228,6 +1230,198 @@ export async function registerRoutes(app: Express): Promise<Server> {
           message: "Erro interno do servidor"
         });
       }
+    }
+  });
+
+  // ==== Access Request Routes ====
+  
+  // Create access request (does not require authentication)
+  app.post("/api/request-access", async (req: Request, res: Response) => {
+    try {
+      // Validate request body
+      const data = insertAccessRequestSchema.parse(req.body);
+      
+      // Create new access request
+      const request = await storage.createAccessRequest(data);
+      
+      // Log the action (using null user ID since this is a public endpoint)
+      await storage.createAuditLog({
+        userId: null,
+        action: "create",
+        resourceType: "access_request",
+        resourceId: request.id,
+        details: {
+          email: request.email,
+          specialty: request.specialty,
+          status: request.status
+        },
+        ipAddress: req.ip
+      });
+      
+      res.status(201).json({
+        success: true,
+        message: "Solicitação de acesso enviada com sucesso",
+        data: {
+          id: request.id,
+          email: request.email,
+          status: request.status
+        }
+      });
+    } catch (error) {
+      if (error instanceof ZodError) {
+        const validationError = fromZodError(error);
+        res.status(400).json({
+          success: false,
+          message: "Erro de validação",
+          errors: validationError.details
+        });
+      } else {
+        log(`Error creating access request: ${error}`, "api");
+        res.status(500).json({
+          success: false,
+          message: "Erro interno do servidor"
+        });
+      }
+    }
+  });
+  
+  // Get pending access requests (admin only)
+  app.get("/api/access-requests/pending", ensureAdmin, async (req: Request, res: Response) => {
+    try {
+      const requests = await storage.getPendingAccessRequests();
+      
+      res.json({
+        success: true,
+        data: requests
+      });
+    } catch (error) {
+      log(`Error fetching pending access requests: ${error}`, "api");
+      res.status(500).json({
+        success: false,
+        message: "Erro interno do servidor"
+      });
+    }
+  });
+  
+  // Approve/reject access request (admin only)
+  app.put("/api/access-requests/:id", ensureAdmin, async (req: Request, res: Response) => {
+    try {
+      const id = parseInt(req.params.id);
+      if (isNaN(id)) {
+        return res.status(400).json({
+          success: false,
+          message: "Formato de ID inválido"
+        });
+      }
+      
+      const { action, comments } = req.body;
+      
+      if (action !== "approve" && action !== "reject") {
+        return res.status(400).json({
+          success: false,
+          message: "Ação inválida. Use 'approve' ou 'reject'."
+        });
+      }
+      
+      // Get the request
+      const accessRequest = await storage.getAccessRequest(id);
+      if (!accessRequest) {
+        return res.status(404).json({
+          success: false,
+          message: "Solicitação de acesso não encontrada"
+        });
+      }
+      
+      // Update the request status
+      const status = action === "approve" ? "approved" : "rejected";
+      
+      // For approved requests, generate a temporary password
+      let temporaryPassword = null;
+      if (status === "approved") {
+        // Generate a random password (in real app would be more secure)
+        temporaryPassword = Math.random().toString(36).slice(-8);
+      }
+      
+      const updatedRequest = await storage.updateAccessRequest(id, {
+        status,
+        reviewedBy: req.user.id,
+        reviewDate: new Date(),
+        comments,
+        temporaryPassword
+      });
+      
+      // Log the action
+      await logAuditTrail(req, action, "access_request", id, {
+        email: accessRequest.email,
+        status: status,
+        comments: comments || ""
+      });
+      
+      // If approved, create a new user account
+      if (status === "approved" && temporaryPassword) {
+        // Generate a username from the email (part before @)
+        const username = accessRequest.email.split('@')[0];
+        
+        // Hash the temporary password
+        const hashedPassword = await hashPassword(temporaryPassword);
+        
+        // Create the user
+        const newUser = await storage.createUser({
+          username,
+          password: hashedPassword,
+          name: accessRequest.fullName,
+          role: "doctor",
+          specialty: accessRequest.specialty
+        });
+        
+        // Log the user creation
+        await logAuditTrail(req, "create", "user", newUser.id, {
+          username,
+          role: "doctor",
+          fromAccessRequest: accessRequest.id
+        });
+        
+        // In a real application, send an email to the user with their credentials
+        // This would be implemented using an email service
+        
+        return res.json({
+          success: true,
+          message: "Solicitação aprovada e usuário criado com sucesso",
+          data: {
+            accessRequest: {
+              id: updatedRequest.id,
+              email: updatedRequest.email,
+              status: updatedRequest.status
+            },
+            user: {
+              id: newUser.id,
+              username: newUser.username,
+              name: newUser.name,
+              role: newUser.role
+            },
+            // In a real app, the temporary password would be emailed, not returned in the response
+            temporaryPassword
+          }
+        });
+      }
+      
+      res.json({
+        success: true,
+        message: action === "approve" 
+          ? "Solicitação aprovada com sucesso" 
+          : "Solicitação rejeitada com sucesso",
+        data: {
+          id: updatedRequest.id,
+          email: updatedRequest.email,
+          status: updatedRequest.status
+        }
+      });
+    } catch (error) {
+      log(`Error processing access request: ${error}`, "api");
+      res.status(500).json({
+        success: false,
+        message: "Erro interno do servidor"
+      });
     }
   });
 

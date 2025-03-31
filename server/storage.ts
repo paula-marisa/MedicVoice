@@ -1,10 +1,11 @@
 import { 
-  users, medicalReports, auditLogs, communicationLogs, patientConsents,
+  users, medicalReports, auditLogs, communicationLogs, patientConsents, accessRequests,
   type User, type InsertUser, 
   type MedicalReport, type InsertMedicalReport,
   type AuditLog, type InsertAuditLog,
   type CommunicationLog, type InsertCommunicationLog,
-  type PatientConsent, type InsertPatientConsent
+  type PatientConsent, type InsertPatientConsent,
+  type AccessRequest, type InsertAccessRequest
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and } from "drizzle-orm";
@@ -38,6 +39,12 @@ export interface IStorage {
   // Communication log methods
   createCommunicationLog(log: InsertCommunicationLog): Promise<CommunicationLog>;
   getCommunicationLogsByReportId(reportId: number): Promise<CommunicationLog[]>;
+  
+  // Access request methods
+  createAccessRequest(request: InsertAccessRequest): Promise<AccessRequest>;
+  getAccessRequest(id: number): Promise<AccessRequest | undefined>;
+  getPendingAccessRequests(): Promise<AccessRequest[]>;
+  updateAccessRequest(id: number, request: Partial<AccessRequest>): Promise<AccessRequest | undefined>;
   
   // Patient consent methods
   createPatientConsent(consent: InsertPatientConsent): Promise<PatientConsent>;
@@ -215,6 +222,34 @@ export class DatabaseStorage implements IStorage {
       .returning();
     
     return updatedConsent;
+  }
+
+  // Access request methods
+  async createAccessRequest(request: InsertAccessRequest): Promise<AccessRequest> {
+    const [newRequest] = await db.insert(accessRequests).values(request).returning();
+    return newRequest;
+  }
+
+  async getAccessRequest(id: number): Promise<AccessRequest | undefined> {
+    const [request] = await db.select().from(accessRequests).where(eq(accessRequests.id, id));
+    return request;
+  }
+
+  async getPendingAccessRequests(): Promise<AccessRequest[]> {
+    return db
+      .select()
+      .from(accessRequests)
+      .where(eq(accessRequests.status, "pending"))
+      .orderBy(desc(accessRequests.createdAt));
+  }
+
+  async updateAccessRequest(id: number, requestData: Partial<AccessRequest>): Promise<AccessRequest | undefined> {
+    const [updatedRequest] = await db
+      .update(accessRequests)
+      .set(requestData)
+      .where(eq(accessRequests.id, id))
+      .returning();
+    return updatedRequest;
   }
 }
 

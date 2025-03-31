@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { ClipboardList, User, Lock } from "lucide-react";
 import { Footer } from "@/layout/footer";
+import { RequestAccessDialog } from "@/components/request-access-dialog";
 
 // Esquema de validação de login
 const loginSchema = z.object({
@@ -21,6 +22,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function AuthPage() {
   const [showRegister, setShowRegister] = useState<boolean>(true);
+  const [requestDialogOpen, setRequestDialogOpen] = useState<boolean>(false);
   const { user, isLoading, loginMutation } = useAuth();
   
   // Verificar se existem usuários no sistema
@@ -85,9 +87,7 @@ export default function AuthPage() {
                 <button 
                   type="button"
                   className="text-primary hover:underline"
-                  onClick={() => {
-                    alert("Por favor, contacte o administrador do sistema para obter credenciais de acesso.");
-                  }}
+                  onClick={() => setRequestDialogOpen(true)}
                 >
                   clicando aqui
                 </button>.
@@ -168,6 +168,12 @@ export default function AuthPage() {
       </main>
       
       <Footer />
+      
+      {/* Diálogo de solicitação de acesso */}
+      <RequestAccessDialog 
+        open={requestDialogOpen} 
+        onOpenChange={setRequestDialogOpen} 
+      />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, timestamp, boolean, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, timestamp, boolean, jsonb, varchar } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import { relations } from "drizzle-orm";
@@ -64,6 +64,23 @@ export const communicationLogs = pgTable("communication_logs", {
   timestamp: timestamp("timestamp").defaultNow().notNull(),
 });
 
+// Access requests from professionals
+export const accessRequests = pgTable("access_requests", {
+  id: serial("id").primaryKey(),
+  fullName: text("full_name").notNull(),
+  professionalId: text("professional_id").notNull(),
+  specialty: text("specialty").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone").notNull(),
+  mechanographicNumber: text("mechanographic_number").notNull(),
+  status: text("status").notNull().default("pending"), // 'pending', 'approved', 'rejected'
+  reviewedBy: integer("reviewed_by").references(() => users.id),
+  reviewDate: timestamp("review_date"),
+  comments: text("comments"),
+  temporaryPassword: text("temporary_password"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 // Patient consent records for GDPR/LGPD compliance
 export const patientConsents = pgTable("patient_consents", {
   id: serial("id").primaryKey(),
@@ -80,10 +97,18 @@ export const patientConsents = pgTable("patient_consents", {
 });
 
 // Relations
+export const accessRequestsRelations = relations(accessRequests, ({ one }) => ({
+  reviewer: one(users, {
+    fields: [accessRequests.reviewedBy],
+    references: [users.id],
+  }),
+}));
+
 export const usersRelations = relations(users, ({ many }) => ({
   medicalReports: many(medicalReports),
   auditLogs: many(auditLogs),
   patientConsents: many(patientConsents),
+  reviewedAccessRequests: many(accessRequests),
 }));
 
 export const medicalReportsRelations = relations(medicalReports, ({ one, many }) => ({
@@ -125,6 +150,17 @@ export const insertAuditLogSchema = createInsertSchema(auditLogs)
 export const insertCommunicationLogSchema = createInsertSchema(communicationLogs)
   .omit({ id: true, timestamp: true });
 
+export const insertAccessRequestSchema = createInsertSchema(accessRequests)
+  .omit({ 
+    id: true, 
+    createdAt: true, 
+    status: true, 
+    reviewedBy: true,
+    reviewDate: true, 
+    comments: true,
+    temporaryPassword: true
+  });
+
 export const insertPatientConsentSchema = createInsertSchema(patientConsents)
   .omit({ id: true, consentDate: true });
 
@@ -140,6 +176,9 @@ export type AuditLog = typeof auditLogs.$inferSelect;
 
 export type InsertCommunicationLog = z.infer<typeof insertCommunicationLogSchema>;
 export type CommunicationLog = typeof communicationLogs.$inferSelect;
+
+export type InsertAccessRequest = z.infer<typeof insertAccessRequestSchema>;
+export type AccessRequest = typeof accessRequests.$inferSelect;
 
 export type InsertPatientConsent = z.infer<typeof insertPatientConsentSchema>;
 export type PatientConsent = typeof patientConsents.$inferSelect;
