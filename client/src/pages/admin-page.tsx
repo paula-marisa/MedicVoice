@@ -178,6 +178,29 @@ export default function AdminPage() {
     },
     enabled: !!user && user.role === "admin"
   });
+  
+  // Consulta para obter as solicitações de acesso pendentes
+  const { 
+    data: accessRequestsData, 
+    isLoading: accessRequestsLoading,
+    refetch: refetchAccessRequests 
+  } = useQuery({
+    queryKey: ["/api/access-requests/pending"],
+    queryFn: async () => {
+      const res = await fetch("/api/access-requests/pending", {
+        method: "GET",
+        credentials: "include"
+      });
+      
+      if (!res.ok) {
+        throw new Error("Erro ao obter solicitações de acesso pendentes");
+      }
+      
+      const data = await res.json();
+      return data.data;
+    },
+    enabled: !!user && user.role === "admin"
+  });
 
   // Formulário para utentes de teste
   const createTestPatientsForm = () => {
@@ -251,6 +274,86 @@ export default function AdminPage() {
     });
   };
 
+  // Função para aprovar uma solicitação de acesso
+  const handleApproveAccessRequest = async (requestId: number) => {
+    try {
+      const response = await fetch(`/api/access-requests/${requestId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          status: "approved",
+          comments: "Aprovado pelo administrador."
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error("Erro ao aprovar solicitação de acesso");
+      }
+
+      const result = await response.json();
+
+      // Mostrar notificação de sucesso
+      toast({
+        title: "Solicitação aprovada",
+        description: "O utilizador foi aprovado e pode agora aceder ao sistema.",
+        variant: "default"
+      });
+
+      // Atualizar lista de solicitações pendentes
+      refetchAccessRequests();
+      // Atualizar lista de utilizadores
+      refetchUsers();
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: error instanceof Error ? error.message : "Erro ao aprovar solicitação de acesso",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Função para rejeitar uma solicitação de acesso
+  const handleRejectAccessRequest = async (requestId: number) => {
+    try {
+      const response = await fetch(`/api/access-requests/${requestId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          status: "rejected",
+          comments: "Rejeitado pelo administrador."
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error("Erro ao rejeitar solicitação de acesso");
+      }
+
+      const result = await response.json();
+
+      // Mostrar notificação de sucesso
+      toast({
+        title: "Solicitação rejeitada",
+        description: "A solicitação de acesso foi rejeitada.",
+        variant: "default"
+      });
+
+      // Atualizar lista de solicitações pendentes
+      refetchAccessRequests();
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: error instanceof Error ? error.message : "Erro ao rejeitar solicitação de acesso",
+        variant: "destructive"
+      });
+    }
+  };
+
   // Filtrar relatórios com base na pesquisa
   const filteredReports = reportsData ? reportsData.filter((report: any) => {
     // Verificar se as propriedades existem antes de chamar toLowerCase
@@ -302,14 +405,18 @@ export default function AdminPage() {
           </div>
           
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-5 mb-8">
+            <TabsList className="grid w-full grid-cols-6 mb-8">
               <TabsTrigger value="register">
                 <UserPlus className="h-4 w-4 mr-2" />
                 Registar Utilizadores
               </TabsTrigger>
+              <TabsTrigger value="access">
+                <Key className="h-4 w-4 mr-2" />
+                Solicitações de Acesso
+              </TabsTrigger>
               <TabsTrigger value="users">
                 <User className="h-4 w-4 mr-2" />
-                Faça a Gestão de Utilizadores
+                Gestão de Utilizadores
               </TabsTrigger>
               <TabsTrigger value="patients">
                 <Hospital className="h-4 w-4 mr-2" />
@@ -443,6 +550,96 @@ export default function AdminPage() {
                     </Button>
                   </form>
                 </CardContent>
+              </Card>
+            </TabsContent>
+            
+            {/* Aba de Solicitações de Acesso */}
+            <TabsContent value="access">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Solicitações de Acesso Pendentes</CardTitle>
+                  <CardDescription>
+                    Aprove ou rejeite solicitações de acesso ao sistema de relatórios médicos.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {accessRequestsLoading ? (
+                    <div className="flex justify-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                    </div>
+                  ) : (
+                    <div className="rounded-md border">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Nome</TableHead>
+                            <TableHead>ID Profissional</TableHead>
+                            <TableHead>Especialidade</TableHead>
+                            <TableHead>Email</TableHead>
+                            <TableHead>Telefone</TableHead>
+                            <TableHead>Data do Pedido</TableHead>
+                            <TableHead>Ações</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {accessRequestsData && accessRequestsData.length > 0 ? (
+                            accessRequestsData.map((request: any) => (
+                              <TableRow key={request.id}>
+                                <TableCell className="font-medium">{request.full_name}</TableCell>
+                                <TableCell>{request.professional_id}</TableCell>
+                                <TableCell>{request.specialty}</TableCell>
+                                <TableCell>{request.email}</TableCell>
+                                <TableCell>{request.phone}</TableCell>
+                                <TableCell>
+                                  {request.created_at ? 
+                                    new Date(request.created_at).toLocaleDateString('pt-PT') : 
+                                    "-"
+                                  }
+                                </TableCell>
+                                <TableCell>
+                                  <div className="flex space-x-2">
+                                    <Button 
+                                      variant="default" 
+                                      size="sm"
+                                      onClick={() => handleApproveAccessRequest(request.id)}
+                                    >
+                                      Aprovar
+                                    </Button>
+                                    <Button 
+                                      variant="outline" 
+                                      size="sm"
+                                      onClick={() => handleRejectAccessRequest(request.id)}
+                                    >
+                                      Rejeitar
+                                    </Button>
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            ))
+                          ) : (
+                            <TableRow>
+                              <TableCell colSpan={7} className="text-center py-4">
+                                Não existem solicitações de acesso pendentes.
+                              </TableCell>
+                            </TableRow>
+                          )}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  )}
+                </CardContent>
+                <CardFooter className="bg-muted/50 flex justify-between p-4">
+                  <div className="text-sm">
+                    <p>Para adicionar um novo utilizador manualmente, vá à aba "Registar Utilizadores".</p>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => refetchAccessRequests()}
+                  >
+                    Atualizar Lista
+                  </Button>
+                </CardFooter>
               </Card>
             </TabsContent>
             

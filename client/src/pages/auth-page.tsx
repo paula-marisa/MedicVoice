@@ -129,7 +129,7 @@ export default function AuthPage() {
             <CardHeader>
               <CardTitle>Login</CardTitle>
               <CardDescription>
-                Para efetuar o login é necessário introduzir as suas credencias, caso não as tenha pode solicitar {" "}
+                Para efetuar o login é necessário introduzir as suas credencias, caso não as tenha pode solicitar acesso {" "}
                 <button 
                   type="button"
                   className="text-primary hover:underline"
@@ -221,7 +221,12 @@ export default function AuthPage() {
                   type="button" 
                   className="ml-1 text-primary hover:underline"
                   onClick={() => {
-                    alert("Contate um administrador para criar uma nova conta");
+                    // Informar o usuário que é necessário fazer login como administrador
+                    toast({
+                      title: "Registo de utilizadores",
+                      description: "Para registar novos utilizadores, faça login como administrador e vá à seção 'Registar Utilizadores'.",
+                      variant: "default",
+                    });
                   }}
                 >
                   Registre-se
