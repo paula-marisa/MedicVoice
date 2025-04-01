@@ -275,7 +275,54 @@ export function VoiceRecognition({ onTranscriptionComplete, notificationRef, pat
           const transcript = event.results[i][0].transcript;
           
           if (event.results[i].isFinal) {
-            // Processar comandos se for resultado final
+            // Novo processamento para capturar frases exatas como "relativamente ao diagnóstico" e "tratamento recomendado"
+            const diagnosisPattern = /(relativamente ao diagnóstico|quanto ao diagnóstico|sobre o diagnóstico|diagnóstico)/i;
+            const treatmentPattern = /(relativamente ao tratamento|quanto ao tratamento|tratamento recomendado|sobre o tratamento)/i;
+            const symptomsPattern = /(relativamente aos sintomas|quanto aos sintomas|sobre os sintomas|sintomas apresentados)/i;
+            const observationsPattern = /(relativamente às observações|quanto às observações|sobre as observações|observações adicionais)/i;
+            
+            let foundPattern = false;
+            let newField = "";
+            
+            // Verificar padrões específicos para relatórios médicos em português
+            if (diagnosisPattern.test(transcript)) {
+              newField = "diagnosis";
+              foundPattern = true;
+            } else if (treatmentPattern.test(transcript)) {
+              newField = "treatment";
+              foundPattern = true;
+            } else if (symptomsPattern.test(transcript)) {
+              newField = "symptoms";
+              foundPattern = true;
+            } else if (observationsPattern.test(transcript)) {
+              newField = "observations";
+              foundPattern = true;
+            }
+            
+            if (foundPattern) {
+              // Se encontrou um padrão no meio da frase, muda o campo e notifica
+              // Se temos conteúdo anterior, enviamos para o campo anterior
+              if (finalText.trim()) {
+                onTranscriptionComplete(finalText.trim(), targetField);
+                notificationRef.current?.show({
+                  message: `Detectada mudança de seção para ${
+                    newField === "diagnosis" ? "diagnóstico" : 
+                    newField === "symptoms" ? "sintomas" : 
+                    newField === "treatment" ? "tratamento" : "observações"
+                  }`,
+                  type: "info"
+                });
+              }
+              
+              // Atualiza o campo alvo
+              setTargetField(newField);
+              
+              // Reinicia o texto para o novo campo
+              finalText = ""; 
+              transcriptRef.current = "";
+            }
+            
+            // Agora processar comandos explícitos
             const commandResult = processVoiceCommand(transcript);
             
             if (commandResult.isCommand) {
