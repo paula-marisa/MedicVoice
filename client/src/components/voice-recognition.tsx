@@ -180,19 +180,56 @@ export function VoiceRecognition({ onTranscriptionComplete, notificationRef, pat
       return { isCommand: true, action: "stop" };
     }
     
-    // Verificar se é um comando para mudar o campo
-    const diagnósticoMatch = lowerText.match(/\b(diagnóstico|diagnose|diagnostico)\b/);
-    const sintomasMatch = lowerText.match(/\b(sintomas|sinais|sintoma)\b/);
-    const tratamentoMatch = lowerText.match(/\b(tratamento|tratar|medicamento|terapia)\b/);
-    const observaçõesMatch = lowerText.match(/\b(observações|observacao|observacoes|nota|notas)\b/);
+    // IMPORTANTE: Verifica primeiro se a frase COMEÇA com uma das palavras-chave
+    // Isso impede que essas palavras sejam detectadas no meio de uma frase normal
     
-    if (diagnósticoMatch) {
+    // Comandos para mudar de campo - verificar se a frase começa com estas palavras
+    if (/^diagnóstico\b|^diagnostico\b|^diagnose\b/.test(lowerText)) {
       return { isCommand: true, action: "changeField", field: "diagnosis" };
-    } else if (sintomasMatch) {
+    }
+    
+    if (/^sintomas\b|^sintoma\b|^sinais\b/.test(lowerText)) {
       return { isCommand: true, action: "changeField", field: "symptoms" };
-    } else if (tratamentoMatch) {
+    }
+    
+    if (/^tratamento\b|^tratar\b|^medicamento\b|^terapia\b/.test(lowerText)) {
       return { isCommand: true, action: "changeField", field: "treatment" };
-    } else if (observaçõesMatch) {
+    }
+    
+    if (/^observações\b|^observacoes\b|^observacao\b|^notas\b|^nota\b/.test(lowerText)) {
+      return { isCommand: true, action: "changeField", field: "observations" };
+    }
+    
+    // Se não começa com palavra-chave, tenta o método antigo (verificar em qualquer parte do texto)
+    // mas apenas para comandos específicos precedidos por algum marcador como "campo", "seção", "mudar para"
+    
+    if (lowerText.includes("campo diagnóstico") || 
+        lowerText.includes("campo diagnostico") || 
+        lowerText.includes("seção diagnóstico") ||
+        lowerText.includes("secao diagnostico") ||
+        lowerText.includes("mudar para diagnóstico")) {
+      return { isCommand: true, action: "changeField", field: "diagnosis" };
+    }
+    
+    if (lowerText.includes("campo sintomas") || 
+        lowerText.includes("seção sintomas") ||
+        lowerText.includes("secao sintomas") ||
+        lowerText.includes("mudar para sintomas")) {
+      return { isCommand: true, action: "changeField", field: "symptoms" };
+    }
+    
+    if (lowerText.includes("campo tratamento") || 
+        lowerText.includes("seção tratamento") ||
+        lowerText.includes("secao tratamento") ||
+        lowerText.includes("mudar para tratamento")) {
+      return { isCommand: true, action: "changeField", field: "treatment" };
+    }
+    
+    if (lowerText.includes("campo observações") || 
+        lowerText.includes("campo observacoes") ||
+        lowerText.includes("seção observações") ||
+        lowerText.includes("secao observacoes") ||
+        lowerText.includes("mudar para observações")) {
       return { isCommand: true, action: "changeField", field: "observations" };
     }
     
