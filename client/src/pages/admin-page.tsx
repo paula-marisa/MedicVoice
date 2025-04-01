@@ -956,7 +956,7 @@ export default function AdminPage() {
                                     </Button>
                                     <Button variant="outline" size="sm" asChild>
                                       <Link to={`/reports/${report.id}/audit`}>
-                                        Ver Histórico
+                                        Ver Histórico de Alterações
                                       </Link>
                                     </Button>
 

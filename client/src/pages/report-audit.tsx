@@ -74,9 +74,9 @@ export default function ReportAuditPage() {
     isLoading: changesLoading,
     error: changesError
   } = useQuery({
-    queryKey: ['/api/medical-reports', id, 'audit'],
+    queryKey: ['/api/medical-reports', id, 'audit-logs'],
     queryFn: async () => {
-      const res = await fetch(`/api/medical-reports/${id}/audit`, {
+      const res = await fetch(`/api/medical-reports/${id}/audit-logs`, {
         method: "GET",
         credentials: "include"
       });

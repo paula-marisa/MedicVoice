@@ -491,28 +491,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      // Check if the report exists and belongs to the user
+      // Check if the report exists
       const report = await storage.getMedicalReport(id);
       if (!report) {
         return res.status(404).json({
           success: false,
-          message: "Relatório médico não encontrado"
+          message: "Relatório não encontrado"
         });
       }
       
-      if (report.userId !== req.user.id) {
+      // Check if user has permission to view this report (doctor owner or admin)
+      if (req.user.role !== 'admin' && report.userId !== req.user.id) {
         return res.status(403).json({
           success: false,
-          message: "Acesso negado"
+          message: "Sem permissão para acessar este relatório"
         });
       }
       
-      // Get audit logs
-      const logs = await storage.getAuditLogs("medical_report", id);
+      // Get audit logs for this report
+      const logs = await storage.getAuditLogs('medical_report', id);
+      
+      // Enrich logs with user data
+      const logsWithUserData = await Promise.all(logs.map(async (log) => {
+        if (log.userId) {
+          const user = await storage.getUser(log.userId);
+          return {
+            ...log,
+            userName: user ? user.name : "Usuário desconhecido",
+            userRole: user ? user.role : "desconhecido"
+          };
+        }
+        return {
+          ...log,
+          userName: "Sistema",
+          userRole: "system"
+        };
+      }));
       
       res.json({
         success: true,
-        data: logs
+        data: logsWithUserData
       });
     } catch (error) {
       log(`Error fetching audit logs: ${error}`, "api");
@@ -896,48 +914,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Get utente by process number
   // Endpoint para buscar informações do utente pelo número de processo
-  app.get("/api/utentes/:processNumber", ensureAuthenticated, async (req, res) => {
-    try {
-      const { processNumber } = req.params;
-      
-      if (!processNumber) {
-        return res.status(400).json({
-          success: false,
-          message: "Número de processo é obrigatório"
-        });
-      }
-      
-      // Verificar se existe um relatório com este número de processo para obter informações do utente
-      const reports = await storage.getAllMedicalReports();
-      const utenteReport = reports.find(report => report.processNumber === processNumber);
-      
-      if (!utenteReport) {
-        return res.status(404).json({
-          success: false,
-          message: "Utente não encontrado"
-        });
-      }
-      
-      // Retornar informações do utente a partir do relatório
-      const utenteInfo = {
-        processNumber: utenteReport.processNumber,
-        name: utenteReport.name,
-        age: utenteReport.age,
-        gender: utenteReport.gender
-      };
-      
-      res.json(utenteInfo);
-    } catch (error) {
-      log(`Erro ao buscar utente: ${error}`, "api");
-      res.status(500).json({
-        success: false,
-        message: "Erro interno do servidor"
-      });
-    }
-  });
-  
-  // Mantendo endpoint legado para compatibilidade
-  // Endpoint para busca de utentes
   app.get("/api/utentes/:processNumber", ensureAuthenticated, async (req, res) => {
     try {
       const { processNumber } = req.params;
