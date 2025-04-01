@@ -7,6 +7,11 @@ import {
   type PatientConsent, type InsertPatientConsent,
   type AccessRequest, type InsertAccessRequest
 } from "@shared/schema";
+
+// Extensão do tipo InsertUser para incluir lastLoginAt
+export interface UserUpdateData extends Partial<InsertUser> {
+  lastLoginAt?: Date;
+}
 import { db } from "./db";
 import { eq, desc, and } from "drizzle-orm";
 import connectPg from "connect-pg-simple";
@@ -22,7 +27,7 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   getAllUsers(): Promise<User[]>;
   createUser(user: InsertUser): Promise<User>;
-  updateUser(id: number, user: Partial<InsertUser>): Promise<User | undefined>;
+  updateUser(id: number, user: UserUpdateData): Promise<User | undefined>;
   
   // Medical report methods
   createMedicalReport(report: InsertMedicalReport): Promise<MedicalReport>;
@@ -89,7 +94,7 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
   
-  async updateUser(id: number, userData: Partial<InsertUser>): Promise<User | undefined> {
+  async updateUser(id: number, userData: UserUpdateData): Promise<User | undefined> {
     const [updatedUser] = await db
       .update(users)
       .set({ ...userData })

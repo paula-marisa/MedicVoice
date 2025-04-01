@@ -4,7 +4,7 @@ import { Express, Request, Response, NextFunction } from "express";
 import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
-import { storage } from "./storage";
+import { storage, UserUpdateData } from "./storage";
 import { type User as UserType, type InsertUser, auditLogs } from "@shared/schema";
 import { log } from "./vite";
 
@@ -67,7 +67,8 @@ export async function initAdminUser() {
         password: await hashPassword("admin123"), // Atualizado para senha mais simples
         name: "Administrador",
         role: "admin",
-        specialty: "Administração"
+        specialty: "Administração",
+        status: "active"
       };
       const newAdmin = await storage.createUser(adminData);
       log(`Admin user created successfully with ID: ${newAdmin.id}`, "auth");
@@ -112,6 +113,17 @@ export function setupAuth(app: Express) {
           await logAuthActivity("login_failed", undefined, { username });
           return done(null, false, { message: "Credenciais inválidas" });
         }
+        
+        // Verificar se o usuário está inativo
+        if (user.status === "inactive") {
+          await logAuthActivity("login_failed", user.id, { reason: "inactive_account" });
+          return done(null, false, { message: "Conta inativa. Entre em contato com o administrador." });
+        }
+        
+        // Atualizar o último login
+        await storage.updateUser(user.id, {
+          lastLoginAt: new Date()
+        });
         
         await logAuthActivity("login_success", user.id);
         return done(null, user);
@@ -169,7 +181,8 @@ export function setupAuth(app: Express) {
       // Create the user with hashed password
       const userData: InsertUser = {
         ...req.body,
-        password: await hashPassword(req.body.password)
+        password: await hashPassword(req.body.password),
+        status: "active" // Garantir que o status esteja definido
       };
       
       const user = await storage.createUser(userData);

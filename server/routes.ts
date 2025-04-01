@@ -1389,6 +1389,101 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Função para enviar e-mail (Simulação)
+  async function sendEmail(to: string, subject: string, body: string) {
+    try {
+      log(`Enviando e-mail para ${to}`, "email");
+      log(`Assunto: ${subject}`, "email");
+      log(`Conteúdo: ${body}`, "email");
+      
+      // Simular o envio de e-mail com registro
+      await storage.createAuditLog({
+        userId: null,
+        action: "email_sent",
+        resourceType: "email",
+        resourceId: null,
+        details: {
+          to,
+          subject,
+          timestamp: new Date()
+        },
+        ipAddress: null
+      });
+      
+      return true;
+    } catch (error) {
+      log(`Erro ao enviar e-mail: ${error}`, "email");
+      return false;
+    }
+  }
+  
+  // Função para verificar e marcar usuários inativos
+  async function checkInactiveUsers() {
+    try {
+      log("Verificando usuários inativos", "api");
+      
+      // Obter todos os usuários
+      const allUsers = await storage.getAllUsers();
+      
+      // Data atual
+      const now = new Date();
+      
+      // 3 meses atrás
+      const threeMonthsAgo = new Date();
+      threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+      
+      for (const user of allUsers) {
+        // Pular usuários admin
+        if (user.role === "admin") {
+          continue;
+        }
+        
+        // Se o usuário nunca fez login ou o último login foi há mais de 3 meses
+        if (!user.lastLoginAt || new Date(user.lastLoginAt) < threeMonthsAgo) {
+          if (user.status !== "inactive") {
+            // Marcar como inativo
+            await storage.updateUser(user.id, {
+              status: "inactive"
+            });
+            
+            log(`Usuário ${user.username} marcado como inativo por inatividade`, "api");
+            
+            // Registrar a ação no log de auditoria
+            await storage.createAuditLog({
+              userId: null,
+              action: "user_marked_inactive",
+              resourceType: "user",
+              resourceId: user.id,
+              details: {
+                reason: "3_months_inactivity",
+                lastLogin: user.lastLoginAt,
+                timestamp: now
+              },
+              ipAddress: null
+            });
+            
+            // Enviar e-mail notificando o usuário
+            await sendEmail(
+              user.username + "@uls.pt", // Supondo que o e-mail segue este padrão
+              "Conta Inativa - Sistema de Relatórios Médicos",
+              `Olá ${user.name},\n\nA sua conta no Sistema de Relatórios Médicos foi marcada como inativa por não ter sido usada nos últimos 3 meses. Para reativá-la, entre em contato com o administrador do sistema.\n\nAtenciosamente,\nAdministração do Sistema`
+            );
+          }
+        }
+      }
+      
+      log("Verificação de usuários inativos concluída", "api");
+    } catch (error) {
+      log(`Erro ao verificar usuários inativos: ${error}`, "api");
+    }
+  }
+  
+  // Programar verificação de usuários inativos uma vez por dia
+  setInterval(checkInactiveUsers, 24 * 60 * 60 * 1000); // 24 horas
+  
+  // Executar uma vez na inicialização
+  checkInactiveUsers().catch(err => log(`Erro na verificação inicial de usuários inativos: ${err}`, "api"));
+
   // Approve/reject access request (admin only)
   app.put("/api/access-requests/:id", ensureAdmin, async (req: Request, res: Response) => {
     try {
@@ -1457,7 +1552,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           password: hashedPassword,
           name: accessRequest.fullName,
           role: "doctor",
-          specialty: accessRequest.specialty
+          specialty: accessRequest.specialty,
+          status: "active", // Usuário começa como ativo
+          professionalId: accessRequest.professionalId,
+          mechanographicNumber: accessRequest.mechanographicNumber
         });
         
         // Log the user creation
@@ -1467,8 +1565,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
           fromAccessRequest: accessRequest.id
         });
         
-        // In a real application, send an email to the user with their credentials
-        // This would be implemented using an email service
+        // Enviar e-mail com as credenciais
+        const emailSubject = "Acesso Aprovado - Sistema de Relatórios Médicos";
+        const emailBody = `
+Olá ${accessRequest.fullName},
+
+A sua solicitação de acesso ao Sistema de Relatórios Médicos foi aprovada.
+
+Dados de acesso:
+- Nome de utilizador: ${username}
+- Senha temporária: ${temporaryPassword}
+
+Na primeira vez que aceder ao sistema, recomendamos que altere a senha para uma de sua preferência.
+
+Atenciosamente,
+Administração do Sistema
+        `;
+        
+        await sendEmail(accessRequest.email, emailSubject, emailBody);
         
         return res.json({
           success: true,
@@ -1485,10 +1599,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
               name: newUser.name,
               role: newUser.role
             },
-            // In a real app, the temporary password would be emailed, not returned in the response
+            // Retornar a senha temporária para o administrador comunicar ao usuário
             temporaryPassword
           }
         });
+      }
+      
+      // Se rejeitado, enviar e-mail notificando o usuário
+      if (status === "rejected") {
+        const emailSubject = "Solicitação de Acesso Rejeitada - Sistema de Relatórios Médicos";
+        const emailBody = `
+Olá ${accessRequest.fullName},
+
+A sua solicitação de acesso ao Sistema de Relatórios Médicos foi analisada e, infelizmente, não foi aprovada neste momento.
+
+${comments ? `Comentários: ${comments}` : ''}
+
+Para mais informações, entre em contato com a administração do sistema.
+
+Atenciosamente,
+Administração do Sistema
+        `;
+        
+        await sendEmail(accessRequest.email, emailSubject, emailBody);
       }
       
       res.json({
@@ -1504,6 +1637,76 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       log(`Error processing access request: ${error}`, "api");
+      res.status(500).json({
+        success: false,
+        message: "Erro interno do servidor"
+      });
+    }
+  });
+
+  // Endpoint para atualizar o status do usuário (Ativar/Desativar)
+  app.put("/api/users/:id/status", ensureAdmin, async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.id);
+      if (isNaN(userId)) {
+        return res.status(400).json({
+          success: false,
+          message: "ID de usuário inválido"
+        });
+      }
+      
+      const { status } = req.body;
+      
+      if (status !== "active" && status !== "inactive") {
+        return res.status(400).json({
+          success: false,
+          message: "Status inválido. Use 'active' ou 'inactive'."
+        });
+      }
+      
+      // Verificar se o usuário existe
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: "Usuário não encontrado"
+        });
+      }
+      
+      // Não permitir alterar o status de administradores
+      if (user.role === "admin") {
+        return res.status(403).json({
+          success: false,
+          message: "Não é possível alterar o status de administradores"
+        });
+      }
+      
+      // Atualizar o status do usuário
+      const updatedUser = await storage.updateUser(userId, { status });
+      
+      // Registrar a ação
+      await logAuditTrail(req, `user_${status === "active" ? "activated" : "deactivated"}`, "user", userId, {
+        previousStatus: user.status || "active",
+        newStatus: status
+      });
+      
+      // Se estiver ativando o usuário, atualizar o lastLoginAt para evitar que ele seja marcado como inativo novamente
+      if (status === "active") {
+        await storage.updateUser(userId, {
+          lastLoginAt: new Date()
+        });
+      }
+      
+      return res.json({
+        success: true,
+        message: `Usuário ${status === "active" ? "ativado" : "desativado"} com sucesso`,
+        data: {
+          id: userId,
+          status
+        }
+      });
+    } catch (error) {
+      log(`Error updating user status: ${error}`, "api");
       res.status(500).json({
         success: false,
         message: "Erro interno do servidor"

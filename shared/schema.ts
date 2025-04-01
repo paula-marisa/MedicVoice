@@ -11,6 +11,10 @@ export const users = pgTable("users", {
   name: text("name").notNull(),
   role: text("role").notNull(), // 'doctor', 'admin', etc.
   specialty: text("specialty"),
+  professionalId: text("professional_id"), // ID profissional para médicos e enfermeiros
+  mechanographicNumber: text("mechanographic_number"), // Número mecanográfico do profissional
+  status: text("status").notNull().default("active"), // 'active', 'inactive'
+  lastLoginAt: timestamp("last_login_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -20,6 +24,9 @@ export const insertUserSchema = createInsertSchema(users).pick({
   name: true,
   role: true,
   specialty: true,
+  status: true,
+  professionalId: true,
+  mechanographicNumber: true,
 });
 
 // Medical Report model

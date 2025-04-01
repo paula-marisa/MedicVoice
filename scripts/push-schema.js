@@ -22,22 +22,31 @@ async function migrateDb() {
     await client.unsafe(`
       CREATE TABLE IF NOT EXISTS "access_requests" (
         "id" SERIAL PRIMARY KEY,
-        "fullName" VARCHAR(255) NOT NULL,
+        "full_name" VARCHAR(255) NOT NULL,
         "email" VARCHAR(255) NOT NULL,
-        "phoneNumber" VARCHAR(50),
-        "professionalId" VARCHAR(100) NOT NULL,
-        "registrationNumber" VARCHAR(100),
+        "phone" VARCHAR(50) NOT NULL,
+        "professional_id" VARCHAR(100) NOT NULL,
+        "mechanographic_number" VARCHAR(100) NOT NULL,
         "specialty" VARCHAR(100) NOT NULL,
         "status" VARCHAR(50) NOT NULL DEFAULT 'pending',
-        "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-        "reviewedBy" INTEGER,
-        "reviewDate" TIMESTAMP WITH TIME ZONE,
+        "created_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+        "reviewed_by" INTEGER,
+        "review_date" TIMESTAMP WITH TIME ZONE,
         "comments" TEXT,
-        "temporaryPassword" VARCHAR(255)
+        "temporary_password" VARCHAR(255)
       );
     `);
     
     console.log('Tabela "access_requests" criada ou já existia');
+    
+    // Adicionar novos campos à tabela de usuários se não existirem
+    await client.unsafe(`
+      ALTER TABLE "users" 
+      ADD COLUMN IF NOT EXISTS "professional_id" VARCHAR(100),
+      ADD COLUMN IF NOT EXISTS "mechanographic_number" VARCHAR(100);
+    `);
+    
+    console.log('Campos profissionais adicionados à tabela "users"');
     
     console.log('Migração concluída com sucesso');
   } catch (error) {

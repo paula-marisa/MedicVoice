@@ -30,7 +30,8 @@ import {
   Key,
   ShieldCheck,
   LogOut,
-  Settings
+  Settings,
+  RefreshCw
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
@@ -284,7 +285,7 @@ export default function AdminPage() {
         },
         credentials: "include",
         body: JSON.stringify({
-          status: "approved",
+          action: "approve",
           comments: "Aprovado pelo administrador."
         })
       });
@@ -295,11 +296,15 @@ export default function AdminPage() {
 
       const result = await response.json();
 
-      // Mostrar notificação de sucesso
+      // Extrair a senha temporária para mostrar ao administrador
+      const temporaryPassword = result.data?.temporaryPassword;
+
+      // Mostrar notificação de sucesso com a senha
       toast({
         title: "Solicitação aprovada",
-        description: "O utilizador foi aprovado e pode agora aceder ao sistema.",
-        variant: "default"
+        description: `O utilizador foi aprovado e pode agora aceder ao sistema. ${temporaryPassword ? `Senha temporária: ${temporaryPassword}` : ''}`,
+        variant: "default",
+        duration: 10000 // Deixar a notificação por mais tempo para o admin ver a senha
       });
 
       // Atualizar lista de solicitações pendentes
@@ -325,7 +330,7 @@ export default function AdminPage() {
         },
         credentials: "include",
         body: JSON.stringify({
-          status: "rejected",
+          action: "reject",
           comments: "Rejeitado pelo administrador."
         })
       });
@@ -666,6 +671,8 @@ export default function AdminPage() {
                             <TableHead>Utilizador</TableHead>
                             <TableHead>Função</TableHead>
                             <TableHead>Especialidade</TableHead>
+                            <TableHead>ID Profissional</TableHead>
+                            <TableHead>Estado</TableHead>
                             <TableHead>Data de Criação</TableHead>
                             <TableHead>Ações</TableHead>
                           </TableRow>
@@ -687,6 +694,16 @@ export default function AdminPage() {
                                   </span>
                                 </TableCell>
                                 <TableCell>{userData.specialty || "-"}</TableCell>
+                                <TableCell>{userData.professionalId || "-"}</TableCell>
+                                <TableCell>
+                                  <span className={`px-2 py-1 rounded-full text-xs ${
+                                    userData.status === 'active' || !userData.status
+                                      ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+                                      : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+                                  }`}>
+                                    {userData.status === 'active' || !userData.status ? 'Ativo' : 'Inativo'}
+                                  </span>
+                                </TableCell>
                                 <TableCell>
                                   {userData.createdAt ? 
                                     new Date(userData.createdAt).toLocaleDateString('pt-PT') : 
@@ -700,28 +717,73 @@ export default function AdminPage() {
                                   }
                                 </TableCell>
                                 <TableCell>
-                                  <Button 
-                                    variant="ghost" 
-                                    size="sm"
-                                    disabled={userData.id === user.id} // Não pode redefinir a própria palavra-passe
-                                    onClick={() => {
-                                      // Aqui implementaríamos a função para redefinir palavra-passe
-                                      toast({
-                                        title: "Função em desenvolvimento",
-                                        description: "A funcionalidade de redefinição de palavra-passe será implementada em breve.",
-                                        variant: "default"
-                                      });
-                                    }}
-                                  >
-                                    <Key className="h-4 w-4 mr-1" />
-                                    Redefinir Palavra-passe
-                                  </Button>
+                                  <div className="flex space-x-2">
+                                    {userData.status === "inactive" && (
+                                      <Button 
+                                        variant="default" 
+                                        size="sm"
+                                        onClick={() => {
+                                          // Implementar função para reativar o usuário
+                                          fetch(`/api/users/${userData.id}/status`, {
+                                            method: "PUT",
+                                            headers: {
+                                              "Content-Type": "application/json"
+                                            },
+                                            credentials: "include",
+                                            body: JSON.stringify({
+                                              status: "active"
+                                            })
+                                          })
+                                          .then(response => {
+                                            if (!response.ok) {
+                                              throw new Error("Erro ao reativar utilizador");
+                                            }
+                                            return response.json();
+                                          })
+                                          .then(() => {
+                                            toast({
+                                              title: "Utilizador reativado",
+                                              description: "O utilizador foi reativado com sucesso.",
+                                              variant: "default"
+                                            });
+                                            refetchUsers();
+                                          })
+                                          .catch(error => {
+                                            toast({
+                                              title: "Erro",
+                                              description: error.message,
+                                              variant: "destructive"
+                                            });
+                                          });
+                                        }}
+                                      >
+                                        <RefreshCw className="h-4 w-4 mr-1" />
+                                        Reativar
+                                      </Button>
+                                    )}
+                                    <Button 
+                                      variant="ghost" 
+                                      size="sm"
+                                      disabled={userData.id === user.id} // Não pode redefinir a própria palavra-passe
+                                      onClick={() => {
+                                        // Aqui implementaríamos a função para redefinir palavra-passe
+                                        toast({
+                                          title: "Função em desenvolvimento",
+                                          description: "A funcionalidade de redefinição de palavra-passe será implementada em breve.",
+                                          variant: "default"
+                                        });
+                                      }}
+                                    >
+                                      <Key className="h-4 w-4 mr-1" />
+                                      Redefinir Palavra-passe
+                                    </Button>
+                                  </div>
                                 </TableCell>
                               </TableRow>
                             ))
                           ) : (
                             <TableRow>
-                              <TableCell colSpan={6} className="text-center py-4">
+                              <TableCell colSpan={8} className="text-center py-4">
                                 Nenhum utilizador encontrado.
                               </TableCell>
                             </TableRow>
