@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Mic, MicOff, Info, Shield, ExternalLink } from "lucide-react";
+import { Mic, MicOff, Info, Shield, ExternalLink, StopCircle, CheckCircle } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
@@ -457,6 +457,27 @@ export function VoiceRecognition({ onTranscriptionComplete, notificationRef, pat
             </div>
           </div>
           
+          <div className="mt-4 flex justify-center mb-6">
+            <Button 
+              size="lg"
+              variant={isRecording ? "destructive" : "default"}
+              className={`h-16 w-full md:w-auto flex items-center justify-center gap-2 ${isRecording ? "bg-red-500" : ""}`}
+              onClick={toggleRecording}
+            >
+              {isRecording ? (
+                <>
+                  <StopCircle className="h-5 w-5" />
+                  Parar Gravação
+                </>
+              ) : (
+                <>
+                  <Mic className="h-5 w-5" />
+                  Iniciar Gravação
+                </>
+              )}
+            </Button>
+          </div>
+          
           <div className="flex items-center justify-center mb-6">
             <div className="w-full bg-neutral-100 dark:bg-neutral-800 rounded-lg p-6 text-center">
               <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium mb-2">
@@ -488,19 +509,7 @@ export function VoiceRecognition({ onTranscriptionComplete, notificationRef, pat
             </div>
           </div>
           
-          <div className="flex flex-col items-center">
-            <Button 
-              size="lg"
-              variant={isRecording ? "destructive" : "default"}
-              className="h-16 w-16 rounded-full mb-3"
-              onClick={toggleRecording}
-            >
-              {isRecording ? <MicOff className="h-6 w-6" /> : <Mic className="h-6 w-6" />}
-            </Button>
-            <span className="text-sm text-neutral-600 dark:text-neutral-400">
-              {isRecording ? "Parar Gravação" : "Iniciar Gravação"}
-            </span>
-          </div>
+          {/* Removido o botão duplicado */}
         </CardContent>
       </Card>
       

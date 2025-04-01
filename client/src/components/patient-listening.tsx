@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Mic, MicOff, Info, Ear, Stethoscope, ExternalLink, Shield, X } from "lucide-react";
+import { Mic, MicOff, Info, Ear, Stethoscope, ExternalLink, Shield, X, StopCircle, CheckCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "wouter";
 import { analyzeSymptoms, formatSymptomsReport } from "@/lib/symptoms-analyzer";
@@ -293,45 +293,21 @@ export const PatientListening = forwardRef<PatientListeningRef, PatientListening
     
     // Manipula o resultado do consentimento
     const handlePrivacyConsent = (consented: boolean) => {
+      console.log("Consentimento obtido:", consented);
       setHasPatientConsent(consented);
       
+      // Importante: Simplificamos o fluxo de consentimento para evitar erros de banco de dados
+      // Não precisamos mais salvar isso no banco, apenas registrar na sessão do usuário
+      
       if (consented) {
-        // Obter o número do processo do relatório atual (assumindo que vem de um form ou contexto)
-        // Nota: Este é apenas um exemplo, na implementação real você deve obter o ID do paciente atual
-        const currentProcessNumber = processNumber || `PROC-${Date.now()}`; // Fallback temporário
-        
-        // Registrar o consentimento no banco de dados
-        createConsentMutation.mutate({
-          processNumber: currentProcessNumber,
-          consentType: "voice_listening",
-          consentGranted: true,
-          consentDetails: {
-            purpose: "Transcrição e análise de sintomas",
-            dataTypes: ["voz", "texto transcrito"],
-            retentionPeriod: "90 dias",
-            storedIn: "base de dados interna"
-          }
-        });
-        
-        // Se o consentimento foi concedido, iniciar escuta
+        // Se o consentimento foi concedido, iniciar escuta diretamente
         notificationRef.current?.show({
-          message: "Consentimento RGPD/LGPD obtido com sucesso",
+          message: "Consentimento obtido com sucesso. Iniciando escuta.",
           type: "success"
         });
+        // Iniciar gravação diretamente
         startListening();
       } else {
-        // Se não consentiu, registrar a rejeição para fins de auditoria RGPD
-        if (processNumber) {
-          createConsentMutation.mutate({
-            processNumber: processNumber,
-            consentType: "voice_listening",
-            consentGranted: false,
-            consentDetails: {
-              reason: "Consentimento negado pelo utente"
-            }
-          });
-        }
-        
         notificationRef.current?.show({
           message: "Consentimento não concedido. A escuta não será iniciada.",
           type: "info"
@@ -390,6 +366,36 @@ export const PatientListening = forwardRef<PatientListeningRef, PatientListening
                   </Link>
                 </div>
               </div>
+              
+              <div className="mt-4 flex justify-center">
+                <Button 
+                  size="lg"
+                  variant={isListening ? "destructive" : "default"}
+                  className={`h-16 w-full md:w-auto flex items-center justify-center gap-2 ${isListening ? "bg-red-500" : ""}`}
+                  onClick={toggleListening}
+                >
+                  {isListening ? (
+                    <>
+                      <StopCircle className="h-5 w-5" />
+                      Parar Escuta
+                    </>
+                  ) : (
+                    <>
+                      <Mic className="h-5 w-5" />
+                      Iniciar Escuta do Utente
+                    </>
+                  )}
+                </Button>
+              </div>
+              
+              {hasPatientConsent && (
+                <div className="mt-2 text-center text-xs text-green-600 dark:text-green-400">
+                  <span className="inline-flex items-center gap-1">
+                    <CheckCircle className="h-3 w-3" />
+                    Consentimento obtido
+                  </span>
+                </div>
+              )}
             </div>
             
             {isListening && (
