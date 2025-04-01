@@ -54,35 +54,33 @@ async function logAuthActivity(action: string, userId?: number, details?: any, r
 // Function to initialize admin user
 export async function initAdminUser() {
   try {
+    log("Initializing admin user...", "auth");
+    
     // Verificar se o usuário admin já existe
     const adminUser = await storage.getUserByUsername("admin");
+    log(`Admin user exists? ${!!adminUser}`, "auth");
     
     // Se não existir, criar o usuário admin
     if (!adminUser) {
       const adminData: InsertUser = {
         username: "admin",
-        password: await hashPassword("administrador"),
+        password: await hashPassword("admin123"), // Atualizado para senha mais simples
         name: "Administrador",
         role: "admin",
         specialty: "Administração"
       };
-      await storage.createUser(adminData);
-      log("Admin user created successfully", "auth");
+      const newAdmin = await storage.createUser(adminData);
+      log(`Admin user created successfully with ID: ${newAdmin.id}`, "auth");
     } else {
-      // Se o admin já existe, verificar se a senha é "admin" e atualizá-la para "administrador"
-      try {
-        if (await comparePasswords("admin", adminUser.password)) {
-          await storage.updateUser(adminUser.id, {
-            password: await hashPassword("administrador")
-          });
-          log("Admin password updated from 'admin' to 'administrador'", "auth");
-        }
-      } catch (error) {
-        log(`Error updating admin password: ${error}`, "auth");
-      }
+      // Atualizar a senha do admin para garantir que seja a correta
+      log(`Updating admin password for user ID: ${adminUser.id}`, "auth");
+      await storage.updateUser(adminUser.id, {
+        password: await hashPassword("admin123") // Atualizado para senha mais simples
+      });
+      log("Admin password updated to 'admin123'", "auth");
     }
   } catch (error) {
-    log(`Error creating admin user: ${error}`, "auth");
+    log(`Error managing admin user: ${error}`, "auth");
   }
 }
 
