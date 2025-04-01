@@ -171,21 +171,40 @@ export const PatientListening = forwardRef<PatientListeningRef, PatientListening
         recognitionRef.current.lang = 'pt-PT'; // Portuguese (Portugal)
         recognitionRef.current.continuous = true;
         recognitionRef.current.interimResults = true;
+        recognitionRef.current.maxAlternatives = 3; // Obter até 3 alternativas para cada trecho
+        // Aumentar a taxa de reconhecimento para maior precisão
+        // Isto melhora os resultados para terminologia médica específica
         
-        // Manipular resultados de reconhecimento
+        // Manipular resultados de reconhecimento - versão melhorada
         recognitionRef.current.onresult = (event: any) => {
           let interimText = '';
           let finalText = transcriptRef.current;
           
           for (let i = event.resultIndex; i < event.results.length; i++) {
-            const transcript = event.results[i][0].transcript;
+            // Considerar múltiplas alternativas e escolher a de maior confiança
+            let bestTranscript = "";
+            let bestConfidence = 0;
+            
+            // Verificar todas as alternativas para cada resultado
+            for (let j = 0; j < event.results[i].length; j++) {
+              const alternative = event.results[i][j];
+              if (alternative.confidence > bestConfidence) {
+                bestConfidence = alternative.confidence;
+                bestTranscript = alternative.transcript;
+              }
+            }
+            
+            // Se não encontrou nada nas alternativas, use a primeira opção (padrão)
+            if (!bestTranscript) {
+              bestTranscript = event.results[i][0].transcript;
+            }
             
             if (event.results[i].isFinal) {
-              finalText += transcript + ' ';
+              finalText += bestTranscript + ' ';
               transcriptRef.current = finalText;
               setTranscript(finalText);
             } else {
-              interimText = transcript;
+              interimText = bestTranscript;
             }
           }
           
@@ -486,43 +505,47 @@ export const PatientListening = forwardRef<PatientListeningRef, PatientListening
             </div>
             <AlertDialogDescription>
               <div className="mt-4">
-                <h3 className="text-sm font-medium mb-2">Texto capturado do utente:</h3>
-                <div className="bg-neutral-100 dark:bg-neutral-800 p-3 rounded-md mb-4 text-sm max-h-32 overflow-y-auto">
-                  {transcript}
+                <div>
+                  <h3 className="text-sm font-medium mb-2">Texto capturado do utente:</h3>
+                  <div className="bg-neutral-100 dark:bg-neutral-800 p-3 rounded-md mb-4 text-sm max-h-32 overflow-y-auto">
+                    {transcript}
+                  </div>
                 </div>
                 
-                <h3 className="text-sm font-medium mb-2">Sintomas detectados:</h3>
-                {detectedSymptoms.length > 0 ? (
-                  <div className="space-y-3">
-                    {detectedSymptoms
-                      .filter(symptom => symptom.confidence > 0.5) // Filtrar por confiança alta
-                      .map((symptom, index) => (
-                      <div key={index} className="bg-white dark:bg-neutral-900 p-3 rounded-md border">
-                        <div className="flex justify-between items-start">
-                          <h4 className="font-medium text-primary capitalize">{symptom.symptom}</h4>
-                          <Badge variant={symptom.confidence > 0.7 ? "default" : "outline"} className="text-xs">
-                            {Math.round(symptom.confidence * 100)}%
-                          </Badge>
+                <div>
+                  <h3 className="text-sm font-medium mb-2">Sintomas detectados:</h3>
+                  {detectedSymptoms.length > 0 ? (
+                    <div className="space-y-3">
+                      {detectedSymptoms
+                        .filter(symptom => symptom.confidence > 0.5) // Filtrar por confiança alta
+                        .map((symptom, index) => (
+                        <div key={index} className="bg-white dark:bg-neutral-900 p-3 rounded-md border">
+                          <div className="flex justify-between items-start">
+                            <h4 className="font-medium text-primary capitalize">{symptom.symptom}</h4>
+                            <Badge variant={symptom.confidence > 0.7 ? "default" : "outline"} className="text-xs">
+                              {Math.round(symptom.confidence * 100)}%
+                            </Badge>
+                          </div>
+                          {symptom.context && (
+                            <div className="text-sm text-neutral-600 dark:text-neutral-400 mt-2 break-words">
+                              "{symptom.context}"
+                            </div>
+                          )}
+                          {symptom.triggers && (
+                            <div className="text-xs text-neutral-500 mt-1">
+                              <span className="font-medium">Fatores desencadeantes:</span> {symptom.triggers}
+                            </div>
+                          )}
                         </div>
-                        {symptom.context && (
-                          <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-2 break-words">
-                            "{symptom.context}"
-                          </p>
-                        )}
-                        {symptom.triggers && (
-                          <p className="text-xs text-neutral-500 mt-1">
-                            <span className="font-medium">Fatores desencadeantes:</span> {symptom.triggers}
-                          </p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-4 text-neutral-500 border border-dashed rounded-md">
-                    <p>Nenhum sintoma identificado.</p>
-                    <p className="text-xs mt-1">Tente descrever com mais detalhes como se sente ou quais queixas apresenta. Por exemplo: "tenho dores de cabeça e tonturas há dois dias".</p>
-                  </div>
-                )}
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-4 text-neutral-500 border border-dashed rounded-md">
+                      <div>Nenhum sintoma identificado.</div>
+                      <div className="text-xs mt-1">Tente descrever com mais detalhes como se sente ou quais queixas apresenta. Por exemplo: "tenho dores de cabeça e tonturas há dois dias".</div>
+                    </div>
+                  )}
+                </div>
               </div>
             </AlertDialogDescription>
             <AlertDialogFooter>

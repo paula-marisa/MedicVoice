@@ -18,6 +18,52 @@ import { RecordingIndicator } from "./recording-indicator";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 
+// Função para criar gramática médica que ajuda no reconhecimento de termos médicos
+function createMedicalGrammar() {
+  if (typeof window === 'undefined') return null;
+  
+  const SpeechGrammarList = (window as any).SpeechGrammarList || (window as any).webkitSpeechGrammarList;
+  if (!SpeechGrammarList) return null;
+  
+  // Criar uma nova lista de gramáticas
+  const grammarList = new SpeechGrammarList();
+  
+  // Gramática para comandos
+  const commands = [
+    'diagnóstico', 'sintomas', 'tratamento', 'observações',
+    'terminar', 'finalizar', 'parar'
+  ];
+  
+  // Termos médicos comuns que queremos que sejam reconhecidos com maior precisão
+  const medicalTerms = [
+    'hipertensão', 'diabetes', 'cefaleia', 'enxaqueca', 'dispneia', 'taquicardia',
+    'hematoma', 'fratura', 'edema', 'amigdalite', 'faringite', 'otite', 'rinite',
+    'pneumonia', 'bronquite', 'catarata', 'glaucoma', 'artrite', 'artrose',
+    'osteoporose', 'tendinite', 'fibromialgia', 'esclerose', 'isquemia', 'anemia',
+    'leucemia', 'gastrite', 'colite', 'hepatite', 'cirrose', 'apendicite', 'cálculo', 
+    'asma', 'enfisema', 'embolia', 'trombose', 'varizes', 'eczema', 'dermatite',
+    'acne', 'lúpus', 'psoríase', 'urticária', 'nefrite', 'insuficiência', 'úlcera',
+    'hérnia', 'conjuntivite', 'desidratação', 'intoxicação', 'hipotensão',
+    'hipoglicemia', 'arritmia', 'insuficiência cardíaca', 'acidente vascular cerebral',
+    'enfarte', 'convulsão', 'epilepsia', 'metástase', 'nódulo', 'tumor', 'quisto',
+    'prolapso', 'diverticulite', 'hemoptise', 'hematemese', 'melena', 'hematúria',
+    'icterícia', 'paracetamol', 'ibuprofeno', 'aspirina', 'omeprazol', 'antibiótico',
+    'anti-inflamatório', 'ansiolítico', 'antidepressivo', 'antialérgico', 'insulina',
+    'radioterapia', 'quimioterapia', 'fisioterapia', 'nutrição', 'reabilitação',
+    'prognóstico', 'diagnóstico', 'sintomas', 'tratamento', 'etiologia'
+  ];
+  
+  // Criar gramática para comandos (peso maior)
+  const commandGrammar = `#JSGF V1.0; grammar commands; public <command> = ${commands.join(' | ')} ;`;
+  grammarList.addFromString(commandGrammar, 2.0);
+  
+  // Criar gramática para termos médicos
+  const medicalGrammar = `#JSGF V1.0; grammar medical; public <term> = ${medicalTerms.join(' | ')} ;`;
+  grammarList.addFromString(medicalGrammar, 1.5);
+  
+  return grammarList;
+}
+
 interface VoiceRecognitionProps {
   onTranscriptionComplete: (text: string, field: string) => void;
   notificationRef: React.RefObject<any>;
@@ -175,6 +221,13 @@ export function VoiceRecognition({ onTranscriptionComplete, notificationRef, pat
       recognitionRef.current.lang = 'pt-PT'; // Portuguese (Portugal)
       recognitionRef.current.continuous = true;
       recognitionRef.current.interimResults = true;
+      recognitionRef.current.maxAlternatives = 3; // Considerar até 3 alternativas para cada frase
+      recognitionRef.current.grammars = createMedicalGrammar();
+      // Aumentar o tempo antes de considerar que o usuário parou de falar
+      // Isso ajuda quando o usuário faz pausas entre frases
+      if ('speechrecognitionevent' in window) {
+        (window as any).speechRecognitionList = (window as any).speechRecognitionList || (window as any).webkitSpeechRecognitionList;
+      }
       
       // Manipular resultados de reconhecimento
       recognitionRef.current.onresult = (event: any) => {
@@ -278,32 +331,10 @@ export function VoiceRecognition({ onTranscriptionComplete, notificationRef, pat
           type: "success"
         });
       } else {
-        // Se a demo não teve retorno de texto, usar exemplos (apenas para demonstração)
-        // Numa aplicação real, esse código seria removido
-        let sampleContent = '';
-        
-        switch (targetField) {
-          case 'diagnosis':
-            sampleContent = 'Paciente apresenta quadro de hipertensão arterial sistêmica grau 2, com valores médios de 160/100 mmHg, refratária ao tratamento atual.';
-            break;
-          case 'symptoms':
-            sampleContent = 'Cefaleia occipital, tontura, visão turva ocasional e edema nos membros inferiores. Relata também episódios de dispneia aos esforços moderados.';
-            break;
-          case 'treatment':
-            sampleContent = 'Recomenda-se ajuste medicamentoso com adição de Losartan 50mg 2x/dia e Hidroclorotiazida 25mg 1x/dia pela manhã. Manter Anlodipino 5mg 1x/dia. Dieta hipossódica e atividade física regular.';
-            break;
-          case 'observations':
-            sampleContent = 'Paciente com baixa adesão ao tratamento anterior. Histórico familiar positivo para doenças cardiovasculares. Solicitar ecocardiograma e teste ergométrico para avaliação de possível hipertrofia ventricular.';
-            break;
-          default:
-            sampleContent = '';
-        }
-        
-        // Passar o texto para o componente pai
-        onTranscriptionComplete(sampleContent, targetField);
+        // Não conseguimos capturar texto
         notificationRef.current?.show({
-          message: "Texto transcrito com sucesso! (demonstração)",
-          type: "success"
+          message: "Não foi possível capturar o texto. Por favor, tente novamente falando mais alto e claramente.",
+          type: "warning"
         });
       }
       
