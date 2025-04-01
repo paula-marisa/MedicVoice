@@ -398,12 +398,23 @@ export const PatientListening = forwardRef<PatientListeningRef, PatientListening
               )}
             </div>
             
-            {isListening && (
-              <div className="mt-4 text-sm text-left bg-white dark:bg-neutral-900 p-3 rounded border overflow-y-auto max-h-24">
-                {transcript && <p className="text-neutral-800 dark:text-neutral-200">{transcript}</p>}
-                {interimTranscript && (
-                  <p className="text-neutral-500 italic">{interimTranscript}</p>
-                )}
+            {/* Mostrar sempre a área de texto (com ou sem escuta ativa) */}
+            <div className="mt-4 text-sm text-left bg-white dark:bg-neutral-900 p-3 rounded border overflow-y-auto max-h-36">
+              <div className="font-medium text-sm mb-2">Transcrição do Utente:</div>
+              {transcript ? (
+                <p className="text-neutral-800 dark:text-neutral-200">{transcript}</p>
+              ) : (
+                <p className="text-neutral-500 italic">
+                  {isListening 
+                    ? "Aguardando o utente falar..."
+                    : "Clique em 'Iniciar Escuta' para começar a capturar o que o utente diz."}
+                </p>
+              )}
+              {interimTranscript && (
+                <p className="text-neutral-500 italic">{interimTranscript}</p>
+              )}
+              
+              {isListening && (
                 <div className="flex items-center mt-2">
                   <Badge variant="destructive" className="flex items-center gap-1">
                     <span className="relative flex h-3 w-3">
@@ -414,8 +425,8 @@ export const PatientListening = forwardRef<PatientListeningRef, PatientListening
                   </Badge>
                   <span className="ml-2 text-sm">{formattedTime()}</span>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </CardContent>
         </Card>
         
