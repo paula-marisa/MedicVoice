@@ -120,20 +120,20 @@ function AppRoutes() {
         <Route path="/reports/:id">
           {!user ? (
             <Redirect to="/auth" />
-          ) : user.role === "admin" ? (
-            <Redirect to="/admin" />
-          ) : (
+          ) : user.role === "admin" || user.role === "doctor" ? (
             <ReportView />
+          ) : (
+            <Redirect to="/" />
           )}
         </Route>
         
         <Route path="/reports/:id/audit">
           {!user ? (
             <Redirect to="/auth" />
-          ) : user.role === "admin" ? (
-            <Redirect to="/admin" />
-          ) : (
+          ) : user.role === "admin" || user.role === "doctor" ? (
             <ReportAudit />
+          ) : (
+            <Redirect to="/" />
           )}
         </Route>
         

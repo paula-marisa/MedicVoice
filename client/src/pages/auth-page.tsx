@@ -106,7 +106,7 @@ export default function AuthPage() {
       setFailedAttempts(0);
     }
     
-    // Se for admin, redireciona para o painel administrativo
+    // Se for admin, redireciona para o painel de administrador
     if (user.role === "admin") {
       return <Redirect to="/admin" />;
     }

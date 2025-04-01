@@ -395,7 +395,7 @@ export default function AdminPage() {
         <div className="bg-primary/10 py-2">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center">
             <ShieldCheck className="h-5 w-5 text-primary mr-2" />
-            <span className="font-semibold">Painel Administrativo</span>
+            <span className="font-semibold">Painel de Administrador</span>
           </div>
         </div>
       </div>
@@ -405,7 +405,7 @@ export default function AdminPage() {
           <div className="mb-6">
             <h2 className="text-2xl font-bold mb-2">Bem-vindo, {user.name}</h2>
             <p className="text-muted-foreground">
-              Este é o painel administrativo do sistema de relatórios médicos. Aqui, podes gerir utilizadores, consultar relatórios médicos e acompanhar todas as atividades do sistema.
+              Este é o painel de administrador do sistema de relatórios médicos. Aqui, podes gerir utilizadores, consultar relatórios médicos e acompanhar todas as atividades do sistema.
             </p>
           </div>
           
@@ -921,8 +921,8 @@ export default function AdminPage() {
                                   {report.doctor?.name || 
                                    (() => {
                                      // Buscar informações do médico
-                                     const user = usersData?.find(user => user.id === report.userId);
-                                     return user ? `${user.name} (${user.role === 'admin' ? 'Admin' : 'Médico'})` : "Desconhecido";
+                                     const userInfo = usersData?.find((u: {id: number, name: string, role: string}) => u.id === report.userId);
+                                     return userInfo ? `${userInfo.name} (${userInfo.role === 'admin' ? 'Admin' : 'Médico'})` : "Desconhecido";
                                    })()
                                   }
                                 </TableCell>
@@ -951,14 +951,15 @@ export default function AdminPage() {
                                   <div className="flex space-x-2">
                                     <Button variant="outline" size="sm" asChild>
                                       <Link to={`/reports/${report.id}`}>
-                                        Visualizar
+                                        Visualizar Relatório
                                       </Link>
                                     </Button>
                                     <Button variant="outline" size="sm" asChild>
-                                      <Link to={`/reports/${report.id}/history`}>
-                                        Histórico
+                                      <Link to={`/reports/${report.id}/audit`}>
+                                        Ver Histórico
                                       </Link>
                                     </Button>
+
                                   </div>
                                 </TableCell>
                               </TableRow>
