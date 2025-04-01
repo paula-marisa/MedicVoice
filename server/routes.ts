@@ -1428,9 +1428,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Data atual
       const now = new Date();
       
-      // 3 meses atrás
-      const threeMonthsAgo = new Date();
-      threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+      // 90 dias atrás (3 meses)
+      const ninetyDaysAgo = new Date();
+      ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
       
       for (const user of allUsers) {
         // Pular usuários admin
@@ -1438,8 +1438,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           continue;
         }
         
-        // Se o usuário nunca fez login ou o último login foi há mais de 3 meses
-        if (!user.lastLoginAt || new Date(user.lastLoginAt) < threeMonthsAgo) {
+        // Se o usuário nunca fez login ou o último login foi há mais de 90 dias
+        if (!user.lastLoginAt || new Date(user.lastLoginAt) < ninetyDaysAgo) {
           if (user.status !== "inactive") {
             // Marcar como inativo
             await storage.updateUser(user.id, {
@@ -1455,7 +1455,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               resourceType: "user",
               resourceId: user.id,
               details: {
-                reason: "3_months_inactivity",
+                reason: "90_days_inactivity",
                 lastLogin: user.lastLoginAt,
                 timestamp: now
               },
@@ -1466,7 +1466,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             await sendEmail(
               user.username + "@uls.pt", // Supondo que o e-mail segue este padrão
               "Conta Inativa - Sistema de Relatórios Médicos",
-              `Olá ${user.name},\n\nA sua conta no Sistema de Relatórios Médicos foi marcada como inativa por não ter sido usada nos últimos 3 meses. Para reativá-la, entre em contato com o administrador do sistema.\n\nAtenciosamente,\nAdministração do Sistema`
+              `Olá ${user.name},\n\nA sua conta no Sistema de Relatórios Médicos foi marcada como inativa por não ter sido usada nos últimos 90 dias. Para reativá-la, entre em contato com o administrador do sistema.\n\nAtenciosamente,\nAdministração do Sistema`
             );
           }
         }
