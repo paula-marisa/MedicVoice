@@ -1238,25 +1238,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create access request (does not require authentication)
   app.post("/api/request-access", async (req: Request, res: Response) => {
     try {
+      log(`Received access request with data: ${JSON.stringify(req.body)}`, "api");
+      
       // Validate request body
       const data = insertAccessRequestSchema.parse(req.body);
+      log(`Validated access request data: ${JSON.stringify(data)}`, "api");
       
       // Create new access request
       const request = await storage.createAccessRequest(data);
+      log(`Created access request with ID: ${request.id}`, "api");
       
       // Log the action (using null user ID since this is a public endpoint)
-      await storage.createAuditLog({
-        userId: null,
-        action: "create",
-        resourceType: "access_request",
-        resourceId: request.id,
-        details: {
-          email: request.email,
-          specialty: request.specialty,
-          status: request.status
-        },
-        ipAddress: req.ip
-      });
+      try {
+        await storage.createAuditLog({
+          userId: null,
+          action: "create",
+          resourceType: "access_request",
+          resourceId: request.id,
+          details: {
+            email: request.email,
+            specialty: request.specialty,
+            status: request.status
+          },
+          ipAddress: req.ip
+        });
+        log(`Created audit log for access request ID: ${request.id}`, "api");
+      } catch (auditError) {
+        log(`Error creating audit log: ${auditError}`, "api");
+        // Continue even if audit log fails
+      }
       
       res.status(201).json({
         success: true,
@@ -1270,6 +1280,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       if (error instanceof ZodError) {
         const validationError = fromZodError(error);
+        log(`Validation error for access request: ${JSON.stringify(validationError.details)}`, "api");
         res.status(400).json({
           success: false,
           message: "Erro de validação",

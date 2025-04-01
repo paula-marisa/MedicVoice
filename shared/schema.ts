@@ -42,7 +42,7 @@ export const medicalReports = pgTable("medical_reports", {
 // Audit log model for tracking changes
 export const auditLogs = pgTable("audit_logs", {
   id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id),
+  userId: integer("user_id"), // Can be null for anonymous actions/public endpoints
   action: text("action").notNull(), // 'create', 'update', 'delete', 'export', etc.
   resourceType: text("resource_type").notNull(), // 'medical_report', 'user', etc.
   resourceId: integer("resource_id"), // ID of the affected resource

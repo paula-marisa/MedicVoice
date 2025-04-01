@@ -181,7 +181,7 @@ export function RequestAccessDialog({ open, onOpenChange }: RequestAccessDialogP
               Cancelar
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Enviando..." : "Enviar Solicitação"}
+              {isSubmitting ? "A enviar..." : "Enviar Solicitação"}
             </Button>
           </DialogFooter>
         </form>
