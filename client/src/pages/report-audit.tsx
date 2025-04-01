@@ -524,7 +524,7 @@ export default function ReportAuditPage() {
                                                 {Object.entries(change.details).map(([key, value]) => (
                                                   <div key={key} className="text-xs">
                                                     <span className="font-medium">{key}: </span>
-                                                    <span>{value as string}</span>
+                                                    <span>{typeof value === 'object' ? JSON.stringify(value) : String(value)}</span>
                                                   </div>
                                                 ))}
                                               </div>

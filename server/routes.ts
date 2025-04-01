@@ -778,16 +778,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Registrar a atualização no log de auditoria
+      // Converter os objetos para JSON strings para facilitar a exibição na interface
+      const oldValuesFields = {
+        diagnosis: existingReport.diagnosis,
+        symptoms: existingReport.symptoms,
+        treatment: existingReport.treatment,
+        observations: existingReport.observations,
+        status: existingReport.status
+      };
+      
       await logAuditTrail(req, "update", "medical_report", id, {
         updatedFields: Object.keys(updateData),
-        oldValues: {
-          diagnosis: existingReport.diagnosis,
-          symptoms: existingReport.symptoms,
-          treatment: existingReport.treatment,
-          observations: existingReport.observations,
-          status: existingReport.status
-        },
-        newValues: updateData
+        oldValues: JSON.stringify(oldValuesFields),
+        newValues: JSON.stringify(updateData)
       });
       
       res.json({
