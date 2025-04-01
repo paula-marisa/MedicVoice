@@ -319,13 +319,31 @@ export function VoiceRecognition({ onTranscriptionComplete, notificationRef, pat
     if (isRecording) {
       stopRecording();
     } else {
-      // Verificar se já temos consentimento
-      if (hasDoctorConsent) {
-        startRecording();
-      } else {
-        // Mostrar diálogo de consentimento
-        setShowPrivacyConsent(true);
+      // O médico não precisa dar consentimento explícito para usar o ditado
+      // O clique no botão de gravação já é considerado como consentimento implícito
+      
+      // Se for a primeira vez, vamos registrar o consentimento implícito
+      if (!hasDoctorConsent) {
+        setHasDoctorConsent(true);
+        
+        // Registrar o consentimento implícito no banco de dados
+        const currentProcessNumber = processNumber || `SELF-${Date.now()}`;
+        createConsentMutation.mutate({
+          processNumber: currentProcessNumber,
+          consentType: "voice_dictation",
+          consentGranted: true,
+          consentDetails: {
+            purpose: "Transcrição de voz do médico para relatório",
+            dataTypes: ["voz do médico", "texto transcrito"],
+            retentionPeriod: "90 dias",
+            storedIn: "base de dados interna",
+            consentMethod: "implícito (clique no botão de gravação)"
+          }
+        });
       }
+      
+      // Iniciar a gravação diretamente
+      startRecording();
     }
   };
   
@@ -399,9 +417,9 @@ export function VoiceRecognition({ onTranscriptionComplete, notificationRef, pat
             <div className="mt-2 flex items-start gap-2 bg-muted/50 p-2 rounded text-xs">
               <Shield className="h-4 w-4 text-primary shrink-0 mt-0.5" />
               <div>
-                <p>Será solicitado seu consentimento conforme RGPD/LGPD para processar dados de voz.</p>
+                <p>Ao clicar no botão de gravação, você autoriza o processamento temporário dos dados de voz, que serão mantidos de forma segura por até 90 dias conforme as regulamentações de proteção de dados.</p>
                 <Link href="/privacy-policy" className="text-primary hover:underline inline-flex items-center gap-1 mt-1">
-                  Ver política de privacidade
+                  Ver política de privacidade completa
                   <ExternalLink className="h-3 w-3" />
                 </Link>
               </div>

@@ -238,9 +238,10 @@ export const PatientListening = forwardRef<PatientListeningRef, PatientListening
           setDetectedSymptoms(symptoms);
           setShowAnalysisResult(true);
           
+          const validSymptoms = symptoms.filter(s => s.confidence > 0.5);
           notificationRef.current?.show({
-            message: `Análise completa. ${symptoms.length} sintomas detectados.`,
-            type: "success"
+            message: `Análise completa. ${validSymptoms.length} sintomas detectados com confiança elevada.`,
+            type: validSymptoms.length > 0 ? "success" : "warning"
           });
         } else {
           notificationRef.current?.show({
@@ -320,8 +321,9 @@ export const PatientListening = forwardRef<PatientListeningRef, PatientListening
     };
   
     const confirmSymptoms = () => {
-      // Formatar os sintomas detectados em um relatório estruturado
-      const formattedSymptoms = formatSymptomsReport(detectedSymptoms);
+      // Filtrar sintomas com confiança alta e formatá-los em um relatório estruturado
+      const validSymptoms = detectedSymptoms.filter(symptom => symptom.confidence > 0.5);
+      const formattedSymptoms = formatSymptomsReport(validSymptoms);
       
       // Passar os sintomas para o componente pai
       onSymptomsDetected(formattedSymptoms);
@@ -492,27 +494,19 @@ export const PatientListening = forwardRef<PatientListeningRef, PatientListening
                 <h3 className="text-sm font-medium mb-2">Sintomas detectados:</h3>
                 {detectedSymptoms.length > 0 ? (
                   <div className="space-y-3">
-                    {detectedSymptoms.map((symptom, index) => (
+                    {detectedSymptoms
+                      .filter(symptom => symptom.confidence > 0.5) // Filtrar por confiança alta
+                      .map((symptom, index) => (
                       <div key={index} className="bg-white dark:bg-neutral-900 p-3 rounded-md border">
-                        <h4 className="font-medium">{symptom.name}</h4>
-                        {symptom.description && (
-                          <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">{symptom.description}</p>
-                        )}
-                        {symptom.severity && (
-                          <div className="flex items-center mt-2">
-                            <span className="text-xs text-neutral-500 mr-2">Intensidade:</span>
-                            <div className="h-2 w-24 bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
-                              <div 
-                                className="h-full bg-primary rounded-full" 
-                                style={{ width: `${symptom.severity * 20}%` }} // 1-5 escala
-                              />
-                            </div>
-                            <span className="text-xs ml-2">{symptom.severity}/5</span>
-                          </div>
-                        )}
-                        {symptom.duration && (
-                          <p className="text-xs text-neutral-500 mt-1">
-                            <span className="font-medium">Duração:</span> {symptom.duration}
+                        <div className="flex justify-between items-start">
+                          <h4 className="font-medium text-primary capitalize">{symptom.symptom}</h4>
+                          <Badge variant={symptom.confidence > 0.7 ? "default" : "outline"} className="text-xs">
+                            {Math.round(symptom.confidence * 100)}%
+                          </Badge>
+                        </div>
+                        {symptom.context && (
+                          <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-2 break-words">
+                            "{symptom.context}"
                           </p>
                         )}
                         {symptom.triggers && (
@@ -524,7 +518,10 @@ export const PatientListening = forwardRef<PatientListeningRef, PatientListening
                     ))}
                   </div>
                 ) : (
-                  <p className="text-neutral-500 text-sm">Nenhum sintoma detectado na transcrição.</p>
+                  <div className="text-center py-4 text-neutral-500 border border-dashed rounded-md">
+                    <p>Nenhum sintoma identificado.</p>
+                    <p className="text-xs mt-1">Tente descrever com mais detalhes como se sente ou quais queixas apresenta. Por exemplo: "tenho dores de cabeça e tonturas há dois dias".</p>
+                  </div>
                 )}
               </div>
             </AlertDialogDescription>
@@ -537,9 +534,9 @@ export const PatientListening = forwardRef<PatientListeningRef, PatientListening
               </Button>
               <Button
                 onClick={confirmSymptoms}
-                disabled={detectedSymptoms.length === 0}
+                disabled={detectedSymptoms.filter(s => s.confidence > 0.5).length === 0}
               >
-                Adicionar ao Relatório
+                Confirmar e Adicionar ao Relatório
               </Button>
             </AlertDialogFooter>
           </AlertDialogContent>

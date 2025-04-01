@@ -11,6 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { Info, Lock, Shield, ExternalLink } from "lucide-react";
+import { Link } from "wouter";
 
 interface PrivacyConsentDialogProps {
   open: boolean;
@@ -106,14 +107,12 @@ export function PrivacyConsentDialog({
                 <p className="text-xs text-muted-foreground">
                   Todos os dados processados serão mantidos de forma segura e criptografada por um período máximo de {dataRetentionPeriod}, conforme as políticas de proteção de dados. Você pode solicitar a exclusão antecipada destes dados a qualquer momento.
                 </p>
-                {privacyPolicyUrl && (
-                  <p className="text-xs">
-                    <a href={privacyPolicyUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1">
-                      Ver política de privacidade completa
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
-                  </p>
-                )}
+                <p className="text-xs">
+                  <Link href="/privacy-policy" className="text-primary hover:underline flex items-center gap-1">
+                    Ver política de privacidade completa
+                    <ExternalLink className="w-3 h-3" />
+                  </Link>
+                </p>
               </div>
             </div>
           </div>

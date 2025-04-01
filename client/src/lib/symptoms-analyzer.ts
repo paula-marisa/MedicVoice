@@ -4,102 +4,122 @@
  * Em ambiente de produção, seria ideal usar uma API de processamento de linguagem natural.
  */
 
-// Lista de sintomas comuns e suas variantes em português
+// Lista de sintomas comuns e suas variantes em português (Portugal)
 const SYMPTOM_KEYWORDS = {
   "dor": [
     "dor", "dolorido", "dolorosa", "dói", "doer", "doendo", "dores"
   ],
   "dor de cabeça": [
-    "dor de cabeça", "cefaleia", "enxaqueca", "migrânea", "dor na cabeça"
+    "dor de cabeça", "cefaleia", "enxaqueca", "dor na cabeça", "cefaleia"
   ],
   "febre": [
     "febre", "febril", "temperatura alta", "temperatura elevada", "hipertermia"
   ],
   "tosse": [
-    "tosse", "tossindo", "tosse seca", "tosse com catarro", "tosse produtiva"
+    "tosse", "tossindo", "tosse seca", "tosse com expetoração", "tosse com catarro"
   ],
   "náusea": [
-    "náusea", "enjoo", "ânsia", "vontade de vomitar", "enjoado", "enjoada"
+    "náusea", "enjoo", "ânsia", "vontade de vomitar", "enjoado", "enjoada", "náuseas"
   ],
-  "vômito": [
-    "vômito", "vomitando", "vomitou", "vomitar", "regurgitar"
+  "vómito": [
+    "vómito", "vomitando", "vomitou", "vomitar", "vomitado", "a vomitar"
   ],
   "diarreia": [
-    "diarreia", "fezes moles", "evacuações frequentes", "intestino solto"
+    "diarreia", "dejeções moles", "evacuações frequentes", "intestino solto", "diarreico"
   ],
   "cansaço": [
-    "cansaço", "fadiga", "exaustão", "fraqueza", "sem energia", "cansado", "cansada"
+    "cansaço", "fadiga", "exaustão", "fraqueza", "sem energia", "cansado", "cansada", "astenia"
   ],
   "tontura": [
-    "tontura", "vertigem", "tonto", "tonta", "desequilíbrio", "zonzo", "zonza"
+    "tontura", "vertigem", "tonto", "tonta", "desequilíbrio", "zonzo", "zonza", "a cabeça à roda"
   ],
   "falta de ar": [
-    "falta de ar", "dispneia", "dificuldade para respirar", "respiração difícil", "ofegante"
+    "falta de ar", "dispneia", "dificuldade para respirar", "respiração difícil", "ofegante", "dificuldade respiratória"
   ],
   "dor no peito": [
-    "dor no peito", "dor torácica", "aperto no peito", "pressão no peito"
+    "dor no peito", "dor torácica", "aperto no peito", "pressão no peito", "dor precordial"
   ],
   "dor abdominal": [
-    "dor abdominal", "dor de barriga", "cólica", "dor na barriga", "dor no abdômen"
+    "dor abdominal", "dor de barriga", "cólica", "dor na barriga", "dor no abdómen", "dor abdominal"
   ],
   "perda de apetite": [
-    "perda de apetite", "inapetência", "sem fome", "não come", "falta de apetite"
+    "perda de apetite", "inapetência", "sem fome", "não come", "falta de apetite", "anorexia"
   ],
-  "coceira": [
-    "coceira", "prurido", "coçando", "comichão", "irritação na pele"
+  "comichão": [
+    "comichão", "prurido", "coçando", "coceira", "irritação na pele", "pele a coçar"
   ],
   "erupção cutânea": [
     "erupção cutânea", "exantema", "manchas na pele", "lesões na pele", "rash"
   ],
   "dor muscular": [
-    "dor muscular", "mialgia", "músculos doloridos", "dor nos músculos"
+    "dor muscular", "mialgia", "músculos doloridos", "dor nos músculos", "mialgias"
   ],
   "dor articular": [
-    "dor articular", "artralgia", "dor nas juntas", "dor nas articulações"
+    "dor articular", "artralgia", "dor nas juntas", "dor nas articulações", "artralgias"
   ],
-  "formigamento": [
-    "formigamento", "formigueiro", "dormência", "parestesia", "adormecido", "adormecida"
+  "formigueiro": [
+    "formigueiro", "formigamento", "dormência", "parestesia", "adormecido", "adormecida"
   ],
   "visão turva": [
-    "visão turva", "vista embaçada", "visão embaçada", "não consegue ver bem"
+    "visão turva", "vista embaçada", "visão embaçada", "não consegue ver bem", "vista enevoada"
   ],
-  "insônia": [
-    "insônia", "dificuldade para dormir", "não consegue dormir", "problema para dormir"
+  "insónia": [
+    "insónia", "dificuldade para dormir", "não consegue dormir", "problema para dormir", "perturbação do sono"
   ],
   "edema": [
-    "edema", "inchaço", "inchado", "inchada", "retenção de líquido"
+    "edema", "inchaço", "inchado", "inchada", "retenção de líquido", "tumefação"
   ],
   "confusão": [
-    "confusão", "confuso", "confusa", "desorientação", "desorientado", "desorientada"
+    "confusão", "confuso", "confusa", "desorientação", "desorientado", "desorientada", "confusão mental"
   ],
   "ansiedade": [
-    "ansiedade", "nervosismo", "angústia", "preocupação", "ansioso", "ansiosa"
+    "ansiedade", "nervosismo", "angústia", "preocupação", "ansioso", "ansiosa", "ansioso"
   ],
   "depressão": [
-    "depressão", "tristeza", "melancolia", "desânimo", "sem vontade"
+    "depressão", "tristeza", "melancolia", "desânimo", "sem vontade", "humor deprimido"
   ],
   "agitação": [
-    "agitação", "inquietação", "agitado", "agitada", "inquieto", "inquieta"
+    "agitação", "inquietação", "agitado", "agitada", "inquieto", "inquieta", "nervosismo"
+  ],
+  "hemorragia": [
+    "hemorragia", "sangramento", "a sangrar", "perda de sangue", "hemorrágico"
+  ],
+  "obstipação": [
+    "obstipação", "prisão de ventre", "constipação intestinal", "dificuldade em evacuar", "fezes duras", "intestino preso"
+  ],
+  "palpitações": [
+    "palpitações", "coração acelerado", "taquicardia", "batimentos cardíacos fortes", "coração a bater depressa"
+  ],
+  "problemas urinários": [
+    "disúria", "ardor ao urinar", "dor a urinar", "dificuldade em urinar", "polaquiúria", "urgência miccional"
+  ],
+  "tensão arterial elevada": [
+    "hipertensão", "tensão alta", "pressão arterial elevada", "HTA"
   ]
 };
 
 // Padrões de localização para ajudar a identificar onde ocorre a dor/sintoma
 const LOCATION_MARKERS = [
-  "na", "no", "nas", "nos", "em", "do", "da", "dos", "das", "ao", "à"
+  "na", "no", "nas", "nos", "em", "do", "da", "dos", "das", "ao", "à", "junto", "próximo"
 ];
 
-// Qualificadores comuns para sintomas
+// Qualificadores comuns para sintomas em português de Portugal
 const QUALIFIERS = [
   "forte", "fraca", "intensa", "leve", "moderada", "severa", "grave",
-  "constante", "intermitente", "aguda", "crônica", "súbita", "gradual",
-  "contínua", "pulsátil", "latejante", "em queimação", "em pontada"
+  "constante", "intermitente", "aguda", "crónica", "súbita", "gradual",
+  "contínua", "pulsátil", "latejante", "em queimação", "em pontada", 
+  "insuportável", "tolerável", "ligeira", "incómoda", "incomodativa",
+  "agravada", "aliviada", "pior", "melhor"
 ];
 
-// Termos relacionados a frequência e duração
+// Termos relacionados a frequência e duração em português de Portugal
 const TIMING_TERMS = [
   "dias", "semanas", "meses", "horas", "minutos", "segundos", "anos",
   "sempre", "frequente", "às vezes", "raramente", "constantemente",
-  "iniciou", "começou", "desde", "há", "faz", "durante"
+  "iniciou", "começou", "desde", "há", "faz", "durante", "há cerca de",
+  "já", "pela manhã", "à tarde", "à noite", "ao acordar", "ao deitar",
+  "após", "antes", "enquanto", "quando", "persistente", "recorrente",
+  "ocasional", "diariamente"
 ];
 
 /**
@@ -181,12 +201,21 @@ export function analyzeSymptoms(text: string): {
     });
   });
   
-  // Ordenar por confiança (mais alta primeiro) e remover duplicatas do mesmo sintoma
-  return result
-    .sort((a, b) => b.confidence - a.confidence)
-    .filter((item, index, self) => 
-      index === self.findIndex(t => t.symptom === item.symptom)
-    );
+  // Ordenar por confiança (mais alta primeiro) e remover duplicatas do mesmo sintoma,
+  // mantendo o item com maior confiança para cada sintoma
+  const uniqueSymptoms = result.reduce((acc, current) => {
+    const existingSymptomIndex = acc.findIndex(item => item.symptom === current.symptom);
+    if (existingSymptomIndex === -1) {
+      // Se o sintoma ainda não existe na lista, adicioná-lo
+      acc.push(current);
+    } else if (current.confidence > acc[existingSymptomIndex].confidence) {
+      // Se o sintoma já existe mas este tem maior confiança, substituí-lo
+      acc[existingSymptomIndex] = current;
+    }
+    return acc;
+  }, [] as typeof result);
+  
+  return uniqueSymptoms.sort((a, b) => b.confidence - a.confidence);
 }
 
 /**
@@ -205,50 +234,94 @@ export function formatSymptomsReport(symptoms: {
     return "";
   }
   
-  // Filtrar apenas sintomas com nível de confiança razoável (acima de 0.4)
-  const validSymptoms = symptoms.filter(s => s.confidence > 0.4);
+  // Filtrar apenas sintomas com nível de confiança razoável (acima de 0.5)
+  const validSymptoms = symptoms.filter(s => s.confidence > 0.5);
   
   if (validSymptoms.length === 0) {
     return "";
   }
   
   // Começar com uma introdução
-  let report = "Utente apresenta ";
+  let report = "Sintomatologia:\n";
   
-  // Adicionar cada sintoma com seu contexto
+  // Adicionar cada sintoma com seu contexto em formato de lista
   validSymptoms.forEach((symptom, index) => {
-    if (index > 0) {
-      if (index === validSymptoms.length - 1) {
-        report += " e ";
-      } else {
-        report += ", ";
-      }
+    // Extrair e adicionar contexto relevante
+    const relevantContext = extractRelevantContext(symptom.context, symptom.symptom);
+    
+    // Formatar como uma lista numerada
+    report += `- ${capitalizeFirstLetter(symptom.symptom)}`;
+    
+    if (relevantContext) {
+      report += `: ${relevantContext}`;
     }
     
-    report += symptom.symptom;
-    
-    // Adicionar qualificadores ou contexto específico se estiverem presentes
-    // e não duplicarem o que já foi escrito
-    const contextLower = symptom.context.toLowerCase();
-    if (!contextLower.includes(symptom.symptom.toLowerCase()) ||
-        contextLower.length > symptom.symptom.length + 10) {
-      
-      // Se o contexto for muito longo, extrair apenas a parte relevante
-      if (symptom.context.length > 100) {
-        const keywordPos = contextLower.indexOf(symptom.symptom.toLowerCase());
-        if (keywordPos !== -1) {
-          const start = Math.max(0, keywordPos - 30);
-          const end = Math.min(symptom.context.length, keywordPos + symptom.symptom.length + 30);
-          const relevantContext = symptom.context.substring(start, end).trim();
-          report += ` (${relevantContext})`;
-        }
-      } else {
-        report += ` (${symptom.context})`;
-      }
+    // Adicionar nível de confiança como comentário clínico apenas para sintomas com confiança não máxima
+    if (symptom.confidence < 0.9) {
+      report += ` (${Math.round(symptom.confidence * 100)}% de confiança)`;
     }
+    
+    report += "\n";
   });
   
-  report += ".";
+  report += "\nSintomatologia captada através de reconhecimento de voz com consentimento do utente, conforme regulamento RGPD.";
   
   return report;
+}
+
+/**
+ * Extrai o contexto mais relevante para um sintoma
+ */
+function extractRelevantContext(context: string, symptom: string): string {
+  if (!context) return "";
+  
+  const contextLower = context.toLowerCase();
+  const symptomLower = symptom.toLowerCase();
+  
+  // Se o contexto não inclui o sintoma ou é praticamente igual ao sintoma, retornar vazio
+  if (!contextLower.includes(symptomLower) || 
+      contextLower.length <= symptomLower.length + 5) {
+    return "";
+  }
+  
+  // Remover o sintoma do contexto para evitar repetição
+  let cleanedContext = contextLower;
+  
+  // Tentar extrair qualificadores e detalhes importantes
+  let foundQualifiers = QUALIFIERS.filter(q => contextLower.includes(q));
+  let foundLocations = LOCATION_MARKERS.filter(l => contextLower.includes(l));
+  let foundTiming = TIMING_TERMS.filter(t => contextLower.includes(t));
+  
+  if (context.length > 100) {
+    // Se o contexto for muito longo, extrair apenas a parte relevante
+    const keywordPos = contextLower.indexOf(symptomLower);
+    if (keywordPos !== -1) {
+      const start = Math.max(0, keywordPos - 30);
+      const end = Math.min(context.length, keywordPos + symptomLower.length + 30);
+      cleanedContext = context.substring(start, end).trim();
+      
+      // Se o sintoma aparece no início da parte extraída, tentar remover
+      if (cleanedContext.toLowerCase().startsWith(symptomLower)) {
+        cleanedContext = cleanedContext.substring(symptomLower.length).trim();
+        // Remover qualquer pontuação inicial após a remoção do sintoma
+        cleanedContext = cleanedContext.replace(/^[,.:;\s]+/, '');
+      }
+    }
+  } else {
+    // Para contextos curtos, apenas remover o sintoma para evitar repetição
+    cleanedContext = context.replace(new RegExp(symptomLower, 'gi'), '').trim();
+    // Remover qualquer pontuação duplicada após a remoção
+    cleanedContext = cleanedContext.replace(/^[,.:;\s]+/, '').replace(/[,.:;\s]+$/, '');
+  }
+  
+  // Capitalizar a primeira letra
+  return capitalizeFirstLetter(cleanedContext);
+}
+
+/**
+ * Capitaliza a primeira letra de uma string
+ */
+function capitalizeFirstLetter(string: string): string {
+  if (!string) return string;
+  return string.charAt(0).toUpperCase() + string.slice(1);
 }
