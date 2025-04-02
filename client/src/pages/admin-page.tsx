@@ -581,7 +581,6 @@ export default function AdminPage() {
                           <TableRow>
                             <TableHead>{t('patient.name')}</TableHead>
                             <TableHead>{t('auth.request_form.professional_id')}</TableHead>
-                            <TableHead>{t('auth.request_form.mechanographic_number')}</TableHead>
                             <TableHead>{t('auth.request_form.specialty')}</TableHead>
                             <TableHead>{t('auth.request_form.email')}</TableHead>
                             <TableHead>{t('auth.request_form.phone')}</TableHead>
@@ -595,7 +594,6 @@ export default function AdminPage() {
                               <TableRow key={request.id}>
                                 <TableCell className="font-medium">{request.full_name}</TableCell>
                                 <TableCell>{request.professional_id}</TableCell>
-                                <TableCell>{request.mechanographic_number}</TableCell>
                                 <TableCell>{request.specialty}</TableCell>
                                 <TableCell>{request.email}</TableCell>
                                 <TableCell>{request.phone}</TableCell>
@@ -627,7 +625,7 @@ export default function AdminPage() {
                             ))
                           ) : (
                             <TableRow>
-                              <TableCell colSpan={8} className="text-center py-4">
+                              <TableCell colSpan={7} className="text-center py-4">
                                 {t('admin.no_pending_requests')}
                               </TableCell>
                             </TableRow>
