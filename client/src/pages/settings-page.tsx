@@ -319,7 +319,7 @@ export default function SettingsPage() {
                     </div>
                   </CardContent>
                   <CardFooter className="flex justify-end">
-                    <Button onClick={handleSaveSettings}>Guardar Alterações</Button>
+                    <Button onClick={handleSaveSettings}>{t('settings.saveChanges')}</Button>
                   </CardFooter>
                 </Card>
               </TabsContent>
@@ -415,7 +415,7 @@ export default function SettingsPage() {
                     </div>
                   </CardContent>
                   <CardFooter className="flex justify-end">
-                    <Button onClick={handleSaveSettings}>Guardar Alterações</Button>
+                    <Button onClick={handleSaveSettings}>{t('settings.saveChanges')}</Button>
                   </CardFooter>
                 </Card>
               </TabsContent>
@@ -543,7 +543,7 @@ export default function SettingsPage() {
                     </div>
                   </CardContent>
                   <CardFooter className="flex justify-end">
-                    <Button onClick={handleSaveSettings}>Guardar Alterações</Button>
+                    <Button onClick={handleSaveSettings}>{t('settings.saveChanges')}</Button>
                   </CardFooter>
                 </Card>
               </TabsContent>
@@ -657,7 +657,7 @@ export default function SettingsPage() {
                     </div>
                   </CardContent>
                   <CardFooter className="flex justify-end">
-                    <Button onClick={handleSaveSettings}>Guardar Alterações</Button>
+                    <Button onClick={handleSaveSettings}>{t('settings.saveChanges')}</Button>
                   </CardFooter>
                 </Card>
               </TabsContent>
@@ -765,7 +765,7 @@ export default function SettingsPage() {
                     </div>
                   </CardContent>
                   <CardFooter className="flex justify-end">
-                    <Button onClick={handleSaveSettings}>Guardar Alterações</Button>
+                    <Button onClick={handleSaveSettings}>{t('settings.saveChanges')}</Button>
                   </CardFooter>
                 </Card>
               </TabsContent>
@@ -937,7 +937,7 @@ export default function SettingsPage() {
                     </div>
                   </CardContent>
                   <CardFooter className="flex justify-end">
-                    <Button onClick={handleSaveSettings}>Guardar Alterações</Button>
+                    <Button onClick={handleSaveSettings}>{t('settings.saveChanges')}</Button>
                   </CardFooter>
                 </Card>
               </TabsContent>
