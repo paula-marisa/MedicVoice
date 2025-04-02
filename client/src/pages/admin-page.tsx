@@ -1015,14 +1015,14 @@ export default function AdminPage() {
                             auditLogsData.map((log: any) => (
                               <TableRow key={log.id}>
                                 <TableCell>
-                                  {log.createdAt ? (
+                                  {log.timestamp ? (
                                     <>
-                                      {new Date(log.createdAt).toLocaleDateString('pt-PT', {
+                                      {new Date(log.timestamp).toLocaleDateString('pt-PT', {
                                         day: '2-digit',
                                         month: '2-digit',
                                         year: 'numeric'
                                       })} {' '}
-                                      {new Date(log.createdAt).toLocaleTimeString('pt-PT')}
+                                      {new Date(log.timestamp).toLocaleTimeString('pt-PT')}
                                     </>
                                   ) : (
                                     "-"
