@@ -405,9 +405,9 @@ export default function AdminPage() {
       <main className="flex-grow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="mb-6">
-            <h2 className="text-2xl font-bold mb-2">{t('messages.welcome')}, {user.name}</h2>
+            <h2 className="text-2xl font-bold mb-2">Bem-vindo, {user.name}</h2>
             <p className="text-muted-foreground">
-              {t('admin.description')}
+              Este é o painel de administrador do sistema de relatórios médicos. Aqui, podes gerir utilizadores, consultar relatórios médicos e acompanhar todas as atividades do sistema.
             </p>
           </div>
           
