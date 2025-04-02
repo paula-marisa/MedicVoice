@@ -13,7 +13,7 @@ i18n
             "home": "Início",
             "profile": "Perfil",
             "reports": "Relatórios",
-            "admin": "Administração",
+            "admin": "Administrador",
             "settings": "Configurações",
             "logout": "Sair",
             "login": "Entrar"
@@ -244,7 +244,7 @@ i18n
             "home": "Home",
             "profile": "Profile",
             "reports": "Reports",
-            "admin": "Administration",
+            "admin": "Administrator",
             "settings": "Settings",
             "logout": "Logout",
             "login": "Login"

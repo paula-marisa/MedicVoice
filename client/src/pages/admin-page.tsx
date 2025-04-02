@@ -419,23 +419,23 @@ export default function AdminPage() {
               </TabsTrigger>
               <TabsTrigger value="access">
                 <Key className="h-4 w-4 mr-2" />
-                Solicitações de Acesso
+                {t('admin.access_requests')}
               </TabsTrigger>
               <TabsTrigger value="users">
                 <User className="h-4 w-4 mr-2" />
-                Gestão de Utilizadores
+                {t('admin.users')}
               </TabsTrigger>
               <TabsTrigger value="patients">
                 <Hospital className="h-4 w-4 mr-2" />
-                Utentes Teste
+                {t('patient.details')}
               </TabsTrigger>
               <TabsTrigger value="reports">
                 <FileText className="h-4 w-4 mr-2" />
-                Relatórios Médicos
+                {t('admin.reports')}
               </TabsTrigger>
               <TabsTrigger value="audit">
                 <BarChart className="h-4 w-4 mr-2" />
-                Logs de Auditoria
+                {t('admin.audit_logs')}
               </TabsTrigger>
             </TabsList>
             
