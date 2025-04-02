@@ -522,23 +522,38 @@ export default function ReportAuditPage() {
                                         
                                         <Separator />
                                         
-                                        {/* Comparativo Antes/Depois em duas colunas */}
-                                        <div className="grid grid-cols-2 gap-4">
-                                          <div>
-                                            <p className="text-sm font-medium">Antes</p>
-                                            <div className="mt-1 p-2 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 rounded text-xs">
-                                              <pre className="whitespace-pre-wrap max-h-24 overflow-y-auto">
-                                                {oldValueDisplay}
-                                              </pre>
+                                        {/* Comparativo Antes/Depois com mais destaque */}
+                                        <div className="space-y-2">
+                                          <div className="p-3 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
+                                            <div className="flex justify-between items-center mb-2">
+                                              <h4 className="text-sm font-semibold">{fieldName}</h4>
+                                              <span className="text-xs text-muted-foreground">Campo alterado</span>
                                             </div>
-                                          </div>
-                                          
-                                          <div>
-                                            <p className="text-sm font-medium">Depois</p>
-                                            <div className="mt-1 p-2 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 rounded text-xs">
-                                              <pre className="whitespace-pre-wrap max-h-24 overflow-y-auto">
-                                                {newValueDisplay}
-                                              </pre>
+                                            
+                                            <div className="grid grid-cols-2 gap-4">
+                                              <div className="space-y-1">
+                                                <div className="flex items-center gap-1">
+                                                  <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
+                                                  <p className="text-xs font-medium text-muted-foreground">ANTES</p>
+                                                </div>
+                                                <div className="p-2 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 rounded-md">
+                                                  <pre className="text-sm whitespace-pre-wrap max-h-32 overflow-y-auto">
+                                                    {oldValueDisplay || "(Vazio)"}
+                                                  </pre>
+                                                </div>
+                                              </div>
+                                              
+                                              <div className="space-y-1">
+                                                <div className="flex items-center gap-1">
+                                                  <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                                                  <p className="text-xs font-medium text-muted-foreground">DEPOIS</p>
+                                                </div>
+                                                <div className="p-2 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 rounded-md">
+                                                  <pre className="text-sm whitespace-pre-wrap max-h-32 overflow-y-auto">
+                                                    {newValueDisplay || "(Vazio)"}
+                                                  </pre>
+                                                </div>
+                                              </div>
                                             </div>
                                           </div>
                                         </div>
@@ -730,23 +745,46 @@ export default function ReportAuditPage() {
                                                 title: `Alteração no campo ${groupChange.field === 'status' ? 'estado' : groupChange.field}`,
                                                 description: (
                                                   <div className="space-y-2 mt-2">
-                                                    {/* Comparativo Antes/Depois em duas colunas */}
-                                                    <div className="grid grid-cols-2 gap-4">
-                                                      <div>
-                                                        <p className="text-sm font-medium">Antes</p>
-                                                        <div className="mt-1 p-2 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 rounded text-xs">
-                                                          <pre className="whitespace-pre-wrap max-h-24 overflow-y-auto">
-                                                            {oldValueDisplay}
-                                                          </pre>
+                                                    {/* Comparativo Antes/Depois com mais destaque */}
+                                                    <div className="space-y-2">
+                                                      <div className="p-3 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700">
+                                                        <div className="flex justify-between items-center mb-2">
+                                                          <h4 className="text-sm font-semibold">
+                                                            {{
+                                                              "diagnosis": "Diagnóstico",
+                                                              "symptoms": "Sintomas",
+                                                              "treatment": "Tratamento",
+                                                              "observations": "Observações",
+                                                              "status": "Estado"
+                                                            }[groupChange.field] || groupChange.field}
+                                                          </h4>
+                                                          <span className="text-xs text-muted-foreground">Campo alterado</span>
                                                         </div>
-                                                      </div>
-                                                      
-                                                      <div>
-                                                        <p className="text-sm font-medium">Depois</p>
-                                                        <div className="mt-1 p-2 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 rounded text-xs">
-                                                          <pre className="whitespace-pre-wrap max-h-24 overflow-y-auto">
-                                                            {newValueDisplay}
-                                                          </pre>
+                                                        
+                                                        <div className="grid grid-cols-2 gap-4">
+                                                          <div className="space-y-1">
+                                                            <div className="flex items-center gap-1">
+                                                              <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
+                                                              <p className="text-xs font-medium text-muted-foreground">ANTES</p>
+                                                            </div>
+                                                            <div className="p-2 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 rounded-md">
+                                                              <pre className="text-sm whitespace-pre-wrap max-h-32 overflow-y-auto">
+                                                                {oldValueDisplay || "(Vazio)"}
+                                                              </pre>
+                                                            </div>
+                                                          </div>
+                                                          
+                                                          <div className="space-y-1">
+                                                            <div className="flex items-center gap-1">
+                                                              <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                                                              <p className="text-xs font-medium text-muted-foreground">DEPOIS</p>
+                                                            </div>
+                                                            <div className="p-2 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 rounded-md">
+                                                              <pre className="text-sm whitespace-pre-wrap max-h-32 overflow-y-auto">
+                                                                {newValueDisplay || "(Vazio)"}
+                                                              </pre>
+                                                            </div>
+                                                          </div>
                                                         </div>
                                                       </div>
                                                     </div>
