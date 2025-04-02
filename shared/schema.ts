@@ -88,7 +88,7 @@ export const accessRequests = pgTable("access_requests", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-// Patient consent records for GDPR/LGPD compliance
+// Patient consent records for RGPD/LGPD compliance
 export const patientConsents = pgTable("patient_consents", {
   id: serial("id").primaryKey(),
   patientName: text("patient_name").notNull(),

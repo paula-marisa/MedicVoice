@@ -143,7 +143,7 @@ i18n
             "no_reports_found": "Nenhum relatório encontrado no sistema.",
             "no_reports_match_search": "Nenhum relatório corresponde à pesquisa.",
             "no_audit_logs_found": "Nenhum log de auditoria encontrado.",
-            "audit_logs_retention_notice": "Os logs de auditoria são mantidos por 90 dias conforme requisitos de conformidade LGPD/GDPR.",
+            "audit_logs_retention_notice": "Os logs de auditoria são mantidos por 90 dias conforme requisitos de conformidade LGPD/RGPD.",
             "datetime": "Data/Hora",
             "user": "Utilizador",
             "action": "Ação",
@@ -483,7 +483,7 @@ i18n
             "no_reports_found": "No reports found in the system.",
             "no_reports_match_search": "No reports match the search.",
             "no_audit_logs_found": "No audit logs found.",
-            "audit_logs_retention_notice": "Audit logs are kept for 90 days as per GDPR compliance requirements.",
+            "audit_logs_retention_notice": "Audit logs are kept for 90 days as per RGPD compliance requirements.",
             "datetime": "Date/Time",
             "user": "User",
             "action": "Action",
@@ -629,7 +629,7 @@ i18n
             "showRecordingIndicator": "Show Recording Indicator",
             "showRecordingIndicatorDesc": "Show a visual indicator when recording is active.",
             "dataRetentionPeriod": "Data Retention Period (days)",
-            "dataRetentionPeriodDesc": "How long personal data will be stored before being automatically deleted (as per GDPR).",
+            "dataRetentionPeriodDesc": "How long personal data will be stored before being automatically deleted (as per RGPD).",
             "exportMyData": "Export My Data",
             "requestDataDeletion": "Request Data Deletion",
             "soundSettings": "Sound Settings",
@@ -680,7 +680,7 @@ i18n
           // Footer
           "footer": {
             "copyright": "Medical Reports System. All rights reserved.",
-            "gdpr_compliance": "GDPR Compliant",
+            "gdpr_compliance": "RGPD Compliant",
             "terms": "Terms of Use",
             "privacy_policy": "Privacy Policy"
           }
