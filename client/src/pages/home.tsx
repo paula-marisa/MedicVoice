@@ -477,8 +477,8 @@ export default function Home() {
         <h1 className="text-3xl font-bold text-primary mb-6">{t('app.title')}</h1>
         <Tabs defaultValue="novo" className="w-full">
           <TabsList className="mb-6">
-            <TabsTrigger value="novo">Novo Relatório</TabsTrigger>
-            <TabsTrigger value="meus">Meus Relatórios</TabsTrigger>
+            <TabsTrigger value="novo">{t('reports.new_report')}</TabsTrigger>
+            <TabsTrigger value="meus">{t('reports.my_reports')}</TabsTrigger>
           </TabsList>
           
           <TabsContent value="novo">
