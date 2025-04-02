@@ -138,7 +138,9 @@ const en = {
     "contact": "Contact",
     "health_number": "Health Number",
     "process_number": "Process Number",
-    "history": "Patient History"
+    "history": "Patient History",
+    "consent_title": "Patient Listening Consent",
+    "consent_description": "To proceed with patient listening, your explicit consent is required for the processing of voice data, in accordance with data protection regulations (GDPR)."
   },
   
   // Change History
@@ -395,7 +397,13 @@ const en = {
     "data_retention": "Data Retention",
     "your_rights": "Your Rights",
     "withdraw_consent": "Withdraw Consent",
-    "rgpd_compliant": "RGPD Compliant"
+    "rgpd_compliant": "RGPD Compliant",
+    "title": "Privacy Policy",
+    "back_to_system": "Back to System",
+    "introduction": {
+      "title": "Introduction",
+      "content": "The Medical Reports System is committed to protecting your privacy and personal data. This privacy policy explains how we collect, use, share, and protect your data when you use our system."
+    }
   },
   
   // Gender
@@ -440,6 +448,15 @@ const en = {
     "privacy_policy": "Privacy Policy",
     "terms_of_service": "Terms of Service",
     "rgpd_compliant": "RGPD Compliant"
+  },
+  
+  // Consent Dialog
+  "consent": {
+    "required_consents": "Required Consents (GDPR)",
+    "data_retention": "All processed data will be kept securely and encrypted for a maximum period of {period}, according to data protection policies. You can request early deletion of this data at any time.",
+    "view_privacy_policy": "View full privacy policy",
+    "decline": "Decline",
+    "accept": "Accept and Continue"
   },
   
   // Common messages

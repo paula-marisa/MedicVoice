@@ -2,28 +2,29 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "wouter";
 import { ArrowLeft } from "lucide-react";
+import { useTranslate } from "@/hooks/use-language";
 
 export function PrivacyPolicy() {
+  const { t } = useTranslate();
   return (
     <div className="container mx-auto py-8 max-w-4xl">
       <Card className="shadow-lg">
         <CardHeader>
           <CardTitle className="text-2xl flex items-center justify-between">
-            <span>Política de Privacidade</span>
+            <span>{t('privacy.title', 'Política de Privacidade')}</span>
             <Link href="/">
               <Button variant="outline" size="sm" className="flex items-center gap-2">
                 <ArrowLeft size={16} />
-                Voltar
+                {t('common.back', 'Voltar')}
               </Button>
             </Link>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <section>
-            <h3 className="text-xl font-semibold mb-2">Introdução</h3>
+            <h3 className="text-xl font-semibold mb-2">{t('privacy.introduction.title', 'Introdução')}</h3>
             <p className="text-muted-foreground leading-relaxed">
-              O Sistema de Relatórios Médicos está comprometido com a proteção da sua privacidade e dos seus dados pessoais. Esta política 
-              de privacidade explica como recolhemos, usamos, partilhamos e protegemos os seus dados quando utiliza o nosso sistema.
+              {t('privacy.introduction.content', 'O Sistema de Relatórios Médicos está comprometido com a proteção da sua privacidade e dos seus dados pessoais. Esta política de privacidade explica como recolhemos, usamos, partilhamos e protegemos os seus dados quando utiliza o nosso sistema.')}
             </p>
           </section>
 
@@ -116,7 +117,7 @@ export function PrivacyPolicy() {
         </CardContent>
         <CardFooter className="border-t pt-6">
           <Link href="/">
-            <Button className="w-full md:w-auto">Voltar para o Sistema</Button>
+            <Button className="w-full md:w-auto">{t('privacy.back_to_system', 'Voltar para o Sistema')}</Button>
           </Link>
         </CardFooter>
       </Card>

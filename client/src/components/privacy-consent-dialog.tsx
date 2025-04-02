@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { Info, Lock, Shield, ExternalLink } from "lucide-react";
 import { Link } from "wouter";
+import { useTranslate } from "@/hooks/use-language";
 
 interface PrivacyConsentDialogProps {
   open: boolean;
@@ -37,6 +38,7 @@ export function PrivacyConsentDialog({
   dataRetentionPeriod = "90 dias",
   privacyPolicyUrl
 }: PrivacyConsentDialogProps) {
+  const { t } = useTranslate();
   const [itemConsents, setItemConsents] = useState<{ [key: string]: boolean }>(
     privacyItems.reduce((acc, item) => ({ ...acc, [item.id]: false }), {})
   );
@@ -77,7 +79,7 @@ export function PrivacyConsentDialog({
           <div className="bg-muted/50 rounded-lg p-3 space-y-3">
             <h3 className="font-medium text-sm flex items-center gap-2">
               <Lock className="w-4 h-4" />
-              Consentimentos necessários (RGPD/LGPD)
+              {t('consent.required_consents', 'Consentimentos necessários (RGPD/LGPD)')}
             </h3>
             <div className="space-y-3">
               {privacyItems.map((item) => (
@@ -105,11 +107,11 @@ export function PrivacyConsentDialog({
               <Info className="w-4 h-4 text-muted-foreground mt-0.5" />
               <div className="space-y-2">
                 <p className="text-xs text-muted-foreground">
-                  Todos os dados processados serão mantidos de forma segura e criptografada por um período máximo de {dataRetentionPeriod}, conforme as políticas de proteção de dados. Você pode solicitar a exclusão antecipada destes dados a qualquer momento.
+                  {t('consent.data_retention', 'Todos os dados processados serão mantidos de forma segura e criptografada por um período máximo de {period}, conforme as políticas de proteção de dados. Você pode solicitar a exclusão antecipada destes dados a qualquer momento.').replace('{period}', dataRetentionPeriod)}
                 </p>
                 <p className="text-xs">
                   <Link href="/privacy-policy" className="text-primary hover:underline flex items-center gap-1">
-                    Ver política de privacidade completa
+                    {t('consent.view_privacy_policy', 'Ver política de privacidade completa')}
                     <ExternalLink className="w-3 h-3" />
                   </Link>
                 </p>
@@ -120,10 +122,10 @@ export function PrivacyConsentDialog({
 
         <DialogFooter className="flex justify-between sm:justify-between">
           <Button type="button" variant="outline" onClick={handleDecline}>
-            Recusar
+            {t('consent.decline', 'Recusar')}
           </Button>
           <Button type="button" onClick={handleAccept} disabled={!allConsented}>
-            Aceitar e continuar
+            {t('consent.accept', 'Aceitar e continuar')}
           </Button>
         </DialogFooter>
       </DialogContent>

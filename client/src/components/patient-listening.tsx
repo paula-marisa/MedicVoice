@@ -17,6 +17,7 @@ import { PrivacyConsentDialog } from "./privacy-consent-dialog";
 import { RecordingIndicator } from "./recording-indicator";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { useTranslate } from "@/hooks/use-language";
 
 interface PatientListeningProps {
   onSymptomsDetected: (symptoms: string) => void;
@@ -32,6 +33,7 @@ export interface PatientListeningRef {
 
 export const PatientListening = forwardRef<PatientListeningRef, PatientListeningProps>(
   ({ onSymptomsDetected, notificationRef, patientProcessNumber }, ref) => {
+    const { t } = useTranslate();
     const [isListening, setIsListening] = useState(false);
     const [recordingTime, setRecordingTime] = useState(0);
     const [transcript, setTranscript] = useState("");
@@ -341,7 +343,7 @@ export const PatientListening = forwardRef<PatientListeningRef, PatientListening
         <Card>
           <CardContent className="pt-6">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-medium">Escuta do Utente</h2>
+              <h2 className="text-lg font-medium">{t('patient.listening', 'Escuta do Utente')}</h2>
               <Button 
                 variant="ghost" 
                 size="sm" 
@@ -377,12 +379,12 @@ export const PatientListening = forwardRef<PatientListeningRef, PatientListening
                   {isListening ? (
                     <>
                       <StopCircle className="h-5 w-5" />
-                      Parar Escuta
+                      {t('patient.stop_listening', 'Parar Escuta')}
                     </>
                   ) : (
                     <>
                       <Mic className="h-5 w-5" />
-                      Iniciar Escuta do Utente
+                      {t('patient.start_listening', 'Iniciar Escuta do Utente')}
                     </>
                   )}
                 </Button>
@@ -392,7 +394,7 @@ export const PatientListening = forwardRef<PatientListeningRef, PatientListening
                 <div className="mt-2 text-center text-xs text-green-600 dark:text-green-400">
                   <span className="inline-flex items-center gap-1">
                     <CheckCircle className="h-3 w-3" />
-                    Consentimento obtido
+                    {t('patient.consent_obtained', 'Consentimento obtido')}
                   </span>
                 </div>
               )}
@@ -485,8 +487,8 @@ export const PatientListening = forwardRef<PatientListeningRef, PatientListening
           open={showPrivacyConsent}
           onOpenChange={setShowPrivacyConsent}
           onConsent={handlePrivacyConsent}
-          title="Consentimento para Escuta do Utente"
-          description="Para prosseguir com a escuta do utente, é necessário o consentimento explícito para o processamento de dados de voz, conforme as regulamentações de proteção de dados (RGPD/LGPD)."
+          title={t('patient.consent_title', 'Consentimento para Escuta do Utente')}
+          description={t('patient.consent_description', 'Para prosseguir com a escuta do utente, é necessário o consentimento explícito para o processamento de dados de voz, conforme as regulamentações de proteção de dados (RGPD/LGPD).')}
           privacyItems={[
             {
               id: "consent-voice-capture",

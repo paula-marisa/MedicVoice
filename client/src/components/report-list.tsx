@@ -39,6 +39,7 @@ import { MedicalReport } from "@shared/schema";
 import { queryClient } from "@/lib/queryClient";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 
 interface ReportListProps {
   onEditReport: (report: MedicalReport) => void;
@@ -51,6 +52,7 @@ export function ReportList({ onEditReport }: ReportListProps) {
   const [deleteReason, setDeleteReason] = useState("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
   
   // Buscar relatórios do usuário
   const { data: reports, isLoading } = useQuery<{ success: boolean, data: MedicalReport[] }>({
@@ -122,9 +124,9 @@ export function ReportList({ onEditReport }: ReportListProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Meus Relatórios</CardTitle>
+        <CardTitle>{t('reports.my_reports', 'Meus Relatórios')}</CardTitle>
         <CardDescription>
-          Aqui você pode visualizar e editar todos os seus relatórios médicos.
+          {t('reports.description', 'Aqui você pode visualizar e editar todos os seus relatórios médicos.')}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -132,7 +134,7 @@ export function ReportList({ onEditReport }: ReportListProps) {
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400" size={18} />
             <Input 
-              placeholder="Pesquisar por utente ou número de processo" 
+              placeholder={t('reports.search', 'Pesquisar por utente ou número de processo')}
               className="pl-10"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -153,11 +155,11 @@ export function ReportList({ onEditReport }: ReportListProps) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Utente</TableHead>
-                  <TableHead>Nº Processo</TableHead>
-                  <TableHead className="hidden md:table-cell">Data</TableHead>
-                  <TableHead className="hidden md:table-cell">Status</TableHead>
-                  <TableHead className="text-right">Ações</TableHead>
+                  <TableHead>{t('patient.name', 'Utente')}</TableHead>
+                  <TableHead>{t('patient.process_number', 'Nº Processo')}</TableHead>
+                  <TableHead className="hidden md:table-cell">{t('reports.created_at', 'Data')}</TableHead>
+                  <TableHead className="hidden md:table-cell">{t('reports.status', 'Status')}</TableHead>
+                  <TableHead className="text-right">{t('reports.action_buttons', 'Ações')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -181,7 +183,7 @@ export function ReportList({ onEditReport }: ReportListProps) {
                               </Button>
                             </TooltipTrigger>
                             <TooltipContent>
-                              <p>Editar relatório</p>
+                              <p>{t('reports.edit_report', 'Editar relatório')}</p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
@@ -200,7 +202,7 @@ export function ReportList({ onEditReport }: ReportListProps) {
                               </Button>
                             </TooltipTrigger>
                             <TooltipContent>
-                              <p>Histórico do utente</p>
+                              <p>{t('patient.history', 'Histórico do utente')}</p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
@@ -221,7 +223,7 @@ export function ReportList({ onEditReport }: ReportListProps) {
                               </Button>
                             </TooltipTrigger>
                             <TooltipContent>
-                              <p>Eliminar relatório</p>
+                              <p>{t('reports.delete_report', 'Eliminar relatório')}</p>
                             </TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
@@ -240,36 +242,36 @@ export function ReportList({ onEditReport }: ReportListProps) {
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <AlertTriangle className="h-5 w-5 text-red-500" />
-                Eliminar Relatório
+                {t('reports.delete_report', 'Eliminar Relatório')}
               </DialogTitle>
               <DialogDescription>
-                Esta ação não pode ser revertida. O relatório será marcado como eliminado e ficará visível apenas para administradores.
+                {t('reports.delete_confirmation', 'Esta ação não pode ser revertida. O relatório será marcado como eliminado e ficará visível apenas para administradores.')}
               </DialogDescription>
             </DialogHeader>
             
             <div className="space-y-4 py-2">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm font-medium mb-1">Utente:</p>
+                  <p className="text-sm font-medium mb-1">{t('patient.name', 'Utente')}:</p>
                   <p className="text-sm">{reportToDelete?.name}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium mb-1">Nº Processo:</p>
+                  <p className="text-sm font-medium mb-1">{t('patient.process_number', 'Nº Processo')}:</p>
                   <p className="text-sm">{reportToDelete?.processNumber}</p>
                 </div>
               </div>
               
               <div>
-                <p className="text-sm font-medium mb-1">Motivo da eliminação: <span className="text-red-500">*</span></p>
+                <p className="text-sm font-medium mb-1">{t('reports.delete_reason', 'Motivo da eliminação')}: <span className="text-red-500">*</span></p>
                 <Textarea 
-                  placeholder="É necessário fornecer um motivo para a eliminação do relatório"
+                  placeholder={t('reports.delete_reason_required', 'É necessário fornecer um motivo para a eliminação do relatório')}
                   value={deleteReason}
                   onChange={(e) => setDeleteReason(e.target.value)}
                   className="resize-none"
                   required
                 />
                 {deleteMutation.isPending && (
-                  <p className="text-sm text-muted-foreground mt-1">A processar...</p>
+                  <p className="text-sm text-muted-foreground mt-1">{t('common.loading', 'A processar...')}</p>
                 )}
               </div>
             </div>
@@ -283,7 +285,7 @@ export function ReportList({ onEditReport }: ReportListProps) {
                   setDeleteReason("");
                 }}
               >
-                Cancelar
+                {t('common.cancel', 'Cancelar')}
               </Button>
               <Button
                 variant="destructive"
