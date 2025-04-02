@@ -139,7 +139,7 @@ const en = {
     "no_reports_found": "No reports found in the system.",
     "no_reports_match_search": "No reports match the search.",
     "no_audit_logs_found": "No audit logs found.",
-    "audit_logs_retention_notice": "Audit logs are kept for 90 days as per GDPR compliance requirements.",
+    "audit_logs_retention_notice": "Audit logs are kept for 90 days as per RGPD compliance requirements.",
     "datetime": "Date/Time",
     "user": "User",
     "action": "Action",
@@ -285,7 +285,7 @@ const en = {
     "showRecordingIndicator": "Show Recording Indicator",
     "showRecordingIndicatorDesc": "Show a visual indicator when recording is active.",
     "dataRetentionPeriod": "Data Retention Period (days)",
-    "dataRetentionPeriodDesc": "How long personal data will be stored before being automatically deleted (according to GDPR).",
+    "dataRetentionPeriodDesc": "How long personal data will be stored before being automatically deleted (according to RGPD).",
     "exportMyData": "Export My Data",
     "requestDataDeletion": "Request Data Deletion",
     "soundSettings": "Sound Settings",
@@ -363,7 +363,7 @@ const en = {
     "data_retention": "Data Retention",
     "your_rights": "Your Rights",
     "withdraw_consent": "Withdraw Consent",
-    "rgpd_compliant": "GDPR Compliant"
+    "rgpd_compliant": "RGPD Compliant"
   },
 
   // Footer
@@ -371,7 +371,7 @@ const en = {
     "all_rights_reserved": "All rights reserved",
     "privacy_policy": "Privacy Policy",
     "terms_of_service": "Terms of Service",
-    "rgpd_compliant": "GDPR Compliant"
+    "rgpd_compliant": "RGPD Compliant"
   },
   
   // Common messages
