@@ -405,9 +405,9 @@ export default function AdminPage() {
       <main className="flex-grow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="mb-6">
-            <h2 className="text-2xl font-bold mb-2">Bem-vindo, {user.name}</h2>
+            <h2 className="text-2xl font-bold mb-2">{t('auth.welcome', 'Bem-vindo')}, {user.name}</h2>
             <p className="text-muted-foreground">
-              Este é o painel de administrador do sistema de relatórios médicos. Aqui, podes gerir utilizadores, consultar relatórios médicos e acompanhar todas as atividades do sistema.
+              {t('admin.description', 'Este é o painel de administrador do sistema de relatórios médicos. Aqui, podes gerir utilizadores, consultar relatórios médicos e acompanhar todas as atividades do sistema.')}
             </p>
           </div>
           
@@ -553,7 +553,7 @@ export default function AdminPage() {
                       className="w-full" 
                       disabled={registerMutation.isPending}
                     >
-                      {registerMutation.isPending ? "A registar..." : "Registar Utilizador"}
+                      {registerMutation.isPending ? t('common.loading', 'A registar...') : t('admin.register_user', 'Registar Utilizador')}
                     </Button>
                   </form>
                 </CardContent>
@@ -707,7 +707,7 @@ export default function AdminPage() {
                                       ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
                                       : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
                                   }`}>
-                                    {userData.status === 'active' || !userData.status ? 'Ativo' : 'Inativo'}
+                                    {userData.status === 'active' || !userData.status ? t('profile.account_active', 'Ativo') : t('profile.account_inactive', 'Inativo')}
                                   </span>
                                 </TableCell>
                                 <TableCell>
@@ -788,7 +788,7 @@ export default function AdminPage() {
                           ) : (
                             <TableRow>
                               <TableCell colSpan={8} className="text-center py-4">
-                                Nenhum utilizador encontrado.
+                                {t('admin.no_users_found', 'Nenhum utilizador encontrado.')}
                               </TableCell>
                             </TableRow>
                           )}
