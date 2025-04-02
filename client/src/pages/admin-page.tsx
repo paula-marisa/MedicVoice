@@ -451,11 +451,11 @@ export default function AdminPage() {
                 <CardContent>
                   <form onSubmit={registerForm.handleSubmit(handleRegisterUser)} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="register-name">Nome Completo</Label>
+                      <Label htmlFor="register-name">{t('auth.request_form.full_name')}</Label>
                       <Input 
                         id="register-name" 
                         {...registerForm.register("name")} 
-                        placeholder="Dr. João Silva" 
+                        placeholder={t('auth.request_form.full_name_placeholder')} 
                       />
                       {registerForm.formState.errors.name && (
                         <p className="text-red-500 text-sm mt-1">
@@ -465,14 +465,14 @@ export default function AdminPage() {
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="register-username">Utilizador</Label>
+                      <Label htmlFor="register-username">{t('auth.username')}</Label>
                       <div className="relative">
                         <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400" size={18} />
                         <Input 
                           id="register-username" 
                           className="pl-10"
                           {...registerForm.register("username")} 
-                          placeholder="Escolha um nome de utilizador" 
+                          placeholder={t('auth.username')} 
                         />
                       </div>
                       {registerForm.formState.errors.username && (
@@ -483,7 +483,7 @@ export default function AdminPage() {
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="register-password">Senha</Label>
+                      <Label htmlFor="register-password">{t('auth.password')}</Label>
                       <div className="relative">
                         <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400" size={18} />
                         <Input 
@@ -491,7 +491,7 @@ export default function AdminPage() {
                           type="password" 
                           className="pl-10"
                           {...registerForm.register("password")} 
-                          placeholder="Crie uma senha segura" 
+                          placeholder={t('auth.password_placeholder')} 
                         />
                       </div>
                       {registerForm.formState.errors.password && (
@@ -502,7 +502,7 @@ export default function AdminPage() {
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="register-role">Função</Label>
+                      <Label htmlFor="register-role">{t('admin.role')}</Label>
                       <div className="relative">
                         <Hospital className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400" size={18} />
                         <select 
@@ -510,9 +510,9 @@ export default function AdminPage() {
                           className="flex h-10 w-full rounded-md border border-input bg-background px-3 pl-10 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                           {...registerForm.register("role")}
                         >
-                          <option value="doctor">Médico</option>
-                          <option value="nurse">Enfermeiro</option>
-                          <option value="admin">Administrador</option>
+                          <option value="doctor">{t('admin.role_doctor')}</option>
+                          <option value="nurse">{t('admin.role_nurse')}</option>
+                          <option value="admin">{t('admin.role_admin')}</option>
                         </select>
                       </div>
                       {registerForm.formState.errors.role && (
@@ -523,14 +523,14 @@ export default function AdminPage() {
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="register-specialty">Especialidade</Label>
+                      <Label htmlFor="register-specialty">{t('auth.request_form.specialty')}</Label>
                       <div className="relative">
                         <Stethoscope className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400" size={18} />
                         <Input 
                           id="register-specialty" 
                           className="pl-10"
                           {...registerForm.register("specialty")} 
-                          placeholder="Ex: Cardiologia, Pediatria" 
+                          placeholder={t('auth.request_form.specialty_placeholder')} 
                         />
                       </div>
                       {registerForm.formState.errors.specialty && (
@@ -585,7 +585,7 @@ export default function AdminPage() {
                             <TableHead>{t('auth.request_form.email')}</TableHead>
                             <TableHead>{t('auth.request_form.phone')}</TableHead>
                             <TableHead>{t('admin.request_date')}</TableHead>
-                            <TableHead>{t('admin.actions')}</TableHead>
+                            <TableHead>{t('admin.action_buttons')}</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -676,7 +676,7 @@ export default function AdminPage() {
                             <TableHead>{t('admin.professional_id')}</TableHead>
                             <TableHead>{t('admin.status')}</TableHead>
                             <TableHead>{t('reports.created_at')}</TableHead>
-                            <TableHead>{t('admin.actions')}</TableHead>
+                            <TableHead>{t('admin.action_buttons')}</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -810,9 +810,9 @@ export default function AdminPage() {
                 <CardContent>
                   <div className="space-y-6">
                     <div>
-                      <h3 className="text-lg font-medium mb-2">Quantidade de Utentes</h3>
+                      <h3 className="text-lg font-medium mb-2">{t('admin.test_patients_count')}</h3>
                       <p className="text-sm text-muted-foreground mb-4">
-                        Escolha quantos utentes de teste deseja criar. Serão gerados registos com dados simulados.
+                        {t('admin.test_patients_choose_count')}
                       </p>
                       
                       <div className="flex items-center space-x-4">
@@ -835,13 +835,13 @@ export default function AdminPage() {
                     </div>
                     
                     <div className="bg-muted rounded-md p-4">
-                      <h4 className="font-medium mb-2">Utentes a serem criados:</h4>
+                      <h4 className="font-medium mb-2">{t('admin.test_patients_to_be_created')}</h4>
                       <div className="space-y-2">
                         {Array.from({ length: patientCount }).map((_, index) => (
                           <div key={index} className="flex justify-between items-center text-sm p-2 rounded-md bg-background">
                             <div>
-                              <span className="font-medium">Utente Teste {index + 1}</span>
-                              <span className="text-muted-foreground ml-2">(Processo: TEST{100 + index})</span>
+                              <span className="font-medium">{t('patient.test_patient')} {index + 1}</span>
+                              <span className="text-muted-foreground ml-2">({t('patient.process')}: TEST{100 + index})</span>
                             </div>
                           </div>
                         ))}
@@ -856,17 +856,16 @@ export default function AdminPage() {
                       {isAddingPatients ? (
                         <span className="flex items-center">
                           <div className="animate-spin h-4 w-4 mr-2 border-b-2 border-current rounded-full"></div>
-                          A criar utentes...
+                          {t('admin.creating_test_patients')}
                         </span>
                       ) : (
-                        "Criar Utentes de Teste"
+                        <>{t('admin.create_test_patients')}</>
                       )}
                     </Button>
                     
                     <div className="text-sm text-muted-foreground">
                       <p className="italic">
-                        Nota: Os dados de teste são criados apenas para fins de demonstração. 
-                        Cada utente será registado com um relatório médico em rascunho.
+                        {t('admin.test_patients_note')}
                       </p>
                     </div>
                   </div>
@@ -905,12 +904,12 @@ export default function AdminPage() {
                       <Table>
                         <TableHeader>
                           <TableRow>
-                            <TableHead>Utente</TableHead>
-                            <TableHead>Nº Processo</TableHead>
-                            <TableHead>Médico</TableHead>
-                            <TableHead>Data</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead>Ações</TableHead>
+                            <TableHead>{t('admin.patient')}</TableHead>
+                            <TableHead>{t('admin.process_number')}</TableHead>
+                            <TableHead>{t('admin.doctor')}</TableHead>
+                            <TableHead>{t('admin.date')}</TableHead>
+                            <TableHead>{t('admin.status')}</TableHead>
+                            <TableHead>{t('admin.action_buttons')}</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -945,20 +944,20 @@ export default function AdminPage() {
                                     report.status === 'in_progress' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300' :
                                     'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'
                                   }`}>
-                                    {report.status === 'submitted' ? 'Enviado' : 
-                                     report.status === 'in_progress' ? 'Em progresso' : 'Rascunho'}
+                                    {report.status === 'submitted' ? t('admin.status_submitted') : 
+                                     report.status === 'in_progress' ? t('admin.status_in_progress') : t('admin.status_draft')}
                                   </span>
                                 </TableCell>
                                 <TableCell>
                                   <div className="flex space-x-2">
                                     <Button variant="outline" size="sm" asChild>
                                       <Link to={`/reports/${report.id}`}>
-                                        Visualizar Relatório
+                                        {t('admin.view_report')}
                                       </Link>
                                     </Button>
                                     <Button variant="outline" size="sm" asChild>
                                       <Link to={`/reports/${report.id}/audit`}>
-                                        Ver Histórico de Alterações
+                                        {t('admin.view_change_history')}
                                       </Link>
                                     </Button>
 
@@ -970,8 +969,8 @@ export default function AdminPage() {
                             <TableRow>
                               <TableCell colSpan={6} className="text-center py-4">
                                 {reportsData && reportsData.length === 0 ? 
-                                  "Nenhum relatório encontrado no sistema." : 
-                                  "Nenhum relatório corresponde à pesquisa."}
+                                  t('admin.no_reports_found') : 
+                                  t('admin.no_reports_match_search')}
                               </TableCell>
                             </TableRow>
                           )}
@@ -1002,12 +1001,12 @@ export default function AdminPage() {
                       <Table>
                         <TableHeader>
                           <TableRow>
-                            <TableHead>Data/Hora</TableHead>
-                            <TableHead>Utilizador</TableHead>
-                            <TableHead>Ação</TableHead>
-                            <TableHead>Recurso</TableHead>
-                            <TableHead>IP</TableHead>
-                            <TableHead>Detalhes</TableHead>
+                            <TableHead>{t('admin.datetime')}</TableHead>
+                            <TableHead>{t('admin.user')}</TableHead>
+                            <TableHead>{t('admin.action')}</TableHead>
+                            <TableHead>{t('admin.resource')}</TableHead>
+                            <TableHead>{t('admin.ip_address')}</TableHead>
+                            <TableHead>{t('admin.details')}</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -1038,7 +1037,7 @@ export default function AdminPage() {
                                     })()
                                   )}
                                 </TableCell>
-                                <TableCell>{log.user?.name || "Sistema"}</TableCell>
+                                <TableCell>{log.user?.name || t('admin.system')}</TableCell>
                                 <TableCell>
                                   <span className={`px-2 py-1 rounded-full text-xs ${
                                     log.action.includes('create') ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' :
@@ -1098,7 +1097,7 @@ export default function AdminPage() {
                                         .join('\n');
                                       
                                       toast({
-                                        title: "Detalhes do Log",
+                                        title: t('admin.log_details'),
                                         description: (
                                           <pre className="mt-2 w-full p-4 rounded-md bg-muted text-sm whitespace-pre-wrap">
                                             {formattedDetails}
@@ -1108,7 +1107,7 @@ export default function AdminPage() {
                                       });
                                     }}
                                   >
-                                    Ver Detalhes
+                                    {t('admin.view_details')}
                                   </Button>
                                 </TableCell>
                               </TableRow>
@@ -1116,7 +1115,7 @@ export default function AdminPage() {
                           ) : (
                             <TableRow>
                               <TableCell colSpan={6} className="text-center py-4">
-                                Nenhum log de auditoria encontrado.
+                                {t('admin.no_audit_logs_found')}
                               </TableCell>
                             </TableRow>
                           )}
@@ -1127,7 +1126,7 @@ export default function AdminPage() {
                 </CardContent>
                 <CardFooter>
                   <p className="text-sm text-muted-foreground">
-                    Os logs de auditoria são mantidos por 90 dias conforme requisitos de conformidade LGPD/GDPR.
+                    {t('admin.audit_logs_retention_notice')}
                   </p>
                 </CardFooter>
               </Card>
