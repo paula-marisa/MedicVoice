@@ -99,6 +99,36 @@ const pt = {
     "deleted": "Eliminado"
   },
   
+  // Reconhecimento de voz
+  "voiceRecognition": {
+    "title": "Reconhecimento de Voz",
+    "helpButton": "Ajuda",
+    "helpTooltip": "Ajuda com comandos de voz",
+    "instructions": "Clique no botão abaixo para começar a gravar. Você pode dizer o nome do campo (ex: \"diagnóstico\") para alterar o destino da transcrição.",
+    "privacyNote": "Ao clicar no botão de gravação, você autoriza o processamento temporário dos dados de voz, que serão mantidos de forma segura por até 90 dias conforme as regulamentações de proteção de dados.",
+    "viewPrivacyPolicy": "Ver política de privacidade completa",
+    "startRecording": "Iniciar Gravação",
+    "stopRecording": "Parar Gravação",
+    "recording": "Gravando...",
+    "readyToRecord": "Pronto para gravar",
+    "targetField": "Campo de Destino",
+    "targetFieldInstructions": "Selecione o campo onde o texto transcrito será inserido:",
+    "diagnosis": "Diagnóstico",
+    "symptoms": "Sintomas",
+    "treatment": "Tratamento Recomendado",
+    "observations": "Observações",
+    "helpDialog": {
+      "title": "Comandos de Voz Disponíveis",
+      "fieldCommands": "Comandos para mudar de campo:",
+      "stopCommands": "Comandos para finalizar a gravação:",
+      "tip": "Os comandos funcionam melhor quando ditos claramente e separados do texto que você deseja transcrever."
+    },
+    "consentDialog": {
+      "title": "Consentimento para Reconhecimento de Voz",
+      "description": "Para prosseguir com o reconhecimento de voz, é necessário o seu consentimento explícito para o processamento de dados de voz, conforme as regulamentações de proteção de dados (RGPD/LGPD)."
+    }
+  },
+  
   // Paciente/Utente
   "patient": {
     "details": "Detalhes do Utente",
@@ -386,8 +416,13 @@ const pt = {
     "treatment_placeholder": "Descreva o tratamento recomendado",
     "observations": "Observações",
     "observations_placeholder": "Observações adicionais",
+    "save_draft": "Guardar Rascunho",
     "save_submit": "Guardar e Enviar",
-    "clear_fields": "Limpar Campos"
+    "clear_fields": "Limpar Campos",
+    "listen": "Escutar",
+    "target_field": "Campo de Destino",
+    "start_transcription": "Iniciar Transcrição",
+    "voice_recognition": "Reconhecimento de Voz"
   },
   
   // Opções de exportação

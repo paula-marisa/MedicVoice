@@ -17,6 +17,7 @@ import { PrivacyConsentDialog } from "./privacy-consent-dialog";
 import { RecordingIndicator } from "./recording-indicator";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { useTranslation } from "react-i18next";
 
 // Função para criar gramática médica que ajuda no reconhecimento de termos médicos
 function createMedicalGrammar() {
@@ -71,6 +72,7 @@ interface VoiceRecognitionProps {
 }
 
 export function VoiceRecognition({ onTranscriptionComplete, notificationRef, patientProcessNumber }: VoiceRecognitionProps) {
+  const { t } = useTranslation();
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [targetField, setTargetField] = useState("diagnosis");
@@ -514,27 +516,26 @@ export function VoiceRecognition({ onTranscriptionComplete, notificationRef, pat
       <Card>
         <CardContent className="pt-6">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-medium">Reconhecimento de Voz</h2>
+            <h2 className="text-lg font-medium">{t('voiceRecognition.title', 'Reconhecimento de Voz')}</h2>
             <Button 
               variant="ghost" 
               size="sm" 
               onClick={() => setIsHelpOpen(true)}
-              title="Ajuda com comandos de voz"
+              title={t('voiceRecognition.helpTooltip', 'Ajuda com comandos de voz')}
             >
               <Info className="h-4 w-4" />
             </Button>
           </div>
           
           <div className="text-sm text-neutral-600 dark:text-neutral-400 mb-6">
-            Clique no botão abaixo para começar a gravar. Você pode dizer o nome do campo (ex: "diagnóstico") 
-            para alterar o destino da transcrição.
+            {t('voiceRecognition.instructions', 'Clique no botão abaixo para começar a gravar. Você pode dizer o nome do campo (ex: "diagnóstico") para alterar o destino da transcrição.')}
             
             <div className="mt-2 flex items-start gap-2 bg-muted/50 p-2 rounded text-xs">
               <Shield className="h-4 w-4 text-primary shrink-0 mt-0.5" />
               <div>
-                <p>Ao clicar no botão de gravação, você autoriza o processamento temporário dos dados de voz, que serão mantidos de forma segura por até 90 dias conforme as regulamentações de proteção de dados.</p>
+                <p>{t('voiceRecognition.privacyNote', 'Ao clicar no botão de gravação, você autoriza o processamento temporário dos dados de voz, que serão mantidos de forma segura por até 90 dias conforme as regulamentações de proteção de dados.')}</p>
                 <Link href="/privacy-policy" className="text-primary hover:underline inline-flex items-center gap-1 mt-1">
-                  Ver política de privacidade completa
+                  {t('voiceRecognition.viewPrivacyPolicy', 'Ver política de privacidade completa')}
                   <ExternalLink className="h-3 w-3" />
                 </Link>
               </div>
@@ -551,12 +552,12 @@ export function VoiceRecognition({ onTranscriptionComplete, notificationRef, pat
               {isRecording ? (
                 <>
                   <StopCircle className="h-5 w-5" />
-                  Parar Gravação
+                  {t('voiceRecognition.stopRecording', 'Parar Gravação')}
                 </>
               ) : (
                 <>
                   <Mic className="h-5 w-5" />
-                  Iniciar Gravação
+                  {t('voiceRecognition.startRecording', 'Iniciar Gravação')}
                 </>
               )}
             </Button>
@@ -571,11 +572,11 @@ export function VoiceRecognition({ onTranscriptionComplete, notificationRef, pat
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
                     </span>
-                    Gravando...
+                    {t('voiceRecognition.recording', 'Gravando...')}
                   </Badge>
                 ) : (
                   <Badge variant="outline" className="flex items-center gap-1">
-                    Pronto para gravar
+                    {t('voiceRecognition.readyToRecord', 'Pronto para gravar')}
                   </Badge>
                 )}
               </div>
@@ -599,32 +600,32 @@ export function VoiceRecognition({ onTranscriptionComplete, notificationRef, pat
       
       <Card>
         <CardContent className="pt-6">
-          <h2 className="text-lg font-medium mb-4">Campo de Destino</h2>
+          <h2 className="text-lg font-medium mb-4">{t('voiceRecognition.targetField', 'Campo de Destino')}</h2>
           
           <div className="text-sm text-neutral-600 dark:text-neutral-400 mb-4">
-            Selecione o campo onde o texto transcrito será inserido:
+            {t('voiceRecognition.targetFieldInstructions', 'Selecione o campo onde o texto transcrito será inserido:')}
           </div>
           
           <RadioGroup value={targetField} onValueChange={setTargetField}>
             <div className="space-y-3">
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="diagnosis" id="target-diagnosis" />
-                <Label htmlFor="target-diagnosis">Diagnóstico</Label>
+                <Label htmlFor="target-diagnosis">{t('voiceRecognition.diagnosis', 'Diagnóstico')}</Label>
               </div>
               
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="symptoms" id="target-symptoms" />
-                <Label htmlFor="target-symptoms">Sintomas</Label>
+                <Label htmlFor="target-symptoms">{t('voiceRecognition.symptoms', 'Sintomas')}</Label>
               </div>
               
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="treatment" id="target-treatment" />
-                <Label htmlFor="target-treatment">Tratamento Recomendado</Label>
+                <Label htmlFor="target-treatment">{t('voiceRecognition.treatment', 'Tratamento Recomendado')}</Label>
               </div>
               
               <div className="flex items-center space-x-2">
                 <RadioGroupItem value="observations" id="target-observations" />
-                <Label htmlFor="target-observations">Observações</Label>
+                <Label htmlFor="target-observations">{t('voiceRecognition.observations', 'Observações')}</Label>
               </div>
             </div>
           </RadioGroup>
@@ -643,8 +644,8 @@ export function VoiceRecognition({ onTranscriptionComplete, notificationRef, pat
         open={showPrivacyConsent}
         onOpenChange={setShowPrivacyConsent}
         onConsent={handlePrivacyConsent}
-        title="Consentimento para Reconhecimento de Voz"
-        description="Para prosseguir com o reconhecimento de voz, é necessário o seu consentimento explícito para o processamento de dados de voz, conforme as regulamentações de proteção de dados (RGPD/LGPD)."
+        title={t('voiceRecognition.consentDialog.title', 'Consentimento para Reconhecimento de Voz')}
+        description={t('voiceRecognition.consentDialog.description', 'Para prosseguir com o reconhecimento de voz, é necessário o seu consentimento explícito para o processamento de dados de voz, conforme as regulamentações de proteção de dados (RGPD/LGPD).')}
         privacyItems={[
           {
             id: "consent-voice-capture-doctor",
@@ -667,11 +668,11 @@ export function VoiceRecognition({ onTranscriptionComplete, notificationRef, pat
       <AlertDialog open={isHelpOpen} onOpenChange={setIsHelpOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Comandos de Voz Disponíveis</AlertDialogTitle>
+            <AlertDialogTitle>{t('voiceRecognition.helpDialog.title', 'Comandos de Voz Disponíveis')}</AlertDialogTitle>
             <AlertDialogDescription>
               <div className="space-y-4 mt-2">
                 <div>
-                  <h3 className="font-medium text-sm">Comandos para mudar de campo:</h3>
+                  <h3 className="font-medium text-sm">{t('voiceRecognition.helpDialog.fieldCommands', 'Comandos para mudar de campo:')}</h3>
                   <ul className="list-disc ml-5 text-sm mt-1">
                     <li>Diga <strong>"diagnóstico"</strong> para alterar para o campo de diagnóstico</li>
                     <li>Diga <strong>"sintomas"</strong> para alterar para o campo de sintomas</li>
@@ -681,7 +682,7 @@ export function VoiceRecognition({ onTranscriptionComplete, notificationRef, pat
                 </div>
                 
                 <div>
-                  <h3 className="font-medium text-sm">Comandos para finalizar a gravação:</h3>
+                  <h3 className="font-medium text-sm">{t('voiceRecognition.helpDialog.stopCommands', 'Comandos para finalizar a gravação:')}</h3>
                   <ul className="list-disc ml-5 text-sm mt-1">
                     <li>Diga <strong>"terminar"</strong> para finalizar a gravação</li>
                     <li>Diga <strong>"finalizar"</strong> para finalizar a gravação</li>
@@ -690,7 +691,7 @@ export function VoiceRecognition({ onTranscriptionComplete, notificationRef, pat
                 </div>
                 
                 <div className="text-sm pt-2 border-t">
-                  <p>Os comandos funcionam melhor quando ditos claramente e separados do texto que você deseja transcrever.</p>
+                  <p>{t('voiceRecognition.helpDialog.tip', 'Os comandos funcionam melhor quando ditos claramente e separados do texto que você deseja transcrever.')}</p>
                 </div>
               </div>
             </AlertDialogDescription>

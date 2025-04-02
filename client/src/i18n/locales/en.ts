@@ -99,6 +99,36 @@ const en = {
     "deleted": "Deleted"
   },
   
+  // Voice Recognition
+  "voiceRecognition": {
+    "title": "Voice Recognition",
+    "helpButton": "Help",
+    "helpTooltip": "Help with voice commands",
+    "instructions": "Click the button below to start recording. You can say the field name (e.g., \"diagnosis\") to change the destination of the transcription.",
+    "privacyNote": "By clicking the record button, you authorize the temporary processing of voice data, which will be kept securely for up to 90 days in accordance with data protection regulations.",
+    "viewPrivacyPolicy": "View full privacy policy",
+    "startRecording": "Start Recording",
+    "stopRecording": "Stop Recording",
+    "recording": "Recording...",
+    "readyToRecord": "Ready to record",
+    "targetField": "Target Field",
+    "targetFieldInstructions": "Select the field where transcribed text will be inserted:",
+    "diagnosis": "Diagnosis",
+    "symptoms": "Symptoms",
+    "treatment": "Recommended Treatment",
+    "observations": "Observations",
+    "helpDialog": {
+      "title": "Available Voice Commands",
+      "fieldCommands": "Commands to change field:",
+      "stopCommands": "Commands to end recording:",
+      "tip": "Commands work best when spoken clearly and separately from the text you want to transcribe."
+    },
+    "consentDialog": {
+      "title": "Consent for Voice Recognition",
+      "description": "To proceed with voice recognition, your explicit consent is required for the processing of voice data, in accordance with data protection regulations (GDPR)."
+    }
+  },
+  
   // Patient
   "patient": {
     "details": "Patient Details",
@@ -386,8 +416,13 @@ const en = {
     "treatment_placeholder": "Describe the recommended treatment",
     "observations": "Observations",
     "observations_placeholder": "Additional observations",
+    "save_draft": "Save Draft",
     "save_submit": "Save and Submit",
-    "clear_fields": "Clear Fields"
+    "clear_fields": "Clear Fields",
+    "listen": "Listen",
+    "target_field": "Target Field",
+    "start_transcription": "Start Transcription",
+    "voice_recognition": "Voice Recognition"
   },
   
   // Export options

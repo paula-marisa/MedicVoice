@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Stethoscope, Ear } from "lucide-react";
 import { RecordingIndicator } from "./recording-indicator";
+import { useTranslation } from "react-i18next";
 
 interface ListenButtonProps {
   isListening: boolean;
@@ -20,6 +21,7 @@ export function ListenButton({
   showLabel = true,
   className = ""
 }: ListenButtonProps) {
+  const { t } = useTranslation();
   const [recordingTime, setRecordingTime] = useState(0);
   const timerRef = useRef<number | null>(null);
   
@@ -70,7 +72,7 @@ export function ListenButton({
             onClick(); 
             return false; 
           }}
-          title={isListening ? "Parar Escuta" : "Iniciar Escuta"}
+          title={isListening ? t('common.stop') : t('report.listen')}
         >
           {isListening ? (
             <Ear className={iconSize} />
@@ -88,7 +90,7 @@ export function ListenButton({
         
         {showLabel && (
           <span className={labelStyle}>
-            {isListening ? "Escutando..." : "Escutar"}
+            {isListening ? `${t('report.listen')}...` : t('report.listen')}
           </span>
         )}
       </div>
@@ -119,7 +121,7 @@ export function ListenButton({
       
       {showLabel && (
         <span className={labelStyle}>
-          {isListening ? "Parar Escuta" : "Iniciar Escuta"}
+          {isListening ? t('common.stop') : t('report.listen')}
         </span>
       )}
       
