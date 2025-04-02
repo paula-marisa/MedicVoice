@@ -11,12 +11,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { LanguageSwitcher } from "@/components/ui/language-switcher";
 import { ClipboardList, User, LogOut, Settings, ShieldCheck } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export function Header() {
   const { user, profileImage, logoutMutation } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [location] = useLocation();
+  const { t } = useTranslation();
   
   // Obtém as iniciais do nome do usuário para o avatar
   const getInitials = (name: string) => {
@@ -45,12 +48,13 @@ export function Header() {
           <div className="flex items-center">
             <Link href={user?.role === "admin" ? "/admin" : "/"} className="flex items-center space-x-2">
               <ClipboardList className="h-8 w-8 text-primary" />
-              <span className="font-medium text-xl">Assistente de Relatórios</span>
+              <span className="font-medium text-xl">{t('navigation.reports')}</span>
             </Link>
           </div>
           
-          {/* Menu direito: Avatar, Nome e Logout */}
+          {/* Menu direito: Idioma, Tema, Avatar, Nome e Logout */}
           <div className="flex items-center space-x-4">
+            <LanguageSwitcher />
             <ThemeToggle />
             
             {user ? (
@@ -83,10 +87,10 @@ export function Header() {
                       <p className="text-sm font-medium">{user.name}</p>
                       <p className="text-xs text-muted-foreground">
                         {user.role === "doctor" 
-                          ? "Médico" 
+                          ? t('admin.users_role_doctor')
                           : user.role === "nurse" 
-                          ? "Enfermeiro" 
-                          : "Administrador"}
+                          ? t('admin.users_role_nurse')
+                          : t('admin.users_role_admin')}
                       </p>
                     </div>
                   </div>
@@ -97,7 +101,7 @@ export function Header() {
                     <DropdownMenuItem asChild className="cursor-pointer">
                       <Link href="/">
                         <ClipboardList className="mr-2 h-4 w-4" />
-                        <span>Relatórios</span>
+                        <span>{t('navigation.reports')}</span>
                       </Link>
                     </DropdownMenuItem>
                   )}
@@ -106,7 +110,7 @@ export function Header() {
                     <DropdownMenuItem asChild className="cursor-pointer">
                       <Link href="/profile">
                         <User className="mr-2 h-4 w-4" />
-                        <span>Perfil</span>
+                        <span>{t('navigation.profile')}</span>
                       </Link>
                     </DropdownMenuItem>
                   )}
@@ -115,7 +119,7 @@ export function Header() {
                     <DropdownMenuItem asChild className="cursor-pointer">
                       <Link href="/settings">
                         <Settings className="mr-2 h-4 w-4" />
-                        <span>Configurações</span>
+                        <span>{t('navigation.settings')}</span>
                       </Link>
                     </DropdownMenuItem>
                   )}
@@ -124,7 +128,7 @@ export function Header() {
                     <DropdownMenuItem asChild className="cursor-pointer">
                       <Link href="/admin">
                         <ShieldCheck className="mr-2 h-4 w-4" />
-                        <span>Painel Administrativo</span>
+                        <span>{t('navigation.admin')}</span>
                       </Link>
                     </DropdownMenuItem>
                   )}
@@ -132,7 +136,7 @@ export function Header() {
                   <DropdownMenuSeparator />
                   <DropdownMenuItem className="cursor-pointer text-red-600 dark:text-red-400" onClick={handleLogout}>
                     <LogOut className="mr-2 h-4 w-4" />
-                    <span>Sair</span>
+                    <span>{t('auth.logout')}</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
