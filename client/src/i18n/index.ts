@@ -29,7 +29,9 @@ i18n
             "forgot_password": "Esqueceu a palavra-passe?",
             "request_access": "Solicitar acesso",
             "not_registered": "Não tem uma conta?",
-            "register": "Registrar"
+            "register": "Registrar",
+            "login_description": "Para efetuar o login é necessário introduzir as suas credencias, caso não as tenha pode solicitar acesso",
+            "click_here": "clicando aqui"
           },
           
           // Relatórios médicos
@@ -119,7 +121,8 @@ i18n
             "users_role_nurse": "Enfermeiro",
             "users_role_admin": "Administrador",
             "description": "Este é o painel de administrador do sistema de relatórios médicos. Aqui, podes gerir utilizadores, consultar relatórios médicos e acompanhar todas as atividades do sistema.",
-            "register_users": "Registar Utilizadores"
+            "register_users": "Registar Utilizadores",
+            "register_users_description": "Para registar novos utilizadores, faça login como administrador e vá à seção 'Registar Utilizadores'."
           },
           
           // Configurações
@@ -155,6 +158,11 @@ i18n
             "processing": "A processar...",
             "not_found": "Página não encontrada",
             "welcome": "Bem-vindo"
+          },
+          
+          // App
+          "app": {
+            "title": "Assistente de Relatórios Médicos"
           },
           
           // Reconhecimento de voz
@@ -215,7 +223,9 @@ i18n
             "forgot_password": "Forgot password?",
             "request_access": "Request access",
             "not_registered": "Don't have an account?",
-            "register": "Register"
+            "register": "Register",
+            "login_description": "To login, please enter your credentials. If you don't have an account, you can request access",
+            "click_here": "click here"
           },
           
           // Medical reports
@@ -305,7 +315,8 @@ i18n
             "users_role_nurse": "Nurse",
             "users_role_admin": "Administrator",
             "description": "This is the administration panel for the medical reports system. Here, you can manage users, view medical reports, and monitor all system activities.",
-            "register_users": "Register Users"
+            "register_users": "Register Users",
+            "register_users_description": "To register new users, please login as administrator and go to the 'Register Users' section."
           },
           
           // Settings
@@ -341,6 +352,11 @@ i18n
             "processing": "Processing...",
             "not_found": "Page not found",
             "welcome": "Welcome"
+          },
+          
+          // App
+          "app": {
+            "title": "Medical Reports Assistant"
           },
           
           // Voice recognition

@@ -8,11 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { ClipboardList, User, Lock, AlertTriangle } from "lucide-react";
+import { ClipboardList, User, Lock, AlertTriangle, Globe } from "lucide-react";
 import { Footer } from "@/layout/footer";
 import { RequestAccessDialog } from "@/components/request-access-dialog";
 import { PasswordRecoveryDialog } from "@/components/password-recovery-dialog";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/hooks/use-language";
+import { useTranslation } from "react-i18next";
 
 // Esquema de validação de login
 const loginSchema = z.object({
@@ -29,6 +31,8 @@ export default function AuthPage() {
   const [failedAttempts, setFailedAttempts] = useState<number>(0);
   const { user, isLoading, loginMutation } = useAuth();
   const { toast } = useToast();
+  const { language, setLanguage } = useLanguage();
+  const { t } = useTranslation();
   
   // Verificar se existem usuários no sistema
   useEffect(() => {
@@ -117,9 +121,24 @@ export default function AuthPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <header className="bg-white dark:bg-neutral-800 py-4">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center">
-          <ClipboardList className="h-8 w-8 text-primary mr-2" />
-          <h1 className="text-xl font-semibold">Assistente de Relatórios Médicos</h1>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+          <div className="flex items-center">
+            <ClipboardList className="h-8 w-8 text-primary mr-2" />
+            <h1 className="text-xl font-semibold">{t('app.title')}</h1>
+          </div>
+          
+          {/* Language Selector */}
+          <div className="flex items-center">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="flex items-center gap-1"
+              onClick={() => setLanguage(language === 'pt' ? 'en' : 'pt')}
+            >
+              <Globe className="h-4 w-4" />
+              <span>{language === 'pt' ? 'PT' : 'EN'}</span>
+            </Button>
+          </div>
         </div>
       </header>
       
@@ -127,29 +146,29 @@ export default function AuthPage() {
         <div className="w-full max-w-md">
           <Card className="w-full">
             <CardHeader>
-              <CardTitle>Login</CardTitle>
+              <CardTitle>{t('auth.login')}</CardTitle>
               <CardDescription>
-                Para efetuar o login é necessário introduzir as suas credencias, caso não as tenha pode solicitar acesso {" "}
+                {t('auth.login_description')}{" "}
                 <button 
                   type="button"
                   className="text-primary hover:underline"
                   onClick={() => setRequestDialogOpen(true)}
                 >
-                  clicando aqui
+                  {t('auth.click_here')}
                 </button>.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="username">Usuário</Label>
+                  <Label htmlFor="username">{t('auth.username')}</Label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400" size={18} />
                     <Input 
                       id="username" 
                       className="pl-10"
                       {...loginForm.register("username")} 
-                      placeholder="Seu nome de usuário" 
+                      placeholder={t('auth.username')} 
                     />
                   </div>
                   {loginForm.formState.errors.username && (
@@ -160,7 +179,7 @@ export default function AuthPage() {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="password">Senha</Label>
+                  <Label htmlFor="password">{t('auth.password')}</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400" size={18} />
                     <Input 
@@ -168,7 +187,7 @@ export default function AuthPage() {
                       type="password" 
                       className="pl-10"
                       {...loginForm.register("password")} 
-                      placeholder="Sua senha" 
+                      placeholder={t('auth.password')} 
                     />
                   </div>
                   {loginForm.formState.errors.password && (
@@ -210,26 +229,26 @@ export default function AuthPage() {
                   className="w-full" 
                   disabled={loginMutation.isPending}
                 >
-                  {loginMutation.isPending ? "Entrando..." : "Entrar"}
+                  {loginMutation.isPending ? t('messages.loading') : t('auth.login')}
                 </Button>
               </form>
             </CardContent>
             {showRegister && (
               <CardFooter className="flex justify-center text-sm text-muted-foreground">
-                Não tem uma conta? 
+                {t('auth.not_registered')}
                 <button 
                   type="button" 
                   className="ml-1 text-primary hover:underline"
                   onClick={() => {
                     // Informar o usuário que é necessário fazer login como administrador
                     toast({
-                      title: "Registo de utilizadores",
-                      description: "Para registar novos utilizadores, faça login como administrador e vá à seção 'Registar Utilizadores'.",
+                      title: t('admin.register_users'),
+                      description: t('admin.register_users_description'),
                       variant: "default",
                     });
                   }}
                 >
-                  Registre-se
+                  {t('auth.register')}
                 </button>
               </CardFooter>
             )}
