@@ -424,9 +424,9 @@ export default function SettingsPage() {
               <TabsContent value="notifications">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Configurações de Notificações</CardTitle>
+                    <CardTitle>{t('settings.notificationSettings')}</CardTitle>
                     <CardDescription>
-                      Determine como e quando deseja receber notificações.
+                      {t('settings.notificationDesc')}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
@@ -552,9 +552,9 @@ export default function SettingsPage() {
               <TabsContent value="privacy">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Configurações de Privacidade</CardTitle>
+                    <CardTitle>{t('settings.privacySettings')}</CardTitle>
                     <CardDescription>
-                      Gerencie suas configurações de privacidade e proteção de dados.
+                      {t('settings.privacyDesc')}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
@@ -589,7 +589,7 @@ export default function SettingsPage() {
                       
                       <Separator />
                       
-                      <h3 className="text-md font-medium">Configurações de Reconhecimento de Voz</h3>
+                      <h3 className="text-md font-medium">{t('settings.voiceRecognitionSettings')}</h3>
                       <div className="flex items-center justify-between">
                         <div className="space-y-0.5">
                           <Label htmlFor="voice-recording">Permitir Gravação de Voz</Label>
@@ -666,9 +666,9 @@ export default function SettingsPage() {
               <TabsContent value="sound">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Configurações de Som</CardTitle>
+                    <CardTitle>{t('settings.soundSettings')}</CardTitle>
                     <CardDescription>
-                      Ajuste as configurações de áudio do sistema.
+                      {t('settings.soundDesc')}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
