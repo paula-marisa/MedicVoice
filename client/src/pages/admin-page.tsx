@@ -671,7 +671,7 @@ export default function AdminPage() {
                           <TableRow>
                             <TableHead>{t('admin.name')}</TableHead>
                             <TableHead>{t('auth.username')}</TableHead>
-                            <TableHead>{t('admin.users_role_admin')}</TableHead>
+                            <TableHead>{t('admin.role')}</TableHead>
                             <TableHead>{t('auth.request_form.specialty')}</TableHead>
                             <TableHead>{t('admin.professional_id')}</TableHead>
                             <TableHead>{t('admin.status')}</TableHead>
