@@ -151,7 +151,7 @@ i18n
             "users_role_admin": "Administrador",
             "description": "Este é o painel de administrador do sistema de relatórios médicos. Aqui, podes gerir utilizadores, consultar relatórios médicos e acompanhar todas as atividades do sistema.",
             "register_users": "Registar Utilizadores",
-            "register_users_description": "Para registar novos utilizadores, faça login como administrador e vá à seção 'Registar Utilizadores'.",
+            "register_users_description": "Adicione novos médicos, enfermeiros ou administradores ao sistema.",
             "new_user_title": "Registar Novo Utilizador",
             "new_user_description": "Registe novos médicos, enfermeiros ou administradores no sistema.",
             "pending_access_title": "Solicitações de Acesso Pendentes",
@@ -167,7 +167,8 @@ i18n
             "refresh_list": "Atualizar Lista",
             "request_date": "Data do Pedido",
             "actions": "Ações",
-            "no_pending_requests": "Não existem solicitações de acesso pendentes."
+            "no_pending_requests": "Não existem solicitações de acesso pendentes.",
+            "add_user_manually_hint": "Para adicionar um novo utilizador manualmente, vá à aba \"Registar Utilizadores\"."
           },
           
           // Configurações
@@ -398,7 +399,7 @@ i18n
             "users_role_admin": "Administrator",
             "description": "This is the administration panel for the medical reports system. Here, you can manage users, view medical reports, and monitor all system activities.",
             "register_users": "Register Users",
-            "register_users_description": "To register new users, please login as administrator and go to the 'Register Users' section.",
+            "register_users_description": "Add new doctors, nurses or administrators to the system.",
             "new_user_title": "Register New User",
             "new_user_description": "Register new doctors, nurses or administrators in the system.",
             "pending_access_title": "Pending Access Requests",
@@ -414,7 +415,8 @@ i18n
             "refresh_list": "Refresh List",
             "request_date": "Request Date",
             "actions": "Actions",
-            "no_pending_requests": "There are no pending access requests."
+            "no_pending_requests": "There are no pending access requests.",
+            "add_user_manually_hint": "To add a new user manually, go to the \"Register Users\" tab."
           },
           
           // Settings

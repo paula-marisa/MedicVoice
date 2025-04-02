@@ -637,7 +637,7 @@ export default function AdminPage() {
                 </CardContent>
                 <CardFooter className="bg-muted/50 flex justify-between p-4">
                   <div className="text-sm">
-                    <p>Para adicionar um novo utilizador manualmente, vá à aba "Registar Utilizadores".</p>
+                    <p>{t('admin.add_user_manually_hint')}</p>
                   </div>
                   <Button 
                     variant="outline" 
@@ -654,9 +654,9 @@ export default function AdminPage() {
             <TabsContent value="users">
               <Card>
                 <CardHeader>
-                  <CardTitle>Gestão de Utilizadores</CardTitle>
+                  <CardTitle>{t('admin.user_management_title')}</CardTitle>
                   <CardDescription>
-                    Visualize e faça a gestão de todos os utilizadores registados no sistema.
+                    {t('admin.user_management_description')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -669,14 +669,14 @@ export default function AdminPage() {
                       <Table>
                         <TableHeader>
                           <TableRow>
-                            <TableHead>Nome</TableHead>
-                            <TableHead>Utilizador</TableHead>
-                            <TableHead>Função</TableHead>
-                            <TableHead>Especialidade</TableHead>
-                            <TableHead>ID Profissional</TableHead>
-                            <TableHead>Estado</TableHead>
-                            <TableHead>Data de Criação</TableHead>
-                            <TableHead>Ações</TableHead>
+                            <TableHead>{t('admin.name')}</TableHead>
+                            <TableHead>{t('auth.username')}</TableHead>
+                            <TableHead>{t('admin.users_role_admin')}</TableHead>
+                            <TableHead>{t('auth.request_form.specialty')}</TableHead>
+                            <TableHead>{t('admin.professional_id')}</TableHead>
+                            <TableHead>{t('admin.status')}</TableHead>
+                            <TableHead>{t('reports.created_at')}</TableHead>
+                            <TableHead>{t('admin.actions')}</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -760,7 +760,7 @@ export default function AdminPage() {
                                         }}
                                       >
                                         <RefreshCw className="h-4 w-4 mr-1" />
-                                        Reativar
+                                        {t('admin.activate_user')}
                                       </Button>
                                     )}
                                     <Button 
@@ -777,7 +777,7 @@ export default function AdminPage() {
                                       }}
                                     >
                                       <Key className="h-4 w-4 mr-1" />
-                                      Redefinir Palavra-passe
+                                      {t('admin.reset_password')}
                                     </Button>
                                   </div>
                                 </TableCell>
@@ -802,9 +802,9 @@ export default function AdminPage() {
             <TabsContent value="patients">
               <Card>
                 <CardHeader>
-                  <CardTitle>Criar Utentes de Teste</CardTitle>
+                  <CardTitle>{t('admin.test_patients_title')}</CardTitle>
                   <CardDescription>
-                    Adicione dados de teste para utilizar no sistema de relatórios médicos.
+                    {t('admin.test_patients_description')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -878,9 +878,9 @@ export default function AdminPage() {
             <TabsContent value="reports">
               <Card>
                 <CardHeader>
-                  <CardTitle>Relatórios Médicos</CardTitle>
+                  <CardTitle>{t('admin.medical_reports_title')}</CardTitle>
                   <CardDescription>
-                    Visualize todos os relatórios médicos gerados no sistema.
+                    {t('admin.medical_reports_description')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -987,9 +987,9 @@ export default function AdminPage() {
             <TabsContent value="audit">
               <Card>
                 <CardHeader>
-                  <CardTitle>Logs de Auditoria</CardTitle>
+                  <CardTitle>{t('admin.audit_logs_title')}</CardTitle>
                   <CardDescription>
-                    Visualize todo o histórico de atividades do sistema.
+                    {t('admin.audit_logs_description')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
