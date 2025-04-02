@@ -95,7 +95,8 @@ const pt = {
     "delete_success_title": "Relatório eliminado",
     "delete_success_message": "O relatório foi eliminado com sucesso.",
     "delete_error_title": "Erro ao eliminar relatório",
-    "delete_error_message": "Ocorreu um erro ao eliminar o relatório. Tente novamente."
+    "delete_error_message": "Ocorreu um erro ao eliminar o relatório. Tente novamente.",
+    "update_report": "Atualizar Relatório"
   },
   
   // Estados dos relatórios
@@ -439,7 +440,10 @@ const pt = {
     "to_pdf": "Exportar para PDF",
     "to_sclinico": "Enviar para S-Clínico",
     "success": "Exportado com sucesso!",
-    "error": "Erro ao exportar o relatório"
+    "error": "Erro ao exportar o relatório",
+    "report_date": "Data do relatório",
+    "responsible_doctor": "Médico responsável",
+    "sclinico_warning": "Para exportar para o SClínico, é necessário preencher o número do processo hospitalar."
   },
 
   // Footer

@@ -95,7 +95,8 @@ const en = {
     "delete_success_title": "Report deleted",
     "delete_success_message": "The report was successfully deleted.",
     "delete_error_title": "Error deleting report",
-    "delete_error_message": "An error occurred while deleting the report. Please try again."
+    "delete_error_message": "An error occurred while deleting the report. Please try again.",
+    "update_report": "Update Report"
   },
   
   // Report statuses
@@ -447,7 +448,10 @@ const en = {
     "to_pdf": "Export to PDF",
     "to_sclinico": "Send to S-Clínico",
     "success": "Successfully exported!",
-    "error": "Error exporting the report"
+    "error": "Error exporting the report",
+    "report_date": "Report date",
+    "responsible_doctor": "Responsible doctor",
+    "sclinico_warning": "To export to S-Clínico, the hospital process number must be filled in."
   },
 
   // Footer

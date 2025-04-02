@@ -80,18 +80,18 @@ export function ExportOptions({
         <div className="mb-4">
           <div className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400 mb-1">
             <Calendar className="h-4 w-4" />
-            <span>Data do relatório: {formattedDate}</span>
+            <span>{t('export.report_date', 'Data do relatório')}: {formattedDate}</span>
           </div>
           
           {user && (
             <div className="text-sm text-neutral-600 dark:text-neutral-400">
-              Médico responsável: {user.name}
+              {t('export.responsible_doctor', 'Médico responsável')}: {user.name}
             </div>
           )}
           
           {processNumber && (
             <div className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
-              Número do processo: {processNumber}
+              {t('patient.process_number', 'Número do processo')}: {processNumber}
             </div>
           )}
         </div>
@@ -118,7 +118,7 @@ export function ExportOptions({
           
           {!processNumber && (
             <div className="text-sm text-amber-600 dark:text-amber-400 mt-1">
-              Para exportar para o SClínico, é necessário preencher o número do processo hospitalar.
+              {t('export.sclinico_warning', 'Para exportar para o SClínico, é necessário preencher o número do processo hospitalar.')}
             </div>
           )}
         </div>

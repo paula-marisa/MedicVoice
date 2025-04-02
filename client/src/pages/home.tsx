@@ -501,20 +501,20 @@ export default function Home() {
                     variant="outline" 
                     onClick={handleClearForm}
                   >
-                    Limpar Campos
+                    {t('reports.clear_fields', 'Limpar Campos')}
                   </Button>
                   <Button 
                     variant="secondary" 
                     onClick={handleSaveDraft}
                     disabled={saveReportMutation.isPending}
                   >
-                    Salvar Rascunho
+                    {t('reports.save_draft', 'Salvar Rascunho')}
                   </Button>
                   <Button 
                     onClick={handleSaveAndSubmit}
                     disabled={saveReportMutation.isPending}
                   >
-                    Salvar e Enviar
+                    {t('reports.save_and_submit', 'Salvar e Enviar')}
                   </Button>
                 </div>
               </div>
@@ -565,13 +565,13 @@ export default function Home() {
                       variant="outline" 
                       onClick={handleCancelEdit}
                     >
-                      Cancelar
+                      {t('common.cancel', 'Cancelar')}
                     </Button>
                     <Button 
                       onClick={handleUpdateReport}
                       disabled={updateReportMutation.isPending}
                     >
-                      Atualizar Relatório
+                      {t('reports.update_report', 'Atualizar Relatório')}
                     </Button>
                   </div>
                 </div>
