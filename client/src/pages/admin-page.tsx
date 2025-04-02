@@ -443,9 +443,9 @@ export default function AdminPage() {
             <TabsContent value="register">
               <Card>
                 <CardHeader>
-                  <CardTitle>Registar Novo Utilizador</CardTitle>
+                  <CardTitle>{t('admin.new_user_title')}</CardTitle>
                   <CardDescription>
-                    Registe novos médicos, enfermeiros ou administradores no sistema.
+                    {t('admin.new_user_description')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -564,9 +564,9 @@ export default function AdminPage() {
             <TabsContent value="access">
               <Card>
                 <CardHeader>
-                  <CardTitle>Solicitações de Acesso Pendentes</CardTitle>
+                  <CardTitle>{t('admin.pending_access_title')}</CardTitle>
                   <CardDescription>
-                    Aprove ou rejeite solicitações de acesso ao sistema de relatórios médicos.
+                    {t('admin.pending_access_description')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -579,13 +579,13 @@ export default function AdminPage() {
                       <Table>
                         <TableHeader>
                           <TableRow>
-                            <TableHead>Nome</TableHead>
-                            <TableHead>ID Profissional</TableHead>
-                            <TableHead>Especialidade</TableHead>
-                            <TableHead>Email</TableHead>
-                            <TableHead>Telefone</TableHead>
-                            <TableHead>Data do Pedido</TableHead>
-                            <TableHead>Ações</TableHead>
+                            <TableHead>{t('patient.name')}</TableHead>
+                            <TableHead>{t('auth.request_form.professional_id')}</TableHead>
+                            <TableHead>{t('auth.request_form.specialty')}</TableHead>
+                            <TableHead>{t('auth.request_form.email')}</TableHead>
+                            <TableHead>{t('auth.request_form.phone')}</TableHead>
+                            <TableHead>{t('admin.request_date')}</TableHead>
+                            <TableHead>{t('admin.actions')}</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -610,14 +610,14 @@ export default function AdminPage() {
                                       size="sm"
                                       onClick={() => handleApproveAccessRequest(request.id)}
                                     >
-                                      Aprovar
+                                      {t('admin.approve')}
                                     </Button>
                                     <Button 
                                       variant="outline" 
                                       size="sm"
                                       onClick={() => handleRejectAccessRequest(request.id)}
                                     >
-                                      Rejeitar
+                                      {t('admin.reject')}
                                     </Button>
                                   </div>
                                 </TableCell>
@@ -626,7 +626,7 @@ export default function AdminPage() {
                           ) : (
                             <TableRow>
                               <TableCell colSpan={7} className="text-center py-4">
-                                Não existem solicitações de acesso pendentes.
+                                {t('admin.no_pending_requests')}
                               </TableCell>
                             </TableRow>
                           )}
@@ -644,7 +644,7 @@ export default function AdminPage() {
                     size="sm"
                     onClick={() => refetchAccessRequests()}
                   >
-                    Atualizar Lista
+                    {t('admin.refresh_list')}
                   </Button>
                 </CardFooter>
               </Card>

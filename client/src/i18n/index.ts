@@ -151,7 +151,23 @@ i18n
             "users_role_admin": "Administrador",
             "description": "Este é o painel de administrador do sistema de relatórios médicos. Aqui, podes gerir utilizadores, consultar relatórios médicos e acompanhar todas as atividades do sistema.",
             "register_users": "Registar Utilizadores",
-            "register_users_description": "Para registar novos utilizadores, faça login como administrador e vá à seção 'Registar Utilizadores'."
+            "register_users_description": "Para registar novos utilizadores, faça login como administrador e vá à seção 'Registar Utilizadores'.",
+            "new_user_title": "Registar Novo Utilizador",
+            "new_user_description": "Registe novos médicos, enfermeiros ou administradores no sistema.",
+            "pending_access_title": "Solicitações de Acesso Pendentes",
+            "pending_access_description": "Aprove ou rejeite solicitações de acesso ao sistema de relatórios médicos.",
+            "user_management_title": "Gestão de Utilizadores",
+            "user_management_description": "Visualize e faça a gestão de todos os utilizadores registados no sistema.",
+            "test_patients_title": "Criar Utentes de Teste",
+            "test_patients_description": "Crie utentes de teste para demonstrações ou formação.",
+            "medical_reports_title": "Relatórios Médicos",
+            "medical_reports_description": "Visualize todos os relatórios médicos no sistema.",
+            "audit_logs_title": "Logs de Auditoria",
+            "audit_logs_description": "Consulte todas as ações realizadas no sistema.",
+            "refresh_list": "Atualizar Lista",
+            "request_date": "Data do Pedido",
+            "actions": "Ações",
+            "no_pending_requests": "Não existem solicitações de acesso pendentes."
           },
           
           // Configurações
@@ -382,7 +398,23 @@ i18n
             "users_role_admin": "Administrator",
             "description": "This is the administration panel for the medical reports system. Here, you can manage users, view medical reports, and monitor all system activities.",
             "register_users": "Register Users",
-            "register_users_description": "To register new users, please login as administrator and go to the 'Register Users' section."
+            "register_users_description": "To register new users, please login as administrator and go to the 'Register Users' section.",
+            "new_user_title": "Register New User",
+            "new_user_description": "Register new doctors, nurses or administrators in the system.",
+            "pending_access_title": "Pending Access Requests",
+            "pending_access_description": "Approve or reject access requests to the medical reports system.",
+            "user_management_title": "User Management",
+            "user_management_description": "View and manage all registered users in the system.",
+            "test_patients_title": "Create Test Patients",
+            "test_patients_description": "Create test patients for demonstrations or training.",
+            "medical_reports_title": "Medical Reports",
+            "medical_reports_description": "View all medical reports in the system.",
+            "audit_logs_title": "Audit Logs",
+            "audit_logs_description": "View all actions performed in the system.",
+            "refresh_list": "Refresh List",
+            "request_date": "Request Date",
+            "actions": "Actions",
+            "no_pending_requests": "There are no pending access requests."
           },
           
           // Settings
