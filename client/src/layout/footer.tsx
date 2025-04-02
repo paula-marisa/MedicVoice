@@ -10,7 +10,7 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
           <div className="text-sm text-gray-500 dark:text-gray-400">
-            &copy; {currentYear} {t('footer.app_name')}. {t('footer.all_rights_reserved')}
+            &copy; {currentYear} {t('footer.copyright')}
           </div>
           
           <div className="flex items-center space-x-4">
