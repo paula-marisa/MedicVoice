@@ -278,10 +278,10 @@ export default function SettingsPage() {
                       
                       {isAdmin && (
                         <div className="rounded-md border p-4 space-y-4">
-                          <h3 className="font-medium">Opções Administrativas</h3>
+                          <h3 className="font-medium">{t('settings.adminOptions')}</h3>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
-                              <Label htmlFor="session-timeout">Tempo Limite de Sessão (minutos)</Label>
+                              <Label htmlFor="session-timeout">{t('settings.sessionTimeout')}</Label>
                               <Input 
                                 id="session-timeout" 
                                 type="number" 
@@ -290,11 +290,11 @@ export default function SettingsPage() {
                                 defaultValue="30"
                               />
                               <p className="text-xs text-muted-foreground">
-                                Tempo de inatividade até encerramento automático da sessão.
+                                {t('settings.sessionTimeoutDesc')}
                               </p>
                             </div>
                             <div className="space-y-2">
-                              <Label htmlFor="log-retention">Período de Retenção de Logs (dias)</Label>
+                              <Label htmlFor="log-retention">{t('settings.logRetention')}</Label>
                               <Input 
                                 id="log-retention" 
                                 type="number" 
@@ -303,16 +303,16 @@ export default function SettingsPage() {
                                 defaultValue="90"
                               />
                               <p className="text-xs text-muted-foreground">
-                                Tempo de retenção dos logs de auditoria no sistema.
+                                {t('settings.logRetentionDesc')}
                               </p>
                             </div>
                           </div>
                           <div className="flex items-center space-x-2">
                             <Checkbox id="maintenance-mode" />
-                            <Label htmlFor="maintenance-mode">Ativar modo de manutenção</Label>
+                            <Label htmlFor="maintenance-mode">{t('settings.maintenanceMode')}</Label>
                           </div>
                           <p className="text-xs text-muted-foreground">
-                            O modo de manutenção bloqueará o acesso para todos os utilizadores, exceto administradores.
+                            {t('settings.maintenanceModeDesc')}
                           </p>
                         </div>
                       )}
@@ -328,27 +328,27 @@ export default function SettingsPage() {
               <TabsContent value="interface">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Configurações de Interface</CardTitle>
+                    <CardTitle>{t('settings.interfaceSettings')}</CardTitle>
                     <CardDescription>
-                      Personalize a aparência do sistema.
+                      {t('settings.interfaceDesc')}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div className="space-y-4">
                       <div className="space-y-2">
-                        <Label htmlFor="font-size">Tamanho da Fonte</Label>
+                        <Label htmlFor="font-size">{t('settings.fontSize')}</Label>
                         <Select 
                           value={fontSize} 
                           onValueChange={setFontSize}
                         >
                           <SelectTrigger id="font-size" className="w-full">
-                            <SelectValue placeholder="Selecione o tamanho da fonte" />
+                            <SelectValue placeholder={t('settings.fontSizePlaceholder')} />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="small">Pequeno</SelectItem>
-                            <SelectItem value="medium">Médio</SelectItem>
-                            <SelectItem value="large">Grande</SelectItem>
-                            <SelectItem value="xl">Extra grande</SelectItem>
+                            <SelectItem value="small">{t('settings.small')}</SelectItem>
+                            <SelectItem value="medium">{t('settings.medium')}</SelectItem>
+                            <SelectItem value="large">{t('settings.large')}</SelectItem>
+                            <SelectItem value="xl">{t('settings.extraLarge')}</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -358,9 +358,9 @@ export default function SettingsPage() {
                       <Separator />
                       <div className="flex items-center justify-between">
                         <div className="space-y-0.5">
-                          <Label htmlFor="show-statistics">Mostrar Estatísticas</Label>
+                          <Label htmlFor="show-statistics">{t('settings.showStatistics')}</Label>
                           <p className="text-sm text-muted-foreground">
-                            Exibir estatísticas na página inicial.
+                            {t('settings.showStatisticsDesc')}
                           </p>
                         </div>
                         <Switch 
