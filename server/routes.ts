@@ -397,19 +397,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      if (existingReport.userId !== req.user.id) {
+      // Verificar se o usuário é o proprietário do relatório ou um administrador
+      const isOwner = existingReport.userId === req.user?.id;
+      const isAdmin = req.user?.role === 'admin';
+      
+      if (!isOwner && !isAdmin) {
         return res.status(403).json({
           success: false,
           message: "Acesso negado"
         });
       }
       
-      // Delete the report
-      const success = await storage.deleteMedicalReport(id);
+      // Verificar se uma razão foi fornecida para a exclusão
+      const { reason } = req.body;
       
-      // Log the action
-      await logAuditTrail(req, "delete", "medical_report", id, {
-        processNumber: existingReport.processNumber
+      if (!reason) {
+        return res.status(400).json({
+          success: false,
+          message: "É necessário fornecer um motivo para eliminar o relatório"
+        });
+      }
+      
+      // Para administradores, não excluímos realmente o relatório, apenas alteramos o status
+      // Para usuários comuns, atualizamos o status para "deleted" 
+      const updateData = {
+        status: "deleted",
+        // Não alteramos outros campos além do status
+      };
+      
+      // Atualizar o relatório em vez de excluí-lo
+      const updatedReport = await storage.updateMedicalReport(id, updateData);
+      
+      // Log da ação com a razão da exclusão
+      await logAuditTrail(req, "update", "medical_report", id, {
+        updatedFields: ["status"],
+        oldValues: JSON.stringify({ status: existingReport.status }),
+        newValues: JSON.stringify({ status: "deleted" }),
+        reason: reason
       });
       
       res.json({

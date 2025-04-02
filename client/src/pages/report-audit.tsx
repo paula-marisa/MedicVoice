@@ -485,6 +485,27 @@ export default function ReportAuditPage() {
                                     ? new Date(change.createdAt).toLocaleString('pt-PT')
                                     : "Data desconhecida";
                                   
+                                  // Formatar alterações de status
+                                  const formatStatus = (status: string) => {
+                                    const statusMap: {[key: string]: string} = {
+                                      "draft": "Rascunho",
+                                      "in_progress": "Em Progresso",
+                                      "submitted": "Enviado",
+                                      "archived": "Arquivado",
+                                      "deleted": "Eliminado"
+                                    };
+                                    return statusMap[status] || status;
+                                  };
+                                  
+                                  // Formatar valores para exibição
+                                  const oldValueDisplay = change.field === 'status' && change.oldValue 
+                                    ? formatStatus(change.oldValue)
+                                    : change.oldValue || "(Vazio)";
+                                    
+                                  const newValueDisplay = change.field === 'status' && change.newValue 
+                                    ? formatStatus(change.newValue) 
+                                    : change.newValue || "(Vazio)";
+                                    
                                   toast({
                                     title: `Alteração no campo ${fieldName}`,
                                     description: (
@@ -501,18 +522,25 @@ export default function ReportAuditPage() {
                                         
                                         <Separator />
                                         
-                                        <div>
-                                          <p className="text-sm font-medium">Valor anterior</p>
-                                          <pre className="mt-1 p-2 bg-gray-100 dark:bg-gray-800 rounded text-xs whitespace-pre-wrap max-h-24 overflow-y-auto">
-                                            {change.oldValue || "(Vazio)"}
-                                          </pre>
-                                        </div>
-                                        
-                                        <div>
-                                          <p className="text-sm font-medium">Novo valor</p>
-                                          <pre className="mt-1 p-2 bg-gray-100 dark:bg-gray-800 rounded text-xs whitespace-pre-wrap max-h-24 overflow-y-auto">
-                                            {change.newValue || "(Vazio)"}
-                                          </pre>
+                                        {/* Comparativo Antes/Depois em duas colunas */}
+                                        <div className="grid grid-cols-2 gap-4">
+                                          <div>
+                                            <p className="text-sm font-medium">Antes</p>
+                                            <div className="mt-1 p-2 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 rounded text-xs">
+                                              <pre className="whitespace-pre-wrap max-h-24 overflow-y-auto">
+                                                {oldValueDisplay}
+                                              </pre>
+                                            </div>
+                                          </div>
+                                          
+                                          <div>
+                                            <p className="text-sm font-medium">Depois</p>
+                                            <div className="mt-1 p-2 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 rounded text-xs">
+                                              <pre className="whitespace-pre-wrap max-h-24 overflow-y-auto">
+                                                {newValueDisplay}
+                                              </pre>
+                                            </div>
+                                          </div>
                                         </div>
                                         
                                         {change.details && (
@@ -530,6 +558,13 @@ export default function ReportAuditPage() {
                                               </div>
                                             </div>
                                           </>
+                                        )}
+                                        
+                                        {change.field === 'status' && change.newValue === 'deleted' && change.details?.reason && (
+                                          <div className="mt-2 p-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800 rounded">
+                                            <p className="text-sm font-medium">Motivo da eliminação:</p>
+                                            <p className="text-sm">{change.details.reason}</p>
+                                          </div>
                                         )}
                                       </div>
                                     ),
@@ -670,23 +705,58 @@ export default function ReportAuditPage() {
                                             size="sm" 
                                             className="mt-1 h-auto py-1 px-2 text-xs"
                                             onClick={() => {
+                                              // Formatar alterações de status
+                                              const formatStatus = (status: string) => {
+                                                const statusMap: {[key: string]: string} = {
+                                                  "draft": "Rascunho",
+                                                  "in_progress": "Em Progresso",
+                                                  "submitted": "Enviado",
+                                                  "archived": "Arquivado",
+                                                  "deleted": "Eliminado"
+                                                };
+                                                return statusMap[status] || status;
+                                              };
+                                              
+                                              // Formatar valores para exibição
+                                              const oldValueDisplay = groupChange.field === 'status' && groupChange.oldValue 
+                                                ? formatStatus(groupChange.oldValue)
+                                                : groupChange.oldValue || "(Vazio)";
+                                                
+                                              const newValueDisplay = groupChange.field === 'status' && groupChange.newValue 
+                                                ? formatStatus(groupChange.newValue) 
+                                                : groupChange.newValue || "(Vazio)";
+                                                
                                               toast({
-                                                title: `Alteração no campo ${groupChange.field}`,
+                                                title: `Alteração no campo ${groupChange.field === 'status' ? 'estado' : groupChange.field}`,
                                                 description: (
                                                   <div className="space-y-2 mt-2">
-                                                    <div>
-                                                      <p className="text-sm font-medium">Valor anterior</p>
-                                                      <pre className="mt-1 p-2 bg-gray-100 dark:bg-gray-800 rounded text-xs whitespace-pre-wrap max-h-24 overflow-y-auto">
-                                                        {groupChange.oldValue || "(Vazio)"}
-                                                      </pre>
+                                                    {/* Comparativo Antes/Depois em duas colunas */}
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                      <div>
+                                                        <p className="text-sm font-medium">Antes</p>
+                                                        <div className="mt-1 p-2 bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 rounded text-xs">
+                                                          <pre className="whitespace-pre-wrap max-h-24 overflow-y-auto">
+                                                            {oldValueDisplay}
+                                                          </pre>
+                                                        </div>
+                                                      </div>
+                                                      
+                                                      <div>
+                                                        <p className="text-sm font-medium">Depois</p>
+                                                        <div className="mt-1 p-2 bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800 rounded text-xs">
+                                                          <pre className="whitespace-pre-wrap max-h-24 overflow-y-auto">
+                                                            {newValueDisplay}
+                                                          </pre>
+                                                        </div>
+                                                      </div>
                                                     </div>
                                                     
-                                                    <div>
-                                                      <p className="text-sm font-medium">Novo valor</p>
-                                                      <pre className="mt-1 p-2 bg-gray-100 dark:bg-gray-800 rounded text-xs whitespace-pre-wrap max-h-24 overflow-y-auto">
-                                                        {groupChange.newValue || "(Vazio)"}
-                                                      </pre>
-                                                    </div>
+                                                    {groupChange.field === 'status' && groupChange.newValue === 'deleted' && groupChange.details?.reason && (
+                                                      <div className="mt-2 p-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-100 dark:border-amber-800 rounded">
+                                                        <p className="text-sm font-medium">Motivo da eliminação:</p>
+                                                        <p className="text-sm">{groupChange.details.reason}</p>
+                                                      </div>
+                                                    )}
                                                   </div>
                                                 ),
                                                 duration: 10000
