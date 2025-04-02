@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { Header } from "@/layout/header";
 import { Footer } from "@/layout/footer";
 import { UtenteForm, type UtenteFormValues } from "@/components/utente-form";
@@ -21,6 +22,7 @@ import { jsPDF } from "jspdf";
 export default function Home() {
   // State para autenticação
   const { user } = useAuth();
+  const { t } = useTranslation();
   
   // State para dados do utente e relatório
   const [patient, setPatient] = useState<UtenteFormValues>({
@@ -472,6 +474,7 @@ export default function Home() {
     <>
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <h1 className="text-3xl font-bold text-primary mb-6">{t('app.title')}</h1>
         <Tabs defaultValue="novo" className="w-full">
           <TabsList className="mb-6">
             <TabsTrigger value="novo">Novo Relatório</TabsTrigger>
