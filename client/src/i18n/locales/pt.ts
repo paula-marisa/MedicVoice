@@ -85,7 +85,9 @@ const pt = {
     "cancel": "Cancelar",
     "save": "Salvar",
     "save_draft": "Salvar Rascunho",
-    "submit": "Enviar"
+    "submit": "Enviar",
+    "save_and_submit": "Salvar e Enviar",
+    "clear_fields": "Limpar Campos"
   },
   
   // Estados dos relatórios

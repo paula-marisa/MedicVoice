@@ -85,7 +85,9 @@ const en = {
     "cancel": "Cancel",
     "save": "Save",
     "save_draft": "Save Draft",
-    "submit": "Submit"
+    "submit": "Submit",
+    "save_and_submit": "Save and Submit",
+    "clear_fields": "Clear Fields"
   },
   
   // Report statuses
