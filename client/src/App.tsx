@@ -15,6 +15,7 @@ import ReportAudit from "@/pages/report-audit";
 import PatientHistory from "@/pages/patient-history";
 import { setupTheme } from "@/lib/theme";
 import { AuthProvider, useAuth } from "./hooks/use-auth";
+import { LanguageProvider } from "./hooks/use-language";
 
 import { ProtectedRoute } from "@/lib/protected-route";
 import { AdminRoute } from "./lib/admin-route";
@@ -167,8 +168,10 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <AppRoutes />
-        <Toaster />
+        <LanguageProvider>
+          <AppRoutes />
+          <Toaster />
+        </LanguageProvider>
       </AuthProvider>
     </QueryClientProvider>
   );

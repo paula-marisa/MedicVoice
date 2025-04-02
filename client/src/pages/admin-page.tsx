@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -77,6 +78,7 @@ export default function AdminPage() {
   // Cache para datas e IPs
   const [logDatesCache, setLogDatesCache] = useState<{[key: number]: string}>({});
   const [logIPsCache, setLogIPsCache] = useState<{[key: number]: string}>({});
+  const { t } = useTranslation();
   
   // Obtém as iniciais do nome do usuário para o avatar
   const getInitials = (name: string) => {
@@ -395,7 +397,7 @@ export default function AdminPage() {
         <div className="bg-primary/10 py-2">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center">
             <ShieldCheck className="h-5 w-5 text-primary mr-2" />
-            <span className="font-semibold">Painel de Administrador</span>
+            <span className="font-semibold">{t('navigation.admin')}</span>
           </div>
         </div>
       </div>
@@ -403,9 +405,9 @@ export default function AdminPage() {
       <main className="flex-grow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="mb-6">
-            <h2 className="text-2xl font-bold mb-2">Bem-vindo, {user.name}</h2>
+            <h2 className="text-2xl font-bold mb-2">{t('messages.welcome')}, {user.name}</h2>
             <p className="text-muted-foreground">
-              Este é o painel de administrador do sistema de relatórios médicos. Aqui, podes gerir utilizadores, consultar relatórios médicos e acompanhar todas as atividades do sistema.
+              {t('admin.description')}
             </p>
           </div>
           
@@ -413,7 +415,7 @@ export default function AdminPage() {
             <TabsList className="grid w-full grid-cols-6 mb-8">
               <TabsTrigger value="register">
                 <UserPlus className="h-4 w-4 mr-2" />
-                Registar Utilizadores
+                {t('admin.register_users')}
               </TabsTrigger>
               <TabsTrigger value="access">
                 <Key className="h-4 w-4 mr-2" />

@@ -117,7 +117,9 @@ i18n
             "reset_password": "Redefinir Palavra-passe",
             "users_role_doctor": "Médico",
             "users_role_nurse": "Enfermeiro",
-            "users_role_admin": "Administrador"
+            "users_role_admin": "Administrador",
+            "description": "Este é o painel de administrador do sistema de relatórios médicos. Aqui, podes gerir utilizadores, consultar relatórios médicos e acompanhar todas as atividades do sistema.",
+            "register_users": "Registar Utilizadores"
           },
           
           // Configurações
@@ -151,7 +153,8 @@ i18n
             "no_data": "Nenhum dado encontrado",
             "required_field": "Este campo é obrigatório",
             "processing": "A processar...",
-            "not_found": "Página não encontrada"
+            "not_found": "Página não encontrada",
+            "welcome": "Bem-vindo"
           },
           
           // Reconhecimento de voz
@@ -300,7 +303,9 @@ i18n
             "reset_password": "Reset Password",
             "users_role_doctor": "Doctor",
             "users_role_nurse": "Nurse",
-            "users_role_admin": "Administrator"
+            "users_role_admin": "Administrator",
+            "description": "This is the administration panel for the medical reports system. Here, you can manage users, view medical reports, and monitor all system activities.",
+            "register_users": "Register Users"
           },
           
           // Settings
@@ -334,7 +339,8 @@ i18n
             "no_data": "No data found",
             "required_field": "This field is required",
             "processing": "Processing...",
-            "not_found": "Page not found"
+            "not_found": "Page not found",
+            "welcome": "Welcome"
           },
           
           // Voice recognition
