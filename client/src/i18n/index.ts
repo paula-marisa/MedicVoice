@@ -165,6 +165,14 @@ i18n
             "title": "Assistente de Relatórios Médicos"
           },
           
+          // Footer
+          "footer": {
+            "app_name": "Assistente de Relatórios Médicos",
+            "all_rights_reserved": "Todos os direitos reservados",
+            "gdpr_compliance": "Em conformidade com o RGPD",
+            "dark_mode": "Modo Escuro"
+          },
+          
           // Reconhecimento de voz
           "voice": {
             "start_listening": "Iniciar Escuta",
@@ -357,6 +365,14 @@ i18n
           // App
           "app": {
             "title": "Medical Reports Assistant"
+          },
+          
+          // Footer
+          "footer": {
+            "app_name": "Medical Reports Assistant",
+            "all_rights_reserved": "All rights reserved",
+            "gdpr_compliance": "GDPR Compliant",
+            "dark_mode": "Dark Mode"
           },
           
           // Voice recognition
