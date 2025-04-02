@@ -592,14 +592,18 @@ export default function AdminPage() {
                           {accessRequestsData && accessRequestsData.length > 0 ? (
                             accessRequestsData.map((request: any) => (
                               <TableRow key={request.id}>
-                                <TableCell className="font-medium">{request.full_name}</TableCell>
-                                <TableCell>{request.professional_id}</TableCell>
-                                <TableCell>{request.specialty}</TableCell>
-                                <TableCell>{request.email}</TableCell>
-                                <TableCell>{request.phone}</TableCell>
+                                <TableCell className="font-medium">{request.full_name || "-"}</TableCell>
+                                <TableCell>{request.professional_id || "-"}</TableCell>
+                                <TableCell>{request.specialty || "-"}</TableCell>
+                                <TableCell>{request.email || "-"}</TableCell>
+                                <TableCell>{request.phone || "-"}</TableCell>
                                 <TableCell>
                                   {request.created_at ? 
-                                    new Date(request.created_at).toLocaleDateString('pt-PT') : 
+                                    new Date(request.created_at).toLocaleDateString('pt-PT', {
+                                      day: '2-digit',
+                                      month: '2-digit',
+                                      year: 'numeric'
+                                    }) : 
                                     "-"
                                   }
                                 </TableCell>
@@ -708,14 +712,12 @@ export default function AdminPage() {
                                 </TableCell>
                                 <TableCell>
                                   {userData.createdAt ? 
-                                    new Date(userData.createdAt).toLocaleDateString('pt-PT') : 
-                                    (() => {
-                                      // Gerar data aleatória no último ano
-                                      const randomDate = new Date();
-                                      randomDate.setMonth(randomDate.getMonth() - Math.floor(Math.random() * 12));
-                                      randomDate.setDate(Math.floor(Math.random() * 28) + 1);
-                                      return randomDate.toLocaleDateString('pt-PT');
-                                    })()
+                                    new Date(userData.createdAt).toLocaleDateString('pt-PT', {
+                                      day: '2-digit',
+                                      month: '2-digit',
+                                      year: 'numeric'
+                                    }) : 
+                                    "-"
                                   }
                                 </TableCell>
                                 <TableCell>
@@ -929,13 +931,12 @@ export default function AdminPage() {
                                 </TableCell>
                                 <TableCell>
                                 {report.createdAt ? 
-                                  new Date(report.createdAt).toLocaleDateString('pt-PT') : 
-                                  (() => {
-                                    // Gerar data aleatória nos últimos 60 dias
-                                    const randomDate = new Date();
-                                    randomDate.setDate(randomDate.getDate() - Math.floor(Math.random() * 60));
-                                    return randomDate.toLocaleDateString('pt-PT');
-                                  })()
+                                  new Date(report.createdAt).toLocaleDateString('pt-PT', {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: 'numeric'
+                                  }) : 
+                                  "-"
                                 }
                               </TableCell>
                                 <TableCell>
@@ -1016,25 +1017,15 @@ export default function AdminPage() {
                                 <TableCell>
                                   {log.createdAt ? (
                                     <>
-                                      {new Date(log.createdAt).toLocaleDateString('pt-PT')} {' '}
+                                      {new Date(log.createdAt).toLocaleDateString('pt-PT', {
+                                        day: '2-digit',
+                                        month: '2-digit',
+                                        year: 'numeric'
+                                      })} {' '}
                                       {new Date(log.createdAt).toLocaleTimeString('pt-PT')}
                                     </>
                                   ) : (
-                                    // Usar data em cache ou gerar uma nova
-                                    logDatesCache[log.id] || (() => {
-                                      // Gerar data aleatória nos últimos 30 dias
-                                      const randomDate = new Date();
-                                      randomDate.setDate(randomDate.getDate() - Math.floor(Math.random() * 30));
-                                      // Hora aleatória
-                                      randomDate.setHours(Math.floor(Math.random() * 24));
-                                      randomDate.setMinutes(Math.floor(Math.random() * 60));
-                                      
-                                      // Formatar e armazenar no cache
-                                      const formattedDate = randomDate.toLocaleString('pt-PT');
-                                      setLogDatesCache(prev => ({...prev, [log.id]: formattedDate}));
-                                      
-                                      return formattedDate;
-                                    })()
+                                    "-"
                                   )}
                                 </TableCell>
                                 <TableCell>{log.user?.name || t('admin.system')}</TableCell>
@@ -1050,46 +1041,16 @@ export default function AdminPage() {
                                   </span>
                                 </TableCell>
                                 <TableCell>{`${log.resourceType}${log.resourceId ? ` #${log.resourceId}` : ''}`}</TableCell>
-                                <TableCell>{log.ipAddress || (
-                                  // Usar IP em cache ou gerar um novo
-                                  logIPsCache[log.id] || (() => {
-                                    // Gerar IP aleatório
-                                    const randomIP = `192.168.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`;
-                                    
-                                    // Armazenar no cache
-                                    setLogIPsCache(prev => ({...prev, [log.id]: randomIP}));
-                                    
-                                    return randomIP;
-                                  })()
-                                )}</TableCell>
+                                <TableCell>{log.ipAddress || "-"}</TableCell>
                                 <TableCell>
                                   <Button 
                                     variant="ghost" 
                                     size="sm"
                                     onClick={() => {
-                                      // Usar ou criar detalhes persistentes para este log
-                                      if (!logDetailsCache[log.id]) {
-                                        // Gerar detalhes persistentes apenas na primeira vez
-                                        logDetailsCache[log.id] = log.details ? log.details : {
-                                          browser: ["Chrome", "Firefox", "Safari", "Edge"][Math.floor(Math.random() * 4)],
-                                          sistema: ["Windows 11", "macOS Ventura", "Ubuntu 22.04", "iOS 16"][Math.floor(Math.random() * 4)],
-                                          duracao: `${Math.floor(Math.random() * 10) + 1} minutos`,
-                                          localizacao: ["Lisboa", "Porto", "Coimbra", "Faro"][Math.floor(Math.random() * 4)],
-                                          detalhesAdicionais: log.action.includes("login") 
-                                            ? "Login bem-sucedido após validação de dois fatores"
-                                            : log.action.includes("create") 
-                                              ? `Criação de novo recurso ${log.resourceType} com sucesso`
-                                              : log.action.includes("update")
-                                                ? `Atualização de campos: ${["nome", "status", "configurações", "permissões"][Math.floor(Math.random() * 4)]}`
-                                                : "Operação concluída com sucesso"
-                                        };
-                                        
-                                        // Atualizar o cache de detalhes
-                                        setLogDetailsCache({...logDetailsCache});
-                                      }
-                                      
-                                      // Usar os detalhes armazenados no cache
-                                      const detailsToShow = logDetailsCache[log.id];
+                                      // Usar os detalhes do log, se disponíveis
+                                      const detailsToShow = log.details || {
+                                        mensagem: "Detalhes não disponíveis"
+                                      };
                                       
                                       // Formatar os detalhes para exibição
                                       const formattedDetails = Object.entries(detailsToShow)
