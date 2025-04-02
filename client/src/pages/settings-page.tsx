@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -52,6 +53,7 @@ import {
 export default function SettingsPage() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("general");
   
   // Carrega as configurações do usuário do localStorage
@@ -184,27 +186,27 @@ export default function SettingsPage() {
             <TabsList className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 mb-8">
               <TabsTrigger value="general">
                 <Settings className="h-4 w-4 mr-2" />
-                Geral
+                {t('settings.general')}
               </TabsTrigger>
               <TabsTrigger value="interface">
                 <LayoutDashboard className="h-4 w-4 mr-2" />
-                Interface
+                {t('settings.interface')}
               </TabsTrigger>
               <TabsTrigger value="notifications">
                 <Bell className="h-4 w-4 mr-2" />
-                Notificações
+                {t('settings.notifications')}
               </TabsTrigger>
               <TabsTrigger value="privacy">
                 <Lock className="h-4 w-4 mr-2" />
-                Privacidade
+                {t('settings.privacy')}
               </TabsTrigger>
               <TabsTrigger value="sound">
                 <Volume2 className="h-4 w-4 mr-2" />
-                Som
+                {t('settings.sound')}
               </TabsTrigger>
               <TabsTrigger value="reports">
                 <FileText className="h-4 w-4 mr-2" />
-                Relatórios
+                {t('settings.reports')}
               </TabsTrigger>
             </TabsList>
             
