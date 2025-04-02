@@ -15,6 +15,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { useTranslation } from "react-i18next";
+import { useLanguage } from "@/hooks/use-language";
 
 // Esquema de validação para o formulário de solicitação de acesso
 const requestAccessSchema = z.object({
@@ -36,6 +38,8 @@ interface RequestAccessDialogProps {
 export function RequestAccessDialog({ open, onOpenChange }: RequestAccessDialogProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { t } = useTranslation();
+  const { language } = useLanguage();
 
   const form = useForm<RequestAccessFormValues>({
     resolver: zodResolver(requestAccessSchema),
@@ -57,8 +61,8 @@ export function RequestAccessDialog({ open, onOpenChange }: RequestAccessDialogP
 
       // Mostrar toast de sucesso
       toast({
-        title: "Solicitação enviada",
-        description: "O administrador vai analisar sua solicitação e entrar em contato por email.",
+        title: t('auth.request_form.success_title'),
+        description: t('auth.request_form.success_message'),
         variant: "default",
       });
 
@@ -68,8 +72,8 @@ export function RequestAccessDialog({ open, onOpenChange }: RequestAccessDialogP
     } catch (error) {
       // Mostrar toast de erro
       toast({
-        title: "Erro ao enviar solicitação",
-        description: error instanceof Error ? error.message : "Ocorreu um erro ao processar sua solicitação. Tente novamente.",
+        title: t('auth.request_form.error_title'),
+        description: error instanceof Error ? error.message : t('auth.request_form.error_message'),
         variant: "destructive",
       });
     } finally {
@@ -81,96 +85,107 @@ export function RequestAccessDialog({ open, onOpenChange }: RequestAccessDialogP
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md md:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Solicitar Acesso</DialogTitle>
+          <DialogTitle>{t('auth.request_form.title')}</DialogTitle>
           <DialogDescription>
-            Preencha o formulário abaixo para solicitar acesso ao sistema. 
-            O administrador irá revisar suas informações e enviar as credenciais para o email fornecido.
+            {t('auth.request_form.description')}
           </DialogDescription>
         </DialogHeader>
         
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="fullName">Nome Completo</Label>
+              <Label htmlFor="fullName">{t('auth.request_form.full_name')}</Label>
               <Input 
                 id="fullName" 
                 {...form.register("fullName")} 
-                placeholder="Seu nome completo" 
+                placeholder={t('auth.request_form.full_name_placeholder')} 
               />
               {form.formState.errors.fullName && (
                 <p className="text-red-500 text-sm mt-1">
-                  {form.formState.errors.fullName.message}
+                  {language === 'pt' 
+                    ? form.formState.errors.fullName.message 
+                    : t('auth.request_form.full_name_error')}
                 </p>
               )}
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="professionalId">Cédula Profissional</Label>
+              <Label htmlFor="professionalId">{t('auth.request_form.professional_id')}</Label>
               <Input 
                 id="professionalId" 
                 {...form.register("professionalId")} 
-                placeholder="Sua cédula profissional" 
+                placeholder={t('auth.request_form.professional_id_placeholder')} 
               />
               {form.formState.errors.professionalId && (
                 <p className="text-red-500 text-sm mt-1">
-                  {form.formState.errors.professionalId.message}
+                  {language === 'pt' 
+                    ? form.formState.errors.professionalId.message 
+                    : t('auth.request_form.professional_id_error')}
                 </p>
               )}
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="specialty">Especialidade</Label>
+              <Label htmlFor="specialty">{t('auth.request_form.specialty')}</Label>
               <Input 
                 id="specialty" 
                 {...form.register("specialty")} 
-                placeholder="Sua especialidade médica" 
+                placeholder={t('auth.request_form.specialty_placeholder')} 
               />
               {form.formState.errors.specialty && (
                 <p className="text-red-500 text-sm mt-1">
-                  {form.formState.errors.specialty.message}
+                  {language === 'pt' 
+                    ? form.formState.errors.specialty.message 
+                    : t('auth.request_form.specialty_error')}
                 </p>
               )}
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('auth.request_form.email')}</Label>
               <Input 
                 id="email" 
                 type="email"
                 {...form.register("email")} 
-                placeholder="seu.email@exemplo.com" 
+                placeholder={t('auth.request_form.email_placeholder')} 
               />
               {form.formState.errors.email && (
                 <p className="text-red-500 text-sm mt-1">
-                  {form.formState.errors.email.message}
+                  {language === 'pt' 
+                    ? form.formState.errors.email.message 
+                    : t('auth.request_form.email_error')}
                 </p>
               )}
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="phone">Contacto Telefónico</Label>
+              <Label htmlFor="phone">{t('auth.request_form.phone')}</Label>
               <Input 
                 id="phone" 
                 {...form.register("phone")} 
-                placeholder="Seu número de telefone" 
+                placeholder={t('auth.request_form.phone_placeholder')} 
               />
               {form.formState.errors.phone && (
                 <p className="text-red-500 text-sm mt-1">
-                  {form.formState.errors.phone.message}
+                  {language === 'pt' 
+                    ? form.formState.errors.phone.message 
+                    : t('auth.request_form.phone_error')}
                 </p>
               )}
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="mechanographicNumber">Número Mecanográfico</Label>
+              <Label htmlFor="mechanographicNumber">{t('auth.request_form.mechanographic_number')}</Label>
               <Input 
                 id="mechanographicNumber" 
                 {...form.register("mechanographicNumber")} 
-                placeholder="Seu número mecanográfico" 
+                placeholder={t('auth.request_form.mechanographic_number_placeholder')} 
               />
               {form.formState.errors.mechanographicNumber && (
                 <p className="text-red-500 text-sm mt-1">
-                  {form.formState.errors.mechanographicNumber.message}
+                  {language === 'pt' 
+                    ? form.formState.errors.mechanographicNumber.message 
+                    : t('auth.request_form.mechanographic_number_error')}
                 </p>
               )}
             </div>
@@ -178,10 +193,10 @@ export function RequestAccessDialog({ open, onOpenChange }: RequestAccessDialogP
           
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancelar
+              {t('auth.request_form.cancel')}
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "A enviar..." : "Enviar Solicitação"}
+              {isSubmitting ? t('auth.request_form.submitting') : t('auth.request_form.submit')}
             </Button>
           </DialogFooter>
         </form>
