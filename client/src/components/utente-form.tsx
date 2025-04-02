@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,6 +33,7 @@ interface UtenteFormProps {
 
 export function UtenteForm({ onUtenteChange, defaultValues, disabled = false }: UtenteFormProps) {
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [processNumber, setProcessNumber] = useState<string>(defaultValues?.processNumber || "");
   const [isSearching, setIsSearching] = useState<boolean>(false);
 
@@ -125,7 +127,7 @@ export function UtenteForm({ onUtenteChange, defaultValues, disabled = false }: 
   return (
     <Card>
       <CardContent className="pt-6">
-        <h2 className="text-lg font-medium mb-6">Dados do Utente</h2>
+        <h2 className="text-lg font-medium mb-6">{t('patient.details')}</h2>
         
         <Form {...form}>
           <form className="space-y-6" onChange={handleFormChange}>
@@ -138,7 +140,7 @@ export function UtenteForm({ onUtenteChange, defaultValues, disabled = false }: 
                   render={({ field }) => (
                     <FormItem>
                       <Label htmlFor="hospital-process">
-                        Número do Processo Hospitalar
+                        {t('patient.process_number')}
                       </Label>
                       <FormControl>
                         <Input
@@ -168,7 +170,7 @@ export function UtenteForm({ onUtenteChange, defaultValues, disabled = false }: 
                 ) : (
                   <Search className="h-4 w-4 mr-2" />
                 )}
-                Procurar
+                {t('common.search')}
               </Button>
             </div>
             
@@ -179,12 +181,12 @@ export function UtenteForm({ onUtenteChange, defaultValues, disabled = false }: 
                 render={({ field }) => (
                   <FormItem>
                     <Label htmlFor="utente-name">
-                      Nome do Utente
+                      {t('patient.name')}
                     </Label>
                     <FormControl>
                       <Input
                         id="utente-name"
-                        placeholder="Nome completo"
+                        placeholder={t('patient.name')}
                         {...field}
                         disabled={true} // Nome sempre bloqueado, associado ao processo
                       />
@@ -200,12 +202,12 @@ export function UtenteForm({ onUtenteChange, defaultValues, disabled = false }: 
                 render={({ field }) => (
                   <FormItem>
                     <Label htmlFor="utente-age">
-                      Idade
+                      {t('patient.age')}
                     </Label>
                     <FormControl>
                       <Input
                         id="utente-age"
-                        placeholder="Idade"
+                        placeholder={t('patient.age')}
                         {...field}
                         disabled={true} // Idade sempre bloqueada, associada ao processo
                       />
@@ -221,7 +223,7 @@ export function UtenteForm({ onUtenteChange, defaultValues, disabled = false }: 
                 render={({ field }) => (
                   <FormItem>
                     <Label htmlFor="utente-gender">
-                      Género
+                      {t('patient.gender')}
                     </Label>
                     <Select 
                       onValueChange={field.onChange} 
@@ -230,17 +232,17 @@ export function UtenteForm({ onUtenteChange, defaultValues, disabled = false }: 
                     >
                       <FormControl>
                         <SelectTrigger id="utente-gender">
-                          <SelectValue placeholder="Selecionar">
-                            {field.value === "M" ? "Masculino" : 
-                             field.value === "F" ? "Feminino" : 
-                             field.value === "O" ? "Outro" : "Selecionar"}
+                          <SelectValue placeholder={t('common.select')}>
+                            {field.value === "M" ? t('gender.male') : 
+                             field.value === "F" ? t('gender.female') : 
+                             field.value === "O" ? t('gender.other') : t('common.select')}
                           </SelectValue>
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="M">Masculino</SelectItem>
-                        <SelectItem value="F">Feminino</SelectItem>
-                        <SelectItem value="O">Outro</SelectItem>
+                        <SelectItem value="M">{t('gender.male')}</SelectItem>
+                        <SelectItem value="F">{t('gender.female')}</SelectItem>
+                        <SelectItem value="O">{t('gender.other')}</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

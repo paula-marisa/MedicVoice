@@ -367,6 +367,13 @@ const pt = {
     "withdraw_consent": "Retirar Consentimento",
     "rgpd_compliant": "Em conformidade com o RGPD"
   },
+  
+  // Gênero
+  "gender": {
+    "male": "Masculino",
+    "female": "Feminino",
+    "other": "Outro"
+  },
 
   // Footer
   "footer": {
@@ -415,7 +422,8 @@ const pt = {
     "please_try_again": "Por favor, tente novamente",
     "not_found": "Não encontrado",
     "welcome": "Bem-vindo",
-    "goodbye": "Adeus"
+    "goodbye": "Adeus",
+    "select": "Selecionar"
   }
 };
 
