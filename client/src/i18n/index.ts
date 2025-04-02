@@ -339,7 +339,7 @@ i18n
           
           // Rodapé
           "footer": {
-            "copyright": "© 2025 Sistema de Relatórios Médicos. Todos os direitos reservados.",
+            "copyright": "Sistema de Relatórios Médicos. Todos os direitos reservados.",
             "gdpr_compliance": "Em conformidade com o RGPD",
             "terms": "Termos de Uso",
             "privacy_policy": "Política de Privacidade"
@@ -679,7 +679,7 @@ i18n
           
           // Footer
           "footer": {
-            "copyright": "© 2025 Medical Reports System. All rights reserved.",
+            "copyright": "Medical Reports System. All rights reserved.",
             "gdpr_compliance": "GDPR Compliant",
             "terms": "Terms of Use",
             "privacy_policy": "Privacy Policy"
