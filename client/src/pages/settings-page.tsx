@@ -153,13 +153,13 @@ export default function SettingsPage() {
       
       // Exibe mensagem de sucesso
       toast({
-        title: "Configurações guardadas",
-        description: "As suas alterações foram guardadas com sucesso e aplicadas.",
+        title: t('settings.saved'),
+        description: t('settings.savedSuccess'),
       });
     } else {
       toast({
-        title: "Erro ao guardar",
-        description: "Ocorreu um erro ao guardar as configurações. Tente novamente.",
+        title: t('settings.errorSaving'),
+        description: t('settings.errorSavingDesc'),
         variant: "destructive",
       });
     }
@@ -431,7 +431,7 @@ export default function SettingsPage() {
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div className="space-y-4">
-                      <h3 className="text-md font-medium">Canais de Notificação</h3>
+                      <h3 className="text-md font-medium">{t('settings.notificationChannels')}</h3>
                       <div className="flex items-center justify-between">
                         <div className="space-y-0.5">
                           <Label htmlFor="email-notifications">Notificações por Email</Label>
@@ -461,7 +461,7 @@ export default function SettingsPage() {
                       
                       <Separator />
                       
-                      <h3 className="text-md font-medium">Tipos de Notificação</h3>
+                      <h3 className="text-md font-medium">{t('settings.notificationTypes')}</h3>
                       <div className="flex items-center justify-between">
                         <div className="space-y-0.5">
                           <Label htmlFor="report-updates">Atualizações de Relatórios</Label>
@@ -506,7 +506,7 @@ export default function SettingsPage() {
                           </div>
                           
                           <div className="rounded-md border p-4 space-y-4">
-                            <h3 className="font-medium">Configurações Avançadas</h3>
+                            <h3 className="font-medium">{t('settings.advancedSettings')}</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                               <div className="space-y-2">
                                 <Label htmlFor="notification-schedule">Horário de Notificações</Label>
@@ -592,9 +592,9 @@ export default function SettingsPage() {
                       <h3 className="text-md font-medium">{t('settings.voiceRecognitionSettings')}</h3>
                       <div className="flex items-center justify-between">
                         <div className="space-y-0.5">
-                          <Label htmlFor="voice-recording">Permitir Gravação de Voz</Label>
+                          <Label htmlFor="voice-recording">{t('settings.allowVoiceRecording')}</Label>
                           <p className="text-sm text-muted-foreground">
-                            Permitir que o sistema utilize reconhecimento de voz para transcrições.
+                            {t('settings.allowVoiceRecordingDesc')}
                           </p>
                         </div>
                         <Switch 
@@ -606,9 +606,9 @@ export default function SettingsPage() {
                       
                       <div className="flex items-center justify-between">
                         <div className="space-y-0.5">
-                          <Label htmlFor="recording-indicator">Mostrar Indicador de Gravação</Label>
+                          <Label htmlFor="recording-indicator">{t('settings.showRecordingIndicator')}</Label>
                           <p className="text-sm text-muted-foreground">
-                            Mostrar um indicador visual quando a gravação estiver ativa.
+                            {t('settings.showRecordingIndicatorDesc')}
                           </p>
                         </div>
                         <Switch 
@@ -619,7 +619,7 @@ export default function SettingsPage() {
                       </div>
                       
                       <div className="space-y-2">
-                        <Label htmlFor="retention-period">Período de Retenção de Dados (dias)</Label>
+                        <Label htmlFor="retention-period">{t('settings.dataRetentionPeriod')}</Label>
                         <Input 
                           id="retention-period" 
                           type="number" 
@@ -632,26 +632,26 @@ export default function SettingsPage() {
                           max="365"
                         />
                         <p className="text-sm text-muted-foreground">
-                          Por quanto tempo os dados pessoais serão armazenados antes de serem automaticamente excluídos (conforme LGPD/GDPR).
+                          {t('settings.dataRetentionPeriodDesc')}
                         </p>
                       </div>
                       
                       <div className="flex items-center space-x-2">
                         <Button variant="outline" onClick={() => {
                           toast({
-                            title: "Função em desenvolvimento",
-                            description: "A exportação de dados pessoais estará disponível em breve."
+                            title: t('settings.featureInDevelopment'),
+                            description: t('settings.exportDataAvailableSoon')
                           });
                         }}>
-                          Exportar Meus Dados
+                          {t('settings.exportMyData')}
                         </Button>
                         <Button variant="destructive" onClick={() => {
                           toast({
-                            title: "Função em desenvolvimento",
-                            description: "A solicitação de exclusão de dados estará disponível em breve."
+                            title: t('settings.featureInDevelopment'),
+                            description: t('settings.deleteDataRequestAvailableSoon')
                           });
                         }}>
-                          Solicitar Exclusão de Dados
+                          {t('settings.requestDataDeletion')}
                         </Button>
                       </div>
                     </div>
@@ -723,12 +723,12 @@ export default function SettingsPage() {
                       
                       <Separator />
                       
-                      <h3 className="text-md font-medium">Preferências de Reconhecimento de Voz</h3>
+                      <h3 className="text-md font-medium">{t('settings.voiceRecognitionPreferences')}</h3>
                       <div className="space-y-2">
-                        <Label htmlFor="voice-language">Idioma de Reconhecimento</Label>
+                        <Label htmlFor="voice-language">{t('settings.recognitionLanguage')}</Label>
                         <Select defaultValue="pt">
                           <SelectTrigger id="voice-language">
-                            <SelectValue placeholder="Selecione o idioma" />
+                            <SelectValue placeholder={t('settings.selectLanguagePlaceholder')} />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="pt">Português (Portugal)</SelectItem>
@@ -742,9 +742,9 @@ export default function SettingsPage() {
                       
                       <div className="flex items-center justify-between">
                         <div className="space-y-0.5">
-                          <Label htmlFor="voice-feedback">Feedback Auditivo</Label>
+                          <Label htmlFor="voice-feedback">{t('settings.auditoryFeedback')}</Label>
                           <p className="text-sm text-muted-foreground">
-                            Fornecer feedback sonoro durante o reconhecimento de voz.
+                            {t('settings.auditoryFeedbackDesc')}
                           </p>
                         </div>
                         <Switch id="voice-feedback" defaultChecked />
@@ -755,12 +755,12 @@ export default function SettingsPage() {
                         className="w-full"
                         onClick={() => {
                           toast({
-                            title: "Teste de Áudio",
-                            description: "Se ouviu um som, o áudio está a funcionar corretamente.",
+                            title: t('settings.audioTest'),
+                            description: t('settings.audioTestSuccess'),
                           });
                         }}
                       >
-                        Testar Audio
+                        {t('settings.testAudio')}
                       </Button>
                     </div>
                   </CardContent>
