@@ -26,6 +26,7 @@ const en = {
     "request_access": "Request access",
     "not_registered": "Don't have an account?",
     "register": "Register",
+    "welcome": "Welcome",
     "login_description": "To login, you need to enter your credentials. If you don't have them, you can request access",
     "click_here": "by clicking here",
     "request_form": {
@@ -224,6 +225,7 @@ const en = {
     "description": "This is the administrator panel of the medical reports system. Here, you can manage users, consult medical reports, and monitor all system activities.",
     "register_users": "Register Users",
     "register_users_description": "Add new doctors, nurses, or administrators to the system.",
+    "register_user": "Register User",
     "new_user_title": "Register New User",
     "new_user_description": "Register new doctors, nurses, or administrators in the system.",
     "pending_access_title": "Pending Access Requests",

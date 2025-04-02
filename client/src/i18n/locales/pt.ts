@@ -26,6 +26,7 @@ const pt = {
     "request_access": "Solicitar acesso",
     "not_registered": "Não tem uma conta?",
     "register": "Registrar",
+    "welcome": "Bem-vindo",
     "login_description": "Para efetuar o login é necessário introduzir as suas credencias, caso não as tenha pode solicitar acesso",
     "click_here": "clicando aqui",
     "request_form": {
@@ -222,6 +223,7 @@ const pt = {
     "description": "Este é o painel de administrador do sistema de relatórios médicos. Aqui, podes gerir utilizadores, consultar relatórios médicos e acompanhar todas as atividades do sistema.",
     "register_users": "Registar Utilizadores",
     "register_users_description": "Adicione novos médicos, enfermeiros ou administradores ao sistema.",
+    "register_user": "Registar Utilizador",
     "new_user_title": "Registar Novo Utilizador",
     "new_user_description": "Registe novos médicos, enfermeiros ou administradores no sistema.",
     "pending_access_title": "Solicitações de Acesso Pendentes",

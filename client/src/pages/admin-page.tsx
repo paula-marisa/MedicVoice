@@ -405,7 +405,7 @@ export default function AdminPage() {
       <main className="flex-grow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="mb-6">
-            <h2 className="text-2xl font-bold mb-2">{t('auth.welcome', 'Bem-vindo')}, {user.name}</h2>
+            <h2 className="text-2xl font-bold mb-2">{t('auth.welcome')}, {user.name}</h2>
             <p className="text-muted-foreground">
               {t('admin.description', 'Este é o painel de administrador do sistema de relatórios médicos. Aqui, podes gerir utilizadores, consultar relatórios médicos e acompanhar todas as atividades do sistema.')}
             </p>
@@ -553,7 +553,7 @@ export default function AdminPage() {
                       className="w-full" 
                       disabled={registerMutation.isPending}
                     >
-                      {registerMutation.isPending ? t('common.loading', 'A registar...') : t('admin.register_user', 'Registar Utilizador')}
+                      {registerMutation.isPending ? t('common.loading') : t('admin.register_user')}
                     </Button>
                   </form>
                 </CardContent>
