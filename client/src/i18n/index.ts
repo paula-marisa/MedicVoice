@@ -216,7 +216,12 @@ i18n
             "profile_settings": "Configurações de Perfil",
             "privacy": "Privacidade",
             "security": "Segurança",
-            "language_selection": "Seleção de Idioma"
+            "language_selection": "Seleção de Idioma",
+            "interface": "Interface",
+            "general": "Geral",
+            "sound": "Som",
+            "reports": "Relatórios",
+            "profile": "Perfil"
           },
           
           // Mensagens gerais
@@ -498,7 +503,12 @@ i18n
             "profile_settings": "Profile Settings",
             "privacy": "Privacy",
             "security": "Security",
-            "language_selection": "Language Selection"
+            "language_selection": "Language Selection",
+            "interface": "Interface",
+            "general": "General",
+            "sound": "Sound",
+            "reports": "Reports",
+            "profile": "Profile"
           },
           
           // General messages
