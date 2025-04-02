@@ -374,6 +374,30 @@ const pt = {
     "female": "Feminino",
     "other": "Outro"
   },
+  
+  // Formulário de relatório médico
+  "report": {
+    "title": "Conteúdo do Relatório",
+    "diagnosis": "Diagnóstico",
+    "diagnosis_placeholder": "Descreva o diagnóstico do utente",
+    "symptoms": "Sintomas",
+    "symptoms_placeholder": "Liste os sintomas apresentados",
+    "treatment": "Tratamento Recomendado",
+    "treatment_placeholder": "Descreva o tratamento recomendado",
+    "observations": "Observações",
+    "observations_placeholder": "Observações adicionais",
+    "save_submit": "Guardar e Enviar",
+    "clear_fields": "Limpar Campos"
+  },
+  
+  // Opções de exportação
+  "export": {
+    "title": "Opções de Exportação",
+    "to_pdf": "Exportar para PDF",
+    "to_sclinico": "Enviar para S-Clínico",
+    "success": "Exportado com sucesso!",
+    "error": "Erro ao exportar o relatório"
+  },
 
   // Footer
   "footer": {

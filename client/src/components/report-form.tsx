@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -27,6 +28,7 @@ interface ReportFormProps {
 }
 
 export function ReportForm({ onReportChange, defaultValues, transcription, listenButton }: ReportFormProps) {
+  const { t } = useTranslation();
   const form = useForm<ReportFormValues>({
     resolver: zodResolver(reportSchema),
     defaultValues: {
@@ -57,7 +59,7 @@ export function ReportForm({ onReportChange, defaultValues, transcription, liste
   return (
     <Card>
       <CardContent className="pt-6">
-        <h2 className="text-lg font-medium mb-6">Conteúdo do Relatório</h2>
+        <h2 className="text-lg font-medium mb-6">{t('report.title')}</h2>
         
         <Form {...form}>
           <form className="space-y-6" onChange={handleFormChange}>
@@ -67,12 +69,12 @@ export function ReportForm({ onReportChange, defaultValues, transcription, liste
               render={({ field }) => (
                 <FormItem>
                   <Label htmlFor="diagnosis">
-                    Diagnóstico
+                    {t('report.diagnosis')}
                   </Label>
                   <FormControl>
                     <Textarea
                       id="diagnosis"
-                      placeholder="Descreva o diagnóstico do utente"
+                      placeholder={t('report.diagnosis_placeholder')}
                       className="resize-none"
                       rows={3}
                       {...field}
@@ -90,14 +92,14 @@ export function ReportForm({ onReportChange, defaultValues, transcription, liste
                 <FormItem>
                   <div className="flex justify-between items-center">
                     <Label htmlFor="symptoms">
-                      Sintomas
+                      {t('report.symptoms')}
                     </Label>
                     {listenButton}
                   </div>
                   <FormControl>
                     <Textarea
                       id="symptoms"
-                      placeholder="Liste os sintomas apresentados"
+                      placeholder={t('report.symptoms_placeholder')}
                       className="resize-none"
                       rows={3}
                       {...field}
@@ -114,12 +116,12 @@ export function ReportForm({ onReportChange, defaultValues, transcription, liste
               render={({ field }) => (
                 <FormItem>
                   <Label htmlFor="treatment">
-                    Tratamento Recomendado
+                    {t('report.treatment')}
                   </Label>
                   <FormControl>
                     <Textarea
                       id="treatment"
-                      placeholder="Descreva o tratamento recomendado"
+                      placeholder={t('report.treatment_placeholder')}
                       className="resize-none"
                       rows={3}
                       {...field}
@@ -136,12 +138,12 @@ export function ReportForm({ onReportChange, defaultValues, transcription, liste
               render={({ field }) => (
                 <FormItem>
                   <Label htmlFor="observations">
-                    Observações
+                    {t('report.observations')}
                   </Label>
                   <FormControl>
                     <Textarea
                       id="observations"
-                      placeholder="Observações adicionais"
+                      placeholder={t('report.observations_placeholder')}
                       className="resize-none"
                       rows={3}
                       {...field}

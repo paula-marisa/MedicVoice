@@ -7,6 +7,7 @@ import { pt } from "date-fns/locale";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "../hooks/use-auth";
+import { useTranslation } from "react-i18next";
 
 interface ExportOptionsProps {
   onExportPDF: () => void;
@@ -23,6 +24,7 @@ export function ExportOptions({
 }: ExportOptionsProps) {
   const { toast } = useToast();
   const { user } = useAuth();
+  const { t } = useTranslation();
   const today = new Date();
   const formattedDate = format(today, "dd 'de' MMMM 'de' yyyy", { locale: pt });
 
@@ -31,13 +33,13 @@ export function ExportOptions({
     try {
       onExportPDF();
       notificationRef.current?.show({
-        message: "Relatório exportado como PDF com sucesso!",
+        message: t('export.success'),
         type: "success"
       });
     } catch (error) {
       console.error("Error exporting PDF:", error);
       notificationRef.current?.show({
-        message: "Erro ao exportar relatório como PDF",
+        message: t('export.error'),
         type: "error"
       });
     }
@@ -48,7 +50,7 @@ export function ExportOptions({
     // Verificar se temos um número de processo válido
     if (!processNumber) {
       toast({
-        title: "Erro de exportação",
+        title: t('export.error'),
         description: "É necessário fornecer um número de processo válido para exportar para o SClínico.",
         variant: "destructive",
       });
@@ -58,13 +60,13 @@ export function ExportOptions({
     try {
       onExportSClinico();
       notificationRef.current?.show({
-        message: `Relatório exportado para SClínico com sucesso! Nº Processo: ${processNumber}`,
+        message: `${t('export.success')} Nº Processo: ${processNumber}`,
         type: "success"
       });
     } catch (error) {
       console.error("Error exporting to SClinico:", error);
       notificationRef.current?.show({
-        message: "Erro ao exportar relatório para SClínico",
+        message: t('export.error'),
         type: "error"
       });
     }
@@ -73,7 +75,7 @@ export function ExportOptions({
   return (
     <Card>
       <CardContent className="pt-6">
-        <h2 className="text-lg font-medium mb-4">Opções de Exportação</h2>
+        <h2 className="text-lg font-medium mb-4">{t('export.title')}</h2>
         
         <div className="mb-4">
           <div className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400 mb-1">
@@ -101,7 +103,7 @@ export function ExportOptions({
             onClick={handleExportPDF}
           >
             <FileDown className="h-5 w-5" />
-            Exportar como PDF
+            {t('export.to_pdf')}
           </Button>
           
           <Button 
@@ -111,7 +113,7 @@ export function ExportOptions({
             disabled={!processNumber}
           >
             <Download className="h-5 w-5" />
-            Exportar para SClínico
+            {t('export.to_sclinico')}
           </Button>
           
           {!processNumber && (

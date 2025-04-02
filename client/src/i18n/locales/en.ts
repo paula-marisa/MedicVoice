@@ -374,6 +374,30 @@ const en = {
     "female": "Female",
     "other": "Other"
   },
+  
+  // Medical report form
+  "report": {
+    "title": "Report Content",
+    "diagnosis": "Diagnosis",
+    "diagnosis_placeholder": "Describe the patient's diagnosis",
+    "symptoms": "Symptoms",
+    "symptoms_placeholder": "List the symptoms presented",
+    "treatment": "Recommended Treatment",
+    "treatment_placeholder": "Describe the recommended treatment",
+    "observations": "Observations",
+    "observations_placeholder": "Additional observations",
+    "save_submit": "Save and Submit",
+    "clear_fields": "Clear Fields"
+  },
+  
+  // Export options
+  "export": {
+    "title": "Export Options",
+    "to_pdf": "Export to PDF",
+    "to_sclinico": "Send to S-Clínico",
+    "success": "Successfully exported!",
+    "error": "Error exporting the report"
+  },
 
   // Footer
   "footer": {
