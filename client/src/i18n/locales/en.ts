@@ -62,6 +62,7 @@ const en = {
   // Medical reports
   "reports": {
     "my_reports": "My Reports",
+    "description": "Here you can view and edit all your medical reports.",
     "new_report": "New Report",
     "edit_report": "Edit Report",
     "report_details": "Report Details",
@@ -87,7 +88,14 @@ const en = {
     "save_draft": "Save Draft",
     "submit": "Submit",
     "save_and_submit": "Save and Submit",
-    "clear_fields": "Clear Fields"
+    "clear_fields": "Clear Fields",
+    "action_buttons": "Actions",
+    "no_reports": "You don't have any reports yet.",
+    "no_reports_match_search": "No reports found for this search.",
+    "delete_success_title": "Report deleted",
+    "delete_success_message": "The report was successfully deleted.",
+    "delete_error_title": "Error deleting report",
+    "delete_error_message": "An error occurred while deleting the report. Please try again."
   },
   
   // Report statuses

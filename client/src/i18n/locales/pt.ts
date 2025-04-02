@@ -62,6 +62,7 @@ const pt = {
   // Relatórios médicos
   "reports": {
     "my_reports": "Meus Relatórios",
+    "description": "Aqui você pode visualizar e editar todos os seus relatórios médicos.",
     "new_report": "Novo Relatório",
     "edit_report": "Editar Relatório",
     "report_details": "Detalhes do Relatório",
@@ -87,7 +88,14 @@ const pt = {
     "save_draft": "Salvar Rascunho",
     "submit": "Enviar",
     "save_and_submit": "Salvar e Enviar",
-    "clear_fields": "Limpar Campos"
+    "clear_fields": "Limpar Campos",
+    "action_buttons": "Ações",
+    "no_reports": "Você ainda não tem relatórios.",
+    "no_reports_match_search": "Nenhum relatório encontrado para a pesquisa.",
+    "delete_success_title": "Relatório eliminado",
+    "delete_success_message": "O relatório foi eliminado com sucesso.",
+    "delete_error_title": "Erro ao eliminar relatório",
+    "delete_error_message": "Ocorreu um erro ao eliminar o relatório. Tente novamente."
   },
   
   // Estados dos relatórios

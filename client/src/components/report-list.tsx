@@ -52,7 +52,7 @@ export function ReportList({ onEditReport }: ReportListProps) {
   const [deleteReason, setDeleteReason] = useState("");
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   
   // Buscar relatórios do usuário
   const { data: reports, isLoading } = useQuery<{ success: boolean, data: MedicalReport[] }>({
@@ -69,8 +69,8 @@ export function ReportList({ onEditReport }: ReportListProps) {
     },
     onSuccess: () => {
       toast({
-        title: "Relatório eliminado",
-        description: "O relatório foi eliminado com sucesso.",
+        title: t('reports.delete_success_title', 'Relatório eliminado'),
+        description: t('reports.delete_success_message', 'O relatório foi eliminado com sucesso.'),
         variant: "default",
       });
       setDeleteDialogOpen(false);
@@ -80,8 +80,8 @@ export function ReportList({ onEditReport }: ReportListProps) {
     },
     onError: (error: any) => {
       toast({
-        title: "Erro ao eliminar relatório",
-        description: error.message || "Ocorreu um erro ao eliminar o relatório. Tente novamente.",
+        title: t('reports.delete_error_title', 'Erro ao eliminar relatório'),
+        description: error.message || t('reports.delete_error_message', 'Ocorreu um erro ao eliminar o relatório. Tente novamente.'),
         variant: "destructive",
       });
     }
@@ -100,7 +100,9 @@ export function ReportList({ onEditReport }: ReportListProps) {
   // Função para formatar data
   const formatDate = (dateString: string | Date) => {
     const date = typeof dateString === 'string' ? new Date(dateString) : dateString;
-    return new Intl.DateTimeFormat('pt-BR', {
+    // Use the current language for date formatting
+    const locale = i18n.language === 'en' ? 'en-US' : 'pt-PT';
+    return new Intl.DateTimeFormat(locale, {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
@@ -113,9 +115,9 @@ export function ReportList({ onEditReport }: ReportListProps) {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'draft':
-        return <Badge variant="outline">Rascunho</Badge>;
+        return <Badge variant="outline">{t('status.draft', 'Rascunho')}</Badge>;
       case 'submitted':
-        return <Badge variant="default">Enviado</Badge>;
+        return <Badge variant="default">{t('status.submitted', 'Enviado')}</Badge>;
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
@@ -148,7 +150,9 @@ export function ReportList({ onEditReport }: ReportListProps) {
           </div>
         ) : filteredReports.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
-            {searchTerm ? "Nenhum relatório encontrado para a pesquisa." : "Você ainda não tem relatórios."}
+            {searchTerm 
+              ? t('reports.no_reports_match_search', 'Nenhum relatório encontrado para a pesquisa.')
+              : t('reports.no_reports', 'Você ainda não tem relatórios.')}
           </div>
         ) : (
           <div className="rounded-md border overflow-hidden">
@@ -302,9 +306,9 @@ export function ReportList({ onEditReport }: ReportListProps) {
                 {deleteMutation.isPending ? (
                   <div className="flex items-center gap-1">
                     <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full"></div>
-                    <span>A eliminar...</span>
+                    <span>{t('reports.deletion_in_progress', 'A eliminar...')}</span>
                   </div>
-                ) : "Eliminar"}
+                ) : t('reports.delete', 'Eliminar')}
               </Button>
             </DialogFooter>
           </DialogContent>
