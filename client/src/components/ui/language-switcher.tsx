@@ -16,9 +16,9 @@ export function LanguageSwitcher() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-9 w-9 rounded-md">
+        <Button variant="ghost" size="sm" className="flex items-center gap-1">
           <Globe className="h-4 w-4" />
-          <span className="sr-only">{t('settings.language_selection')}</span>
+          <span>{language === 'pt' ? 'PT' : 'EN'}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
