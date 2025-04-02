@@ -175,9 +175,9 @@ export default function SettingsPage() {
         <div className="container max-w-7xl py-6">
           <div className="flex flex-col items-start gap-4 md:flex-row md:justify-between">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">Configurações</h1>
+              <h1 className="text-3xl font-bold tracking-tight">{t('settings.profile_settings')}</h1>
               <p className="text-muted-foreground">
-                Personalize o sistema de acordo com as suas preferências.
+                {t('settings.customize')}
               </p>
             </div>
           </div>
@@ -215,9 +215,9 @@ export default function SettingsPage() {
               <TabsContent value="general">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Configurações Gerais</CardTitle>
+                    <CardTitle>{t('settings.general')}</CardTitle>
                     <CardDescription>
-                      Configure as opções básicas do sistema.
+                      {t('settings.generalDescription')}
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
@@ -225,13 +225,13 @@ export default function SettingsPage() {
                       {/* Opção de idioma removida conforme solicitado */}
                       
                       <div className="space-y-2">
-                        <Label htmlFor="date-format">Formato de Data</Label>
+                        <Label htmlFor="date-format">{t('settings.dateFormat')}</Label>
                         <Select 
                           value={dateFormat} 
                           onValueChange={setDateFormat}
                         >
                           <SelectTrigger id="date-format" className="w-full">
-                            <SelectValue placeholder="Selecione o formato de data" />
+                            <SelectValue placeholder={t('settings.dateFormat')} />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="dd/mm/yyyy">DD/MM/AAAA (25/03/2025)</SelectItem>
@@ -241,12 +241,12 @@ export default function SettingsPage() {
                           </SelectContent>
                         </Select>
                         <p className="text-sm text-muted-foreground">
-                          Como as datas serão exibidas no sistema.
+                          {t('settings.dateFormatDescription')}
                         </p>
                       </div>
                       
                       <div className="space-y-2">
-                        <Label>Tema</Label>
+                        <Label>{t('settings.theme')}</Label>
                         <RadioGroup 
                           value={theme} 
                           onValueChange={(value) => setTheme(value as "light" | "dark" | "system")} 
@@ -256,21 +256,21 @@ export default function SettingsPage() {
                             <RadioGroupItem value="light" id="theme-light" />
                             <Label htmlFor="theme-light" className="flex items-center">
                               <Sun className="h-4 w-4 mr-1" />
-                              Claro
+                              {t('settings.light')}
                             </Label>
                           </div>
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="dark" id="theme-dark" />
                             <Label htmlFor="theme-dark" className="flex items-center">
                               <Moon className="h-4 w-4 mr-1" />
-                              Escuro
+                              {t('settings.dark')}
                             </Label>
                           </div>
                           <div className="flex items-center space-x-2">
                             <RadioGroupItem value="system" id="theme-system" />
                             <Label htmlFor="theme-system" className="flex items-center">
                               <Laptop className="h-4 w-4 mr-1" />
-                              Sistema
+                              {t('settings.system')}
                             </Label>
                           </div>
                         </RadioGroup>

@@ -214,6 +214,7 @@ i18n
             "system": "Sistema",
             "notifications": "Notificações",
             "profile_settings": "Configurações de Perfil",
+            "customize": "Personalize o sistema de acordo com as suas preferências.",
             "privacy": "Privacidade",
             "security": "Segurança",
             "language_selection": "Seleção de Idioma",
@@ -221,7 +222,10 @@ i18n
             "general": "Geral",
             "sound": "Som",
             "reports": "Relatórios",
-            "profile": "Perfil"
+            "profile": "Perfil",
+            "dateFormat": "Formato de Data",
+            "dateFormatDescription": "Como as datas serão exibidas no sistema.",
+            "generalDescription": "Configure as opções básicas do sistema."
           },
           
           // Mensagens gerais
@@ -501,6 +505,7 @@ i18n
             "system": "System",
             "notifications": "Notifications",
             "profile_settings": "Profile Settings",
+            "customize": "Customize the system according to your preferences.",
             "privacy": "Privacy",
             "security": "Security",
             "language_selection": "Language Selection",
@@ -508,7 +513,10 @@ i18n
             "general": "General",
             "sound": "Sound",
             "reports": "Reports",
-            "profile": "Profile"
+            "profile": "Profile",
+            "dateFormat": "Date Format",
+            "dateFormatDescription": "How dates will be displayed in the system.",
+            "generalDescription": "Configure the basic system options."
           },
           
           // General messages
